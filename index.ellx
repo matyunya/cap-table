@@ -2,17 +2,17 @@ version: 1.1
 nodes:
   $investors = basicStore.investors
   $1 = store.$investors
-  makeSheetWith = (i, r) => sheet({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(i, r) })
+  makeSheetWith = (s) => sheet({ nRows: rowsCount(s.get('investors')), nCols: colsCount(s.get('rounds')), blocks: toBlocks(s), store })
   $rounds = basicStore.rounds
   $10 = testBlocks
   $11 = testBlocksWithStyle
-  blocks = Object.fromEntries(toBlocks($investors, $rounds))
+  blocks = Object.fromEntries(toBlocks(basicStore))
   $investorsRowSpan = storeWithRowSpan.investors
   $roundsRowSpan = storeWithRowSpan.rounds
-  $5 = makeSheetWith($investorsRowSpan, $roundsRowSpan)
+  $5 = makeSheetWith(storeWithRowSpan)
   $investorsShareCalc = shareCalcStore.investors
   $roundsShareCalc = shareCalcStore.rounds
-  $8 = makeSheetWith($investorsShareCalc, $roundsShareCalc)
+  $8 = makeSheetWith(shareCalcStore)
 layout:
 [
   [,,,,,,,,,
@@ -71,10 +71,11 @@ layout:
     {
       "node": "blocks",
       "expansion": {
-        "vertical": true,
-        "labelsLeft": true,
-        "height": 5,
-        "width": 1
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "height": 4,
+        "width": 10
       }
     }
   ],,,,,,

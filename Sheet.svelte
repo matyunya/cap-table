@@ -6,6 +6,7 @@
   export let rowHeight = 20;
   export let columnWidth = 100;
   export let tileSize = 10;
+  export let store;
 
   let editing = false;
   let onSave = false;
@@ -51,7 +52,10 @@
 
     if (e.code === 'Enter') {
       e.preventDefault();
-      onSave(document.getElementById('editing').innerText);
+      onSave(store, {
+        value: document.getElementById('editing').innerText,
+        id: editing,
+      });
     }
     if (e.code === 'Escape') {
       e.preventDefault();

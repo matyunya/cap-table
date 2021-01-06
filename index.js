@@ -49,7 +49,10 @@ export const testBlocks = new Map([[0, { position: [0,0,0,0], value: "test"}]]);
 
 export const testBlocksWithStyle = new Map([[0, { position: [0,1,0,0], value: "test", classes: "font-bold text-center bg-gray-200" }]]);
 
-export function toBlocks(investors, rounds) {
+export function toBlocks(store) {
+  const investors = store.get('investors');
+  const rounds = store.get('rounds');
+
   return new Map([
     ...groupNames(investors),
     ...[...investors.keys()].map(investorNames(investors)),

@@ -107,7 +107,7 @@ First column (1) + (Each round * round type column span) = **{ cols = colsCount(
 
 Next we must modify ellx gridline code to allow row and colspan.
 
-{ makeSheetWith($investorsRowSpan, $roundsRowSpan) }
+{ makeSheetWith(storeWithRowSpan) }
 
 { investorFormName = input({ label: "Name", size: 2 }) }
 { investorFormType = select({ label: "Type", value: "Employees", options: investorTypes }) }
@@ -152,7 +152,7 @@ We should also keep in mind that display and real value of a cell should differ 
 
 Individual cell may be editable and have a bound mutation, otherwise any cell is derived, hence not editable. So we're adding [`onChange`](https://ellx.io/matyunya/cap-table/options.js) prop to columns to signify editable cells. At the moment editable cell is discerned only by hand cursor pointer.
 
-{ makeSheetWith($investorsShareCalc, $roundsShareCalc) }
+{ makeSheetWith(shareCalcStore) }
 
 ## Aggregate rows
 
