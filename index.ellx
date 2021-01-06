@@ -14,7 +14,12 @@ nodes:
   $roundsShareCalc = shareCalcStore.rounds
   $8 = makeSheetWith($investorsShareCalc, $roundsShareCalc)
 layout:
-[,
+[
+  [,,,,,,,,,
+    {
+      "value": "Make sheet helper:"
+    }
+  ],
   [,
     {
       "value": "Investors:"

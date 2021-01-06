@@ -1,10 +1,14 @@
 <script>
+  import { tick } from "svelte";
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;
   export let rowHeight = 20;
   export let columnWidth = 100;
   export let tileSize = 10;
+
+  let editing = false;
+  let onSave = false;
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
@@ -29,8 +33,43 @@
     return result;
   }
 
+  function setEditing(onChange, id) {
+    if (!onChange) return;
+
+    editing = id;
+    onSave = onChange;
+
+    tick().then(() => {
+      const el = document.getElementById('editing');
+      if (el) el.focus();
+    })
+  }
+
+  function onKeydown(e) {
+    console.log({ e, editing });
+    if (!editing) return;
+
+    if (e.code === 'Enter') {
+      e.preventDefault();
+      onSave(document.getElementById('editing').innerText);
+    }
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      editing = false;
+    }
+  }
+
   const URLS = /\[([^\[]+)\]\(([^)]*)\)/g;
   const parseLinks = cell => replaceAll(cell, URLS, (_, text, href) => `<a href="${href}">${text}</a>`);
+
+  function checkClickedOutside(e) {
+    if (!editing) return;
+
+    const node = document.getElementById('editing');
+    if (node && !node.contains(e.target)) {
+      editing = false;
+    }
+  }
 </script>
 
 <style>
@@ -68,19 +107,25 @@
   }
 </style>
 
+<svelte:window on:keydown={onKeydown} on:click={checkClickedOutside} />
+
 <div class="gridlayout__container gridlines" style={`width: ${nCols * columnWidth}px; height: ${nRows * rowHeight}px;`}>
   {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format } (id)}
     <div
       class:bg-white={rowSpan > 1 || colSpan > 1}
       class:cursor-pointer={onChange}
-      class="gridlayout__tile gridlayout__cell dark:bg-gray-500 {classes || ""}" style={`
-      transform: translate(${col * columnWidth}px, ${row * rowHeight}px);
-      height: ${rowSpan * rowHeight}px;
-      width: ${(colSpan || 1) * columnWidth}px;
-      overflow: visible;
-    `}
+      on:click={() => setEditing(onChange, id)}
+      contenteditable={editing === id}
+      id={editing === id ? "editing": ""}
+      class="gridlayout__tile gridlayout__cell dark:bg-gray-500 {classes || ""}"
+      style={`
+        transform: translate(${col * columnWidth}px, ${row * rowHeight}px);
+        height: ${rowSpan * rowHeight}px;
+        width: ${(colSpan || 1) * columnWidth}px;
+        overflow: visible;
+      `}
     >
-      {@html parseLinks(format(value))}
+      {@html editing === id ? value : parseLinks(format(value))}
     </div>
   {/each}
 </div>
