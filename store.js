@@ -15,7 +15,7 @@ const testStore = {
 
   // name, address, class, acquisition date, #shares,
   // position/relationship with shareholders, note(acquisition price,allocation to third party or purchase)
-  investors: new Map([[0, { name: "Founder" }]]),
+  investors: new Map([[0, { name: "Founder", group: "Founder" }]]),
 };
 
 const testStoreWithRowSpan = {
@@ -60,13 +60,25 @@ const testStoreWithShareCalc = {
       sharePrice: 125000,
       investments: new Set([[0, 0], [1, 0], [2, 120], [3, 40]]),
     }
+  ], [
+    3,
+    {
+      name: "Angel round 2",
+      date: new Date("2022-12-01"),
+      type: "angel",
+      sharePrice: 150000,
+      investments: new Set([[0, 0], [1, 0], [2, 0], [3, 0], [4, 50], [5, 150], [6, 220]]),
+    }
   ]
 ]),
   investors: new Map([
     [0, { name: "Founder", group: "Founder" }],
     [1, { name: "Employee", group: "Employees" }],
     [2, { name: "Angel 1", group: "Angels 1" }],
-    [3, { name: "Angel 2", group: "Angels 1" }]
+    [3, { name: "Angel 2", group: "Angels 1" }],
+    [4, { name: "Angel 2 1", group: "Angels 1" }],
+    [5, { name: "Angel 2 2", group: "Angels 2" }],
+    [6, { name: "Angel 2 3", group: "Angels 2" }]
   ]),
 };
 

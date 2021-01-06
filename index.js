@@ -26,13 +26,12 @@ export {
   uid
 } from "./utils.js";
 
-import { totalInvestorRows } from "./utils.js";
+import { totalInvestorRows, groupNames } from "./utils.js";
 
 import {
   footerLabels,
   investorNames,
   roundValues,
-  groupNames,
 } from "./selectors.js";
 
 export {

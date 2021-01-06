@@ -6,7 +6,7 @@ import {
   totalInvestorRows,
   getPosition,
   allGroups,
-  calcIndividualValues,
+  calcValues,
 } from "./utils.js";
 
 const formatRoundTitle = ({ name, date }) => `${name} (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})`;
@@ -42,22 +42,6 @@ export const footerLabels = offset => [
 ];
 
 export const investorNames = investors => (id, i) => ['investor:' + id, { position: getPosition(investors, id, 0), value: investors.get(id).name }];
-
-export function groupNames(investors) {
-  const groups = allGroups(investors).slice(1); // omit founders
-
-  return groups.reduce((acc, cur, i) => {
-    if (groups[i + 1] === cur) {
-      return acc;
-    }
-
-    return [
-      ...acc,
-      // Three label rows + 1 founder row
-      [`group-label:${cur}:${i}`, { position: [i + 4, 0, i + 4, 0], value: cur, classes: "italic" }],
-    ];
-  }, []);
-}
 
 const roundTitle = (id, x, colSpan, rounds) => [
   'round:' + id,
@@ -98,13 +82,16 @@ export function roundValues(rounds, investors) {
         ...votingColumnHeader(cols, prevCol + 1),
         ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 3, colSpan, calcRoundResults(rounds, id)),
 
-        ...cols.reduce(calcIndividualValues({
-          prevCol,
-          round,
-          investors,
-          previousRounds: getPreviousRounds(rounds, id),
-          id,
-        }), []),
+        ...cols.reduce(
+          calcValues({
+            prevCol,
+            round,
+            investors,
+            previousRounds: getPreviousRounds(rounds, id),
+            id,
+          }),
+          []
+        ),
       ],
       prevCol + colSpan
     ];

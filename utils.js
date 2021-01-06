@@ -27,15 +27,54 @@ export const format = {
 
 export const allGroups = investors => [...investors.values()].map(i => i.group);
 
-export const getPosition = (investors, id, col) => {
-  const idx = [...investors.keys()].indexOf(id);
-  const groups = allGroups(investors);
-  const groupIdx = Math.max(0, groups.indexOf(investors.get(id).group)); // minus founders, which doesn't require extra row
+export const uniqueGroups = investors => [...new Set(allGroups(investors))];
 
-  const row = idx + groupIdx + 3;
+export function groupNames(investors) {
+  const investorGroups = allGroups(investors).slice(1); // omit founders
 
-  return [row, col, row, col];
-};
+  return investorGroups.reduce((acc, cur, i) => {
+    if (investorGroups[i - 1] === cur) {
+      return acc;
+    }
+
+    const y = i + 4 + acc.length;
+
+    return [
+      ...acc,
+      // Three label rows + 1 founder row
+      [`group-label:${cur}:${i}`, { position: [y, 0, y, 0], value: cur, classes: "italic font-medium" }],
+    ];
+  }, []);
+}
+
+function calcGroupRow(investors, group) {
+  const investorGroups = allGroups(investors).slice(1);
+
+  return investorGroups.reduce((acc, cur, i) => {
+    if (typeof acc === "number") return acc;
+
+    if (investorGroups[i - 1] === cur) {
+      return acc;
+    }
+
+    const y = i + 4 + acc.length;
+
+    if (cur === group) return y;
+
+    return [
+      ...acc,
+      [cur, y],
+    ];
+  }, []);
+}
+
+export function getPosition(investors, id, x) {
+  const { group } = investors.get(id);
+  const y = group.toLowerCase() === 'founder' ? 2 : calcGroupRow(investors, group);
+  const idx = [...getGroupInvestors(investors, group).keys()].indexOf(id);
+
+  return [y + idx + 1, x, y + idx + 1, x];
+}
 
 export const totalInvestorRows = investors => investors.size + (new Set(allGroups(investors))).size;
 
@@ -56,7 +95,21 @@ export function calcRoundResults(rounds, id) {
   };
 }
 
-export const calcIndividualValues = ({
+function getAggregateValue(prefix, individualValues, x, y, ...options) {
+  const [idx] = individualValues[individualValues.length - 1] || [];
+
+  if (!idx) return false;
+
+  return [`${prefix}:${idx}`, {
+    position: [y, x, y, x],
+    value: individualValues.reduce((acc, [k, { value }]) => acc + value, 0),
+    ...options[0],
+  }];
+}
+
+const getGroupInvestors = (investors, group) => new Map([...investors].filter(([_, i]) => i.group === group));
+
+export const calcValues = ({
   prevCol,
   round,
   investors,
@@ -65,9 +118,29 @@ export const calcIndividualValues = ({
 }) => (acc, { onChange, fn, format }, i) => {
   if (!fn) return acc;
 
+  const y = prevCol + i + 1;
+
+  const individualValues = ([...round.investments] || [])
+    .map(fn(investors, previousRounds, y, id, { onChange, format }));
+
+  const groups = uniqueGroups(investors).slice(1);
+
+  const groupValues = groups.map(group => {
+    const x = calcGroupRow(investors, group)
+    const groupInvestors = getGroupInvestors(investors, group);
+    const groupInvestorsValues = ([...round.investments].filter(([id]) => groupInvestors.has(id)) || [])
+      .map(fn(groupInvestors, previousRounds, y, id, { onChange, format }));
+
+    if (!groupInvestorsValues.length) return false;
+
+    return getAggregateValue("group", groupInvestorsValues, y, x, { format, classes: "italic tracking-wide" });
+  }).filter(Boolean);
+
   return [
     ...acc,
-    ...([...round.investments] || [])
-      .map(fn(investors, previousRounds, prevCol + i + 1, id, { onChange, format }))
-  ];
+    ...individualValues,
+    ...groupValues,
+
+    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + groups.length - 1, { format }),
+  ].filter(Boolean);
 }

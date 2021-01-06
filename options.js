@@ -22,20 +22,6 @@ const calcCell = calcFn =>
   ];
 };
 
-// const aggregateCell = calcFn =>
-//   prefix =>
-//   (investors, rounds, col, id, ...options) =>
-//   ([investorId, shares]) => {
-//   return [
-//     `${prefix}${id}:${investorId}`,
-//     {
-//       position: getPosition(investors, investorId, col),
-//       value: calcFn({ shares, rounds, investors, investorId }),
-//       ...options[0],
-//     }
-//   ];
-// };
-
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalShares(rounds);
   const previousRoundShares = totalSharesForInvestor(rounds, investorId);
@@ -60,7 +46,6 @@ const colTypes = {
     label: "#shares",
     onChange: (store, params) => store.commit(UPDATE_SHARE, params),
     fn: addedSharesPerRound('initial'),
-    aggrFn: () => {},
     format: format.number.format,
   },
   shareDiff: {
