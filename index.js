@@ -1,20 +1,8 @@
+export { default as headlong } from "~matyunya/headlong";
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
-import RoundResults from "./RoundResults.svelte";
 import Sheet from "./Sheet.svelte";
-import i from "~ellx-hub/lib/components/Input/index.js";
 
-import "/index.css";
-
-export { default as output } from "~matyunya/output";
-export { default as slider } from "~ellx-hub/lib/components/Slider/index.js";
-export { default as select } from "~ellx-hub/lib/components/Select/index.js";
-export { default as button } from "~ellx-hub/lib/components/Button/index.js";
-
-export {
-  basicStore,
-  storeWithRowSpan,
-  shareCalcStore,
-} from "./store.js";
+export { store } from "./store.js";
 
 export {
   investorTypes,
@@ -32,31 +20,24 @@ import {
   footerLabels,
   investorNames,
   roundValues,
-} from "./selectors.js";
-
-export {
   colsCount,
   rowsCount,
 } from "./selectors.js";
 
-export const input = props => i({ size: 4, ...props });
-
-export const roundResults = ellxify(RoundResults);
+export const makeSheetWith = (s, r, i) => sheet({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(s), store: s });
 
 export const sheet = ellxify(Sheet);
-
-export const testBlocks = new Map([[0, { position: [0,0,0,0], value: "test"}]]);
-
-export const testBlocksWithStyle = new Map([[0, { position: [0,1,0,0], value: "test", classes: "font-bold text-center bg-gray-200" }]]);
 
 export function toBlocks(store) {
   const investors = store.get('investors');
   const rounds = store.get('rounds');
 
   return new Map([
+    ["ellx-logo", { position: [0,0,2,1], value: "", classes: "flex items-center justify-center" }],
     ...groupNames(investors),
     ...[...investors.keys()].map(investorNames(investors)),
-    ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 0])[0],
+    ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
     ...footerLabels(totalInvestorRows(investors) + 3),
   ]);
 }
+

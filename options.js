@@ -1,9 +1,12 @@
-import { UPDATE_SHARE } from "./store.js";
+import { UPDATE_SHARE, UPDATE_SHARE_PRICE } from "./store.js";
 
 import {
   sum,
   totalShares,
+  totalCommonShares,
   totalSharesForInvestor,
+  totalCommonSharesForInvestor,
+  totalVotingSharesForInvestor,
   format,
   getPosition,
 } from "./utils.js";
@@ -11,80 +14,97 @@ import {
 const calcCell = calcFn =>
   prefix =>
   (investors, rounds, col, id, ...options) =>
-  ([investorId, shares]) => {
+  ([investorId, shares, votingShares]) => {
   return [
     `${prefix}:${id}:${investorId}`,
     {
       position: getPosition(investors, investorId, col),
-      value: calcFn({ shares, rounds, investors, investorId }),
+      value: calcFn({ shares, votingShares, rounds, investors, investorId }),
       ...options[0],
     }
   ];
 };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
+  const total = totalCommonShares(rounds);
+  const previousRoundShares = totalCommonSharesForInvestor(rounds, investorId);
+
+  return previousRoundShares / total;
+};
+
+const calcTotalSharesPerRound = ({ rounds, investorId }) => {
   const total = totalShares(rounds);
   const previousRoundShares = totalSharesForInvestor(rounds, investorId);
 
   return previousRoundShares / total;
 };
 
-const calcIndividualShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
+const calcCommonShares = ({ rounds, investorId }) => totalCommonSharesForInvestor(rounds, investorId);
 
-// initial for founders or emitted in subsequent rounds
-const addedSharesPerRound = calcCell(({ shares }) => shares);
+const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForInvestor(rounds, investorId);
 
-const sharesPercentagePerRound = calcCell(calcSharesPerRound);
-
-const totalIndividualShares = calcCell(calcIndividualShares);
+const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
 
 // TODO: move into a store
 export const investorTypes = ['Employees, partners', 'Angel investors 1', 'Angel investors 2', 'J-kiss investor'];
 
+const updateShares = type => (store, { id, value }) => {
+  const [, roundId, investorId] = id.split(':').map(Number);
+  store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+};
+
+export const updateSharePrice = (store, { id, value }) => {
+  const [roundId] = id.split(':').map(Number);
+  store.commit(UPDATE_SHARE_PRICE, { roundId, sharePrice: Number(value) });
+};
+
 const colTypes = {
   sharesInitial: {
     label: "#shares",
-    onChange: (store, params) => store.commit(UPDATE_SHARE, params),
-    fn: addedSharesPerRound('initial'),
+    onChange: updateShares("common"),
+    fn: calcCell(({ shares }) => shares)('initial'),
     format: format.number.format,
   },
   shareDiff: {
     label: "share±",
-    onChange: (store, params) => store.commit(UPDATE_SHARE, params),
-    fn: addedSharesPerRound('diff'),
+    onChange: updateShares("common"),
+    fn: calcCell(({ shares }) => shares)('diff'),
     format: format.number.format,
   },
   sharesAmount: {
     label: "#shares",
-    fn: totalIndividualShares('amount'),
+    fn: calcCell(calcCommonShares)('amount'),
     format: format.number.format,
   },
   sharesPercent: {
     label: "%shares",
-    fn: sharesPercentagePerRound('percent'),
+    fn: calcCell(calcSharesPerRound)('percent'),
     format: format.percent.format,
   },
   votingShareDiff: {
     label: "share±",
     hasRowspan: true,
     voting: true,
-//     fn: totalIndividualShares('voting-diff'),
-//     format: format.number.format,
+    fn: calcCell(({ votingShares }) => votingShares || 0)('voting-diff'),
+    onChange: updateShares('voting'),
+    classes: "text-red-700",
+    format: format.number.format,
   },
   votingSharesAmount: {
     label: "#shares",
     hasRowspan: true,
-//     fn: totalIndividualShares('voting-total'),
-//     format: format.number.format,
+    fn: calcCell(calcCommonVotingShares)('voting-total'),
+    classes: "text-red-700",
+    format: format.number.format,
   },
   totalSharesAmount: {
     label: "Total #shares",
-    fn: totalIndividualShares('total-amount'),
+    fn: calcCell(calcTotalShares)('total-amount'),
     format: format.number.format,
   },
   totalSharesPercent: {
     label: "Total %shares",
-    fn: sharesPercentagePerRound('total-percent'),
+    fn: calcCell(calcTotalSharesPerRound)('total-percent'),
     format: format.percent.format,
   },
 };
@@ -102,19 +122,7 @@ const {
 
 const foundCols = [sharesInitial, sharesPercent];
 
-const angelCols = [shareDiff, sharesAmount, sharesPercent];
-
-const employeeCols = [
-  shareDiff,
-  sharesAmount,
-  sharesPercent,
-  votingShareDiff,
-  votingSharesAmount,
-  totalSharesAmount,
-  totalSharesPercent
-];
-
-const ipoCols = [
+const genericCols = [
   shareDiff,
   sharesAmount,
   sharesPercent,
@@ -130,24 +138,24 @@ export const roundOptions = {
     cols: foundCols,
   },
   angel: {
-    colSpan: angelCols.length,
-    cols: angelCols,
+    colSpan: genericCols.length,
+    cols: genericCols,
   },
   "j-kiss": {
-    colSpan: angelCols.length,
-    cols: angelCols,
+    colSpan: genericCols.length,
+    cols: genericCols,
   },
   split: {
-    colSpan: angelCols.length,
-    cols: angelCols,
+    colSpan: genericCols.length,
+    cols: genericCols,
   },
   employee: {
-    colSpan: employeeCols.length,
-    cols: employeeCols,
+    colSpan: genericCols.length,
+    cols: genericCols,
   },
   IPO: {
-    colSpan: ipoCols.length,
-    cols: ipoCols,
+    colSpan: genericCols.length,
+    cols: genericCols,
   },
 };
 

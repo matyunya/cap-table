@@ -1,38 +1,6 @@
 import bootstrap from "~matyunya/store";
 
-const testStore = {
-  // date (Month Year), name, share price, conditions attached
-  rounds: new Map([[
-    0, // round id
-    {
-      name: "Founded",
-      date: new Date("2014-08-01"),
-      type: "founded",
-      sharePrice: 1000,
-      investments: new Set(), // set of tuples [investor_id, number of acquired shares]
-    }
-  ]]),
-
-  // name, address, class, acquisition date, #shares,
-  // position/relationship with shareholders, note(acquisition price,allocation to third party or purchase)
-  investors: new Map([[0, { name: "Founder", group: "Founder" }]]),
-};
-
-const testStoreWithRowSpan = {
-  rounds: new Map([[
-    0,
-    {
-      name: "Row span test Employee SO round",
-      date: new Date("2022-08-01"),
-      type: "employee",
-      sharePrice: 1000,
-      investments: new Set(),
-    }
-  ]]),
-  investors: new Map([[0, { name: "Founder", group: "Founder" }], [1, { name: "Employee 1", group: "Employees" }]]),
-};
-
-const testStoreWithShareCalc = {
+const defaultStore = {
   rounds: new Map([[
     0,
     {
@@ -40,7 +8,7 @@ const testStoreWithShareCalc = {
       date: new Date("2014-08-01"),
       type: "founded",
       sharePrice: 1000,
-      investments: new Set([[0, 3000]]),
+      investments: new Set([[0, 3000, 0]]),
     },
   ], [
     1,
@@ -49,7 +17,7 @@ const testStoreWithShareCalc = {
       date: new Date("2022-08-01"),
       type: "employee",
       sharePrice: 80000,
-      investments: new Set([[0, 0], [1, 576]]),
+      investments: new Set([[1, 0, 576]]),
     }
   ], [
     2,
@@ -58,7 +26,7 @@ const testStoreWithShareCalc = {
       date: new Date("2022-10-01"),
       type: "angel",
       sharePrice: 125000,
-      investments: new Set([[0, 0], [1, 0], [2, 120], [3, 40]]),
+      investments: new Set([[2, 120, 0], [3, 40, 0]]),
     }
   ], [
     3,
@@ -67,7 +35,7 @@ const testStoreWithShareCalc = {
       date: new Date("2022-12-01"),
       type: "angel",
       sharePrice: 150000,
-      investments: new Set([[0, 50], [1, 0], [2, 0], [3, 0], [4, 50], [5, 150], [6, 220]]),
+      investments: new Set([[0, 50, 0], [1, 0, 200], [4, 50, 0], [5, 150, 0], [6, 220, 0]]),
     }
   ]
 ]),
@@ -78,22 +46,33 @@ const testStoreWithShareCalc = {
     [3, { name: "Angel 2", group: "Angels 1" }],
     [4, { name: "Angel 2 1", group: "Angels 2" }],
     [5, { name: "Angel 2 2", group: "Angels 2" }],
-    [6, { name: "Angel 2 3", group: "Angels 2" }]
+    [6, { name: "Angel 2 3", group: "Angels 2" }],
   ]),
 };
 
-export const basicStore = bootstrap(testStore);
+export const store = bootstrap(defaultStore);
 
-export const storeWithRowSpan = bootstrap(testStoreWithRowSpan);
+export function UPDATE_SHARE({ roundId, investorId, shares, type = "common" }) {
+  return ({ update }) => update("rounds", roundId, "investments", i => {
+    const [, common = 0, voting = 0] = [...(i || [])].find(([id]) => investorId === id) || [];
+    const investments = new Set([...(i || [])].filter(([id]) => investorId !== id) || []);
 
-export const shareCalcStore = bootstrap(testStoreWithShareCalc);
+    const updated = [
+      investorId,
+      type === 'common' ? shares : common,
+      type === 'voting' ? shares : voting,
+    ]
 
-export function UPDATE_SHARE({ roundId, investorId, shares }) {
-  return ({ update }) => update('rounds', roundId, 'investors', i => {
-    const updated = new Map(i || []);
+    investments.add(updated);
 
-    updated.set(investorId, shares);
-
-    return updated;
+    return investments;
   });
+}
+
+export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
+  return ({ update }) => update("rounds", roundId, i => ({ ...i, sharePrice }));
+}
+
+export function UPDATE_INVESTOR_NAME({ investorId, name }) {
+  return (({ set }) => set("investors", investorId, 'name', name));
 }

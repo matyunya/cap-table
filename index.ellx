@@ -1,136 +1,32 @@
 version: 1.1
 nodes:
-  $investors = basicStore.investors
-  $1 = store.$investors
-  makeSheetWith = (s) => sheet({ nRows: rowsCount(s.get('investors')), nCols: colsCount(s.get('rounds')), blocks: toBlocks(s), store })
-  $rounds = basicStore.rounds
-  $10 = testBlocks
-  $11 = testBlocksWithStyle
-  blocks = Object.fromEntries(toBlocks(basicStore))
-  $investorsRowSpan = storeWithRowSpan.investors
-  $roundsRowSpan = storeWithRowSpan.rounds
-  $5 = makeSheetWith(storeWithRowSpan)
-  $investorsShareCalc = shareCalcStore.investors
-  $roundsShareCalc = shareCalcStore.rounds
-  $8 = makeSheetWith(shareCalcStore)
+  $i = store.investors
+  $r = store.rounds
+  $1 = headlong()
 layout:
-[
-  [,,,,,,,,,
+[,
+  [,,
     {
-      "value": "Make sheet helper:"
-    }
-  ],
-  [,
-    {
-      "value": "Investors:"
+      "value": "investments:"
     },
     {
-      "node": "$investors"
-    },,
-    {
-      "node": "$1",
-      "expansion": {
-        "vertical": false,
-        "secondary": true,
-        "labelsLeft": true,
-        "height": 2,
-        "width": 2
-      }
-    },,,,,
-    {
-      "node": "makeSheetWith"
+      "node": "$i"
     }
   ],
-  [,
+  [,,
     {
-      "value": "Rounds:"
+      "value": "rounds:"
     },
     {
-      "node": "$rounds"
+      "node": "$r"
     }
-  ],,
-  [,
+  ],,,
+  [,,
     {
-      "value": "test blocks:"
-    }
-  ],
-  [,
-    {
-      "node": "$10"
-    }
-  ],,
-  [,
-    {
-      "value": "test blocks with style:"
-    },,
-    {
-      "node": "$11"
-    }
-  ],
-  [,,,,
-    {
-      "node": "blocks",
-      "expansion": {
-        "vertical": false,
-        "labelsTop": true,
-        "secondary": true,
-        "height": 4,
-        "width": 10
-      }
-    }
-  ],,,,,,
-  [,
-    {
-      "value": "Investors with row span:"
-    }
-  ],
-  [,
-    {
-      "node": "$investorsRowSpan"
-    }
-  ],
-  [,
-    {
-      "value": "Rounds with row span:"
-    }
-  ],
-  [,
-    {
-      "node": "$roundsRowSpan"
-    },,
-    {
-      "value": "Table with row span"
-    }
-  ],
-  [,,,
-    {
-      "node": "$5"
-    }
-  ],,,,,,,,,,,,
-  [,
-    {
-      "value": "Investors:"
+      "value": "headlong:"
     },
     {
-      "node": "$investorsShareCalc"
-    }
-  ],
-  [,
-    {
-      "value": "Rounds:"
-    },
-    {
-      "node": "$roundsShareCalc"
-    }
-  ],,
-  [,,,
-    {
-      "value": "Table with cell calculations"
-    }
-  ],
-  [,,,
-    {
-      "node": "$8"
+      "node": "$1"
     }
   ]
 ]

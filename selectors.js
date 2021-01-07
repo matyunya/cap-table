@@ -1,4 +1,4 @@
-import { roundOptions } from "./options.js";
+import { roundOptions, updateSharePrice } from "./options.js";
 import {
   getPreviousRounds,
   calcRoundResults,
@@ -7,11 +7,13 @@ import {
   getPosition,
   allGroups,
   calcValues,
+  labelClasses,
+  firstColClasses,
 } from "./utils.js";
 
-const formatRoundTitle = ({ name, date }) => `${name} (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})`;
+import { UPDATE_INVESTOR_NAME } from "./store.js"
 
-const labelClasses = "font-bold text-center flex items-center justify-center";
+const formatRoundTitle = ({ name, date }) => `${name} (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})`;
 
 const columnHeaders = (cols, idx) => cols.map((c, i) => [
   `round-label:${idx}:${i}`,
@@ -34,14 +36,26 @@ const votingColumnHeader = (cols, idx) => cols
   .filter(Boolean);
 
 export const footerLabels = offset => [
-  ['total-label', { position: [offset - 1, 0, offset - 1, 0], value: "Total" }],
-  ['share-price-label', { position: [offset, 0, offset, 0], value: "Share price" }],
-  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 0], value: "New equity (¥)" }],
-  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 0], value: "Pre money (¥)" }],
-  ['post-money-label', { position: [offset + 3, 0, offset + 3, 0], value: "Post money (¥)" }],
+  ['total-label', { position: [offset - 1, 0, offset - 1, 1], value: "Total", classes: firstColClasses }],
+  ['share-price-label', { position: [offset, 0, offset, 1], value: "Share price", classes: firstColClasses }],
+  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 1], value: "New equity (¥)", classes: firstColClasses }],
+  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 1], value: "Pre money (¥)", classes: firstColClasses }],
+  ['post-money-label', { position: [offset + 3, 0, offset + 3, 1], value: "Post money (¥)", classes: firstColClasses }],
 ];
 
-export const investorNames = investors => (id, i) => ['investor:' + id, { position: getPosition(investors, id, 0), value: investors.get(id).name }];
+export const investorNames = investors => (id, i) => [
+  'investor:' + id,
+  {
+    position: getPosition(investors, id, 0, 1),
+    value: investors.get(id).name,
+    classes: firstColClasses,
+    onChange: (store, { id, value }) => {
+      const [,investorId] = id.split(':');
+
+      store.commit(UPDATE_INVESTOR_NAME, { investorId: Number(investorId), name: value });
+    },
+  }
+];
 
 const roundTitle = (id, x, colSpan, rounds) => [
   'round:' + id,
@@ -54,7 +68,7 @@ const roundTitle = (id, x, colSpan, rounds) => [
 
 function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
   return [
-    [`${id}:share-price-label`, { value: roundResults.sharePrice }],
+    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: updateSharePrice }],
     [`${id}:new-equity-label`, { value: roundResults.newEquity }],
     [`${id}:pre-money-label`, { value: roundResults.preMoney }],
     [`${id}:post-money-label`, { value: roundResults.postMoney }],

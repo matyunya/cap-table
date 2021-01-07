@@ -1,10 +1,11 @@
 <script>
-  import { tick } from "svelte";
+  import { tick, onMount } from "svelte";
+  import headlong from "~matyunya/headlong";
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;
   export let rowHeight = 20;
-  export let columnWidth = 100;
+  export let columnWidth = 70;
   export let tileSize = 10;
   export let store;
 
@@ -21,19 +22,6 @@
     ]
   }, []);
 
-  function replaceAll(input, regex, replacer) {
-    let result = input;
-    let match, delta = 0;
-
-    while (match = regex.exec(input)) {
-      const replacement = replacer(...match);
-      result = result.slice(0, match.index + delta) + replacement + result.slice(regex.lastIndex + delta);
-      delta += replacement.length - match[0].length;
-    }
-
-    return result;
-  }
-
   function setEditing(onChange, id) {
     if (!onChange) return;
 
@@ -42,29 +30,40 @@
 
     tick().then(() => {
       const el = document.getElementById('editing');
-      if (el) el.focus();
+      if (el) {
+        el.focus();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
     })
   }
 
   function onKeydown(e) {
-    console.log({ e, editing });
     if (!editing) return;
 
     if (e.code === 'Enter') {
       e.preventDefault();
+
       onSave(store, {
         value: document.getElementById('editing').innerText,
         id: editing,
       });
+
+      editing = false;
     }
     if (e.code === 'Escape') {
       e.preventDefault();
       editing = false;
+      blocks = blocks;
     }
   }
 
-  const URLS = /\[([^\[]+)\]\(([^)]*)\)/g;
-  const parseLinks = cell => replaceAll(cell, URLS, (_, text, href) => `<a href="${href}">${text}</a>`);
+  onMount(() => {
+    setTimeout(() => headlong(), 50);
+  });
 
   function checkClickedOutside(e) {
     if (!editing) return;
@@ -77,37 +76,28 @@
 </script>
 
 <style>
-  .gridlines {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' fill='transparent' height='20'%3E%3Crect width='100' height='20' style='stroke-width:1;stroke:rgb(239,239,239)' /%3E%3C/svg%3E");
-  }
-
   .gridlayout__container {
     position: relative;
-    padding: 0;
-    margin: 0;
-    font-size: 12px;
     font-family: monospace;
     color: black;
-  }
-
-  .gridlines :global(a) {
-    color: blue;
+    font-size: 12px;
   }
 
   .gridlayout__tile {
-    position: absolute;
     line-height: 16px;
-    white-space: nowrap;
-    padding: 2px;
+    padding: 2px 4px;
   }
 
-  .bg-white {
-    background: white;
+  .w-block {
     box-shadow: 0 0 0 0.5px rgb(239,239,239) inset;
   }
 
-  :global(.mode-dark) .gridlines {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' fill='transparent' height='20'%3E%3Crect width='100' height='20' style='stroke-width:1;stroke:rgb(50,50,50)' /%3E%3C/svg%3E");
+  :global(.mode-dark) .w-block {
+    box-shadow: 0 0 0 0.5px rgb(50,50,50) inset;
+  }
+
+  .editable:hover {
+    box-shadow: 0 0 0 0.5px rgb(150,150,220) inset;
   }
 </style>
 
@@ -116,20 +106,22 @@
 <div class="gridlayout__container gridlines" style={`width: ${nCols * columnWidth}px; height: ${nRows * rowHeight}px;`}>
   {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format } (id)}
     <div
-      class:bg-white={rowSpan > 1 || colSpan > 1}
-      class:cursor-pointer={onChange}
+      class:editable={onChange}
       on:click={() => setEditing(onChange, id)}
       contenteditable={editing === id}
+      class:border={editing === id}
       id={editing === id ? "editing": ""}
-      class="gridlayout__tile gridlayout__cell dark:bg-gray-500 {classes || ""}"
+      class="w-block gridlayout__tile absolute overflow-hidden gridlayout__cell dark:bg-dark-700 dark:text-white border-blue-500 border-1 {classes || ""}"
       style={`
         transform: translate(${col * columnWidth}px, ${row * rowHeight}px);
         height: ${rowSpan * rowHeight}px;
         width: ${(colSpan || 1) * columnWidth}px;
-        overflow: visible;
       `}
     >
-      {@html editing === id ? value : parseLinks(format(value))}
+      {editing === id ? value : format(value)}
+      {#if row === 0 && col === 0}
+        <svg class="rounded-full p-1" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
+      {/if}
     </div>
   {/each}
 </div>
