@@ -1,9 +1,12 @@
 import bootstrap from "~matyunya/store";
+import { uid } from "../utils.js";
+
+const ids = [uid(), uid(), uid(), uid(), uid(), uid(), uid()];
 
 const testStore = {
   // date (Month Year), name, share price, conditions attached
   rounds: new Map([[
-    0, // round id
+    ids[0], // round id
     {
       name: "Founded",
       date: new Date("2014-08-01"),
@@ -15,7 +18,7 @@ const testStore = {
 
   // name, address, class, acquisition date, #shares,
   // position/relationship with shareholders, note(acquisition price,allocation to third party or purchase)
-  investors: new Map([[0, { name: "Founder", group: "Founder" }]]),
+  investors: new Map([[ids[0], { name: "Founder", group: "Founder" }]]),
 };
 
 const testStoreWithRowSpan = {
@@ -29,12 +32,12 @@ const testStoreWithRowSpan = {
       investments: new Set(),
     }
   ]]),
-  investors: new Map([[0, { name: "Founder", group: "Founder" }], [1, { name: "Employee 1", group: "Employees" }]]),
+  investors: new Map([[ids[0], { name: "Founder", group: "Founder" }], [ids[1], { name: "Employee 1", group: "Employees" }]]),
 };
 
 const testStoreWithShareCalc = {
   rounds: new Map([[
-    0,
+    ids[0],
     {
       name: "Founded",
       date: new Date("2014-08-01"),

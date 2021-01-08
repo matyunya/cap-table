@@ -1,17 +1,18 @@
-import { roundOptions, updateSharePrice } from "./options.js";
+import { roundOptions, updateSharePrice } from "./actions.js";
 import {
   getPreviousRounds,
   calcRoundResults,
-  format,
   totalInvestorRows,
   getPosition,
-  allGroups,
   calcValues,
+  format,
+} from "./utils.js";
+import {
   labelClasses,
   firstColClasses,
-} from "./utils.js";
+} from "./classes.js";
 
-import { UPDATE_INVESTOR_NAME } from "./store.js"
+import { UPDATE_INVESTOR_NAME, ADD_INVESTOR, REMOVE_INVESTOR } from "./store.js"
 
 const formatRoundTitle = ({ name, date }) => `${name} (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})`;
 
@@ -48,12 +49,28 @@ export const investorNames = investors => (id, i) => [
   {
     position: getPosition(investors, id, 0, 1),
     value: investors.get(id).name,
-    classes: firstColClasses,
+    classes: firstColClasses + " pr-4",
     onChange: (store, { id, value }) => {
       const [,investorId] = id.split(':');
 
-      store.commit(UPDATE_INVESTOR_NAME, { investorId: Number(investorId), name: value });
+      store.commit(UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
     },
+    menuItems: (store, { id }) => [
+        {
+          text: "Add investor",
+          cb: () => store.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
+        },
+        {
+          text: "New group",
+          cb: () => {
+            store.commit(ADD_INVESTOR, { afterId: id.split(':')[1], group: "New group" })
+          },
+        },
+        {
+          text: "Remove",
+          cb: () => store.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
+        },
+      ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'New group'),
   }
 ];
 
@@ -62,7 +79,12 @@ const roundTitle = (id, x, colSpan, rounds) => [
   {
     position: [0, x + 1, 0, x + colSpan],
     value: formatRoundTitle(rounds.get(id)),
-    classes: "font-bold text-center",
+    classes: "font-bold text-center pr-4",
+    menuItems: [
+      { text: "Add common", cb: console.log },
+      { text: "Add J-kiss", cb: console.log },
+      { text: "Add preferred", cb: console.log },
+    ],
   }
 ];
 

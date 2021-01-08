@@ -22,9 +22,8 @@ export {
 } from "./store.js";
 
 export {
-  investorTypes,
   roundTypes,
-} from "../options.js";
+} from "../actions.js";
 
 export {
   calcShare,
@@ -51,4 +50,6 @@ export const roundResults = ellxify(RoundResults);
 export const testBlocks = new Map([[0, { position: [0,0,0,0], value: "test"}]]);
 
 export const testBlocksWithStyle = new Map([[0, { position: [0,1,0,0], value: "test", classes: "font-bold text-center bg-gray-200" }]]);
+
+export const investorTypes = ['Employees, partners', 'Angel investors 1', 'Angel investors 2', 'J-kiss investor'];
 

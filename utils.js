@@ -1,12 +1,10 @@
-export const firstColClasses = "border-gray-100 border-1 text-xs ";
-export const labelClasses = "font-bold text-center flex items-center justify-center";
-export const groupClasses = "dark:bg-blue-800 dark:bg-opacity-10 bg-blue-100 italic tracking-wide bg-opacity-20";
+import { groupClasses } from "./classes.js";
 
 const reduceSumOfShares = (acc, { investments }) => acc + sum([...investments].map(([_, a, b]) => a + b));
 
 const reduceSumOfCommonShares = (acc, { investments }) => acc + sum([...investments].map(([_, a]) => a));
 
-export const uid = (length = 64) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
+export const uid = (length = 16) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
 
 export const calcShare = (myShare, total) => (myShare * 100 / total).toFixed(1);
 
@@ -46,24 +44,6 @@ export const format = {
 export const allGroups = investors => [...investors.values()].map(i => i.group);
 
 export const uniqueGroups = investors => [...new Set(allGroups(investors))];
-
-export function groupNames(investors) {
-  const investorGroups = allGroups(investors).slice(1); // omit founders
-
-  return investorGroups.reduce((acc, cur, i) => {
-    if (investorGroups[i - 1] === cur) {
-      return acc;
-    }
-
-    const y = i + 4 + acc.length;
-
-    return [
-      ...acc,
-      // Three label rows + 1 founder row
-      [`group-label:${cur}:${i}`, { position: [y, 0, y, 1], value: cur, classes: groupClasses + " " + firstColClasses }],
-    ];
-  }, []);
-}
 
 function calcGroupRow(investors, group) {
   const investorGroups = allGroups(investors).slice(1);
@@ -168,6 +148,6 @@ export const calcValues = ({
     ...individualValues,
     ...groupValues,
 
-    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + groups.length - 1, { format }),
+    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 2, { format }),
   ].filter(Boolean);
 }
