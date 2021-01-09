@@ -38,9 +38,9 @@ export const getPreviousRounds = (rounds, id) => {
 }
 
 export const format = {
-  number: new Intl.NumberFormat(),
-  percent: new Intl.NumberFormat(undefined, { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }),
-  currency: new Intl.NumberFormat(undefined, { style: "currency", currency: 'JPY' }),
+  number: new Intl.NumberFormat("ja-JA"),
+  percent: new Intl.NumberFormat("ja-JA", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+  currency: new Intl.NumberFormat("ja-JA", { style: "currency", currency: 'JPY' }),
 };
 
 export const allGroups = investors => [...investors.values()].map(i => i.group);

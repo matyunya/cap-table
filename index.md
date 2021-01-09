@@ -1,18 +1,13 @@
 { app(makeSheetWith(store, $r, $i)) }
-<br>
-
-<br>
-
-<br>
 
 <style>
-  ul {
+  #md ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
   }
 
-  h1 {
+  #md h1 {
     font-size: 6rem !important;
   }
 
@@ -20,7 +15,7 @@
     right: 0;
   }
 
-  button:focus, input:focus {
+  button:focus, input:focus, select:focus {
     outline: none;
   }
 </style>

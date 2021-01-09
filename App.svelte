@@ -9,16 +9,12 @@
   export let nCols = 5;
   export let store;
 
-  async function register(data) {
-    // TODO: save registration data
-    await tick();
+//   let page = "home";
+  page = "cap-table";
 
-    console.log(data);
-
+  function onRegistered() {
     page = "cap-table";
   }
-
-  let page = "home";
 
   onMount(() => {
     // TODO: goto sheet if auth cookie present
@@ -26,6 +22,8 @@
     setTimeout(async () => {
       headlong();
       const el = document.getElementById('app');
+      if (!el) return;
+
       el.classList.remove('hidden');
       el.classList.remove('opacity-0');
       await tick();
@@ -36,7 +34,7 @@
 </script>
 
 {#if page === 'home'}
-  <HomePage {register} />
+  <HomePage on:success={onRegistered} />
 {:else}
   <Sheet
     {blocks}

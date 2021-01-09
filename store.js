@@ -47,14 +47,14 @@ export function UPDATE_INVESTOR_NAME({ investorId, name }) {
   return (({ set }) => set("investors", investorId, 'name', name));
 }
 
-export function ADD_INVESTOR({ afterId, newGroup = false }) {
+export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
   return (({ update }) => update("investors", i => {
     const ids = [...i.keys()];
     const lastId = newGroup ? [...i].reduce(lastInvestorIdInGroup(i.get(afterId).group), "") : afterId;
     const idx = ids.indexOf(lastId) + 1;
 
     const newInvestor = {
-      group: newGroup ? uniqueGroupName(i) : i.get(afterId).group,
+      group: group || (newGroup ? uniqueGroupName(i) : i.get(afterId).group),
       name: "New investor"
     };
 
@@ -98,6 +98,7 @@ export function REMOVE_GROUP({ group }) {
 }
 
 export function UPDATE_GROUP_NAME({ oldName, newName }) {
+  // TODO: disallow renaming into existing group
   return (({ update }) => {
     update("investors", i => new Map([...i].map(([id, investor]) => [id, {
       ...investor,
@@ -107,20 +108,27 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
 }
 
 export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Set() }) {
-  return (({ update }) => update('rounds', i => {
-    const ids = [...i.keys()];
-    const idx = ids.indexOf(afterId) + 1;
+  return (({ update, apply, get }) => {
+    let roundName;
 
-    const newRound = { name: name || uniqueRoundName(i), type, sharePrice, investments };
+    update('rounds', i => {
+      const ids = [...i.keys()];
+      const idx = ids.indexOf(afterId) + 1;
 
-    const newId = uid();
-    const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
+      roundName = name || uniqueRoundName(i);
 
-    // TODO: validate round type
-    // add default group for the round
+      const newRound = { name: roundName, type, sharePrice, investments };
 
-    return new Map(newIds.map(id => [id, i.get(id) || newRound]));;
-  }));
+      const newId = uid();
+      const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
+
+      return new Map(newIds.map(id => [id, i.get(id) || newRound]));;
+    });
+
+    const lastId = [...get('investors').keys()].pop();
+
+    apply(ADD_INVESTOR({ newGroup: true, afterId: lastId, group: roundName }));
+  })
 }
 
 export function REMOVE_ROUND({ id }) {

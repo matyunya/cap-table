@@ -44,7 +44,7 @@ TODOs:
 - router
 - drag and drop
 - validate round type when adding
-- add default group for the round
 - round logic
 - prevent empty cell
+- global error handler for production
 */

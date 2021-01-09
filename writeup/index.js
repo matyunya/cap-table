@@ -25,12 +25,16 @@ export {
   roundTypes,
 } from "../actions.js";
 
+import { groupNames } from "../actions.js";
+
 export {
   calcShare,
   uid
 } from "../utils.js";
 
-import { totalInvestorRows, groupNames } from "../utils.js";
+import { totalInvestorRows } from "../utils.js";
+
+
 
 import {
   footerLabels,
