@@ -155,7 +155,7 @@
         <div
           contenteditable="false"
           on:click|stopPropagation={(e) => openContextMenu(menuItems(store, { id }), e)}
-          class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 opacity-0 transition duration-150 right-0 rounded-full p-1 text-blue-500 hover:bg-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none">+</div>
+          class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 opacity-0 transition duration-150 right-0 rounded-full p-1 text-blue-500 hover:bg-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
       {/if}
       {editing === id ? value : format(value)}
       {#if row === 0 && col === 0}

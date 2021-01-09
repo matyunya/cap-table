@@ -57,13 +57,15 @@
       open = false;
     }
   }
+
+  $: if ($activeId && $activeId === id) console.log({ open, $activeId, id, node });
 </script>
 
 <svelte:window on:keydown={onKeydown} />
 
 <div
   use:clickedOutside={() => open = false}
-  class="{$$props.class || ''} cursor-pointer relative"
+  class="{$$props.class || ''} cursor-pointer relative z-50"
   on:click|stopPropagation
 >
   <span on:click={(e) => {
@@ -72,13 +74,12 @@
   }}>
     <slot name="activator" />
   </span>
-  {#if $activeId === id}
-    <div
-      bind:this={node}
-      on:click={() => open = false}
-      class="shadow text-xs fixed w-auto bg-white dark:bg-gray-800 z-50"
-    >
-      <slot />
-    </div>
-  {/if}
+  <div
+    bind:this={node}
+    on:click={() => open = false}
+    class:hidden={$activeId !== id}
+    class="shadow text-xs fixed w-auto bg-white dark:bg-gray-800 z-50"
+  >
+    <slot />
+  </div>
 </div>

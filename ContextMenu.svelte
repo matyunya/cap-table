@@ -2,7 +2,7 @@
   import { tick } from "svelte";
   import { writable } from "svelte/store";
   import Menu, { onClickActivator } from './Menu.svelte';
-  let items = writable();
+  const items = writable();
 
   export function openContextMenu(i, e) {
     items.set(i);

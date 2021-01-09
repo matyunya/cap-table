@@ -9,7 +9,8 @@
   export let nCols = 5;
   export let store;
 
-//   let page = "home";
+  let page = "home";
+//   Uncomment to jump straight to the table
   page = "cap-table";
 
   function onRegistered() {
