@@ -11,7 +11,7 @@
 
   let page = "home";
 //   Uncomment to jump straight to the table
-  page = "cap-table";
+//   page = "cap-table";
 
   function onRegistered() {
     page = "cap-table";
