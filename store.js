@@ -1,21 +1,22 @@
 import bootstrap from "~matyunya/store";
-import { uid } from "./utils.js";
+import { uid, lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName } from "./utils.js";
 
-const [ID_0, ID_1] = [uid(), uid()];
+const founderId = uid();
 
 const defaultStore = {
   rounds: new Map([[
-    ID_0,
+    "founded",
     {
       name: "Founded",
-      date: new Date("2014-08-01"),
       type: "founded",
       sharePrice: 1000,
-      investments: new Set([[ID_0, 3000, 0]]),
+      investments: new Set([[founderId, 1000, 0]]),
     },
   ]]),
   investors: new Map([
-    [ID_0, { name: "Founder", group: "Founder" }],
+    [founderId, { name: "Founder name", group: "Founder" }],
+    [uid(), { name: "Partner 1", group: "Partners" }],
+    [uid(), { name: "Employee 1", group: "Partners" }],
   ]),
 };
 
@@ -46,16 +47,14 @@ export function UPDATE_INVESTOR_NAME({ investorId, name }) {
   return (({ set }) => set("investors", investorId, 'name', name));
 }
 
-export function ADD_INVESTOR({ afterId, group }) {
+export function ADD_INVESTOR({ afterId, newGroup = false }) {
   return (({ update }) => update("investors", i => {
     const ids = [...i.keys()];
-    const idx = ids.indexOf(afterId) + 1;
-
-    console.log({ afterId, group });
-
+    const lastId = newGroup ? [...i].reduce(lastInvestorIdInGroup(i.get(afterId).group), "") : afterId;
+    const idx = ids.indexOf(lastId) + 1;
 
     const newInvestor = {
-      group: group || i.get(afterId).group,
+      group: newGroup ? uniqueGroupName(i) : i.get(afterId).group,
       name: "New investor"
     };
 
@@ -105,4 +104,29 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
       group: investor.group === oldName ? newName : investor.group,
     }])));
   });
+}
+
+export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Set() }) {
+  return (({ update }) => update('rounds', i => {
+    const ids = [...i.keys()];
+    const idx = ids.indexOf(afterId) + 1;
+
+    const newRound = { name: name || uniqueRoundName(i), type, sharePrice, investments };
+
+    const newId = uid();
+    const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
+
+    // TODO: validate round type
+    // add default group for the round
+
+    return new Map(newIds.map(id => [id, i.get(id) || newRound]));;
+  }));
+}
+
+export function REMOVE_ROUND({ id }) {
+  if (id === 'founded') {
+    throw new Error('Cannot delete founded round');
+  }
+
+  return (({ update }) => update('rounds', i => new Map([...i].filter(([i]) => i !== id))))
 }

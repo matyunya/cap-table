@@ -14,6 +14,7 @@ import {
   format,
   getPosition,
   allGroups,
+  lastInvestorIdInGroup,
 } from "./utils.js";
 
 export function groupNames(investors) {
@@ -45,8 +46,7 @@ export function groupNames(investors) {
                 ADD_INVESTOR,
                 {
                   group: id.split(':')[1],
-                  afterId: [...store.get('investors')]
-                    .reduce((res, [investorId, { group }]) => group === id.split(':')[1] ? investorId : res, "")
+                  afterId: [...store.get('investors')].reduce(lastInvestorIdInGroup(id.split(':')[1]), "")
                 }
               ),
             },
@@ -98,8 +98,6 @@ const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(round
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
   store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
-
-  console.log(store.get(), type);
 };
 
 export const updateSharePrice = (store, { id, value }) => {
@@ -186,7 +184,7 @@ export const roundOptions = {
     colSpan: foundCols.length,
     cols: foundCols,
   },
-  angel: {
+  common: {
     colSpan: genericCols.length,
     cols: genericCols,
   },
@@ -198,11 +196,7 @@ export const roundOptions = {
     colSpan: genericCols.length,
     cols: genericCols,
   },
-  employee: {
-    colSpan: genericCols.length,
-    cols: genericCols,
-  },
-  IPO: {
+  preferred: {
     colSpan: genericCols.length,
     cols: genericCols,
   },

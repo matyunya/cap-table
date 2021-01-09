@@ -14,7 +14,6 @@
   async function action({ cb }) {
     cb();
 
-    console.log(cb, '!!!');
     $items = false;
   }
 </script>

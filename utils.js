@@ -10,6 +10,8 @@ export const calcShare = (myShare, total) => (myShare * 100 / total).toFixed(1);
 
 export const sum = i => i.reduce((acc, cur) => acc + cur, 0);
 
+export const lastInvestorIdInGroup = search => (res, [investorId, { group }]) => group === search ? investorId : res;
+
 export const totalShares = (rounds) => [...rounds.values()].reduce(reduceSumOfShares, 0);
 
 export const totalCommonShares = (rounds) => [...rounds.values()].reduce(reduceSumOfCommonShares, 0);
@@ -43,7 +45,7 @@ export const format = {
 
 export const allGroups = investors => [...investors.values()].map(i => i.group);
 
-export const uniqueGroups = investors => [...new Set(allGroups(investors))];
+export const uniqueGroups = investors => new Set(allGroups(investors));
 
 function calcGroupRow(investors, group) {
   const investorGroups = allGroups(investors).slice(1);
@@ -78,7 +80,7 @@ export const totalInvestorRows = investors => investors.size + (new Set(allGroup
 
 export function calcRoundResults(rounds, id) {
   const roundIds = [...rounds.keys()];
-  const prevId = roundIds[roundIds.indexOf(id - 1)];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
   const { sharePrice, ...round } = rounds.get(id);
 
   const prevRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId));
@@ -130,7 +132,7 @@ export const calcValues = ({
   const individualValues = investments
     .map(fn(investors, previousRounds, y, id, { onChange, format, classes }));
 
-  const groups = uniqueGroups(investors).slice(1);
+  const groups = [...uniqueGroups(investors)].slice(1);
 
   const groupValues = groups.map(group => {
     const x = calcGroupRow(investors, group)
@@ -150,4 +152,22 @@ export const calcValues = ({
 
     getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 2, { format }),
   ].filter(Boolean);
+}
+
+const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+export const uniqueGroupName = investors => {
+  const groups = uniqueGroups(investors);
+
+  const unusedLetter = [...alpha].find(a => !groups.has("Group " + a));
+
+  return "Group " + unusedLetter;
+}
+
+export const uniqueRoundName = rounds => {
+  const names = new Set([...rounds.values()].map(i => i.name));
+
+  const unusedLetter = [...alpha].find(a => !names.has("Round " + a));
+
+  return "Round " + unusedLetter;
 }

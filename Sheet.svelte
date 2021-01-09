@@ -1,17 +1,17 @@
 <script>
-  import { tick, onMount } from "svelte";
   import headlong from "~matyunya/headlong";
+  import { tick, onMount } from "svelte";
   import ContextMenu, { openContextMenu } from "./ContextMenu.svelte";
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;
   export let rowHeight = 20;
   export let columnWidth = 70;
-  export let tileSize = 10;
   export let store;
 
   let editing = false;
   let onSave = false;
+  let dark = false;
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
@@ -25,6 +25,20 @@
     ]
   }, []);
 
+  $: if (dark) {
+    document.querySelector('body').classList.add('mode-dark');
+  } else {
+    document.querySelector('body').classList.remove('mode-dark');
+  }
+
+  onMount(async () => {
+    await tick();
+
+    const h = headlong();
+
+    return h.unsubscribe;
+  });
+
   function setEditing(onChange, id) {
     if (!onChange) return;
 
@@ -32,7 +46,7 @@
     onSave = onChange;
 
     tick().then(() => {
-      const el = document.getElementById('editing');
+      const el = document.getElementById(editing);
       if (el) {
         el.focus();
         const range = document.createRange();
@@ -44,23 +58,27 @@
     })
   }
 
+  function save() {
+    const el = document.getElementById(editing);
+    if (!el) return;
+
+    const value = [].reduce.call(el.childNodes, (a, b) => a + (b.nodeType === 3 ? b.textContent : ''), '').trim();
+
+    onSave(store, {
+      value,
+      id: editing,
+    });
+
+    editing = false;
+  }
+
   function onKeydown(e) {
     if (!editing) return;
 
     if (e.code === 'Enter') {
       e.preventDefault();
 
-      const el = document.getElementById('editing');
-      if (!el) return;
-
-      const value = [].reduce.call(el.childNodes, (a, b) => a + (b.nodeType === 3 ? b.textContent : ''), '').trim();
-
-      onSave(store, {
-        value,
-        id: editing,
-      });
-
-      editing = false;
+      save();
     }
     if (e.code === 'Escape') {
       e.preventDefault();
@@ -69,16 +87,12 @@
     }
   }
 
-  onMount(() => {
-    setTimeout(() => headlong(), 50);
-  });
-
   function checkClickedOutside(e) {
     if (!editing) return;
 
-    const node = document.getElementById('editing');
+    const node = document.getElementById(editing);
     if (node && !node.contains(e.target)) {
-      editing = false;
+      save();
     }
   }
 </script>
@@ -86,7 +100,6 @@
 <style>
   .gridlayout__container {
     position: relative;
-    font-family: monospace;
     color: black;
     font-size: 12px;
   }
@@ -120,7 +133,7 @@
 
 <ContextMenu />
 
-<div class="gridlayout__container gridlines shadow" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
+<div class="gridlayout__container gridlines shadow rounded" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
   {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, onAddRight } (id)}
     <div
       class:editable={onChange}
@@ -128,7 +141,7 @@
       contenteditable={editing === id}
       class:border={editing === id}
       class:menuItems
-      id={editing === id ? "editing": ""}
+      id={editing === id ? id: ""}
       class="w-block relative tile absolute overflow-hidden dark:bg-dark-700 dark:text-white border-blue-500 border-1 {classes || ""}"
       style={`
         transform: translate(${col * columnWidth}px, ${row * rowHeight}px);
@@ -136,15 +149,20 @@
         width: ${(colSpan || 1) * columnWidth}px;
       `}
     >
-      {#if menuItems}
+      {#if editing !== id && menuItems}
         <div
           contenteditable="false"
           on:click|stopPropagation={(e) => openContextMenu(menuItems(store, { id }), e)}
-          class="flex text-center items-center justify-center toggle absolute top-0 opacity-0 transition duration-150 right-0 rounded-full p-1 text-blue-500 hover:bg-blue-200 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none">+</div>
+          class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 opacity-0 transition duration-150 right-0 rounded-full p-1 text-blue-500 hover:bg-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none">+</div>
       {/if}
       {editing === id ? value : format(value)}
       {#if row === 0 && col === 0}
-        <svg class="rounded-full p-1" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
+        <a href="https://ellx.io">
+        <svg class="rounded-full p-1 hover:bg-blue-gray-200 transition duration-500 transform cursor-pointer hover:rotate-360" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
+        </a>
+        <button title="Dark mode toggle" class="rounded-full outline-none ring-gray-100 text-xs h-4 w-4 hover:ring-4 transition duration-500" on:click={() => dark = !dark}>
+          {dark ? "☀️" : "🌙"}
+        </button>
       {/if}
     </div>
   {/each}

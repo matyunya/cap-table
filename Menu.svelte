@@ -51,7 +51,15 @@
   } else {
     $activeId = false;
   }
+
+  function onKeydown(e) {
+    if (e.code === 'Escape') {
+      open = false;
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeydown} />
 
 <div
   use:clickedOutside={() => open = false}

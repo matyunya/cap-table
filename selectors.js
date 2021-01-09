@@ -12,9 +12,10 @@ import {
   firstColClasses,
 } from "./classes.js";
 
-import { UPDATE_INVESTOR_NAME, ADD_INVESTOR, REMOVE_INVESTOR } from "./store.js"
+import { UPDATE_INVESTOR_NAME, ADD_INVESTOR, REMOVE_INVESTOR, ADD_ROUND, REMOVE_ROUND } from "./store.js"
 
-const formatRoundTitle = ({ name, date }) => `${name} (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})`;
+const formatRoundTitle = ({ name, date }) => `${name}`
+  + (date ? ` (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})` : '');
 
 const columnHeaders = (cols, idx) => cols.map((c, i) => [
   `round-label:${idx}:${i}`,
@@ -63,7 +64,7 @@ export const investorNames = investors => (id, i) => [
         {
           text: "New group",
           cb: () => {
-            store.commit(ADD_INVESTOR, { afterId: id.split(':')[1], group: "New group" })
+            store.commit(ADD_INVESTOR, { afterId: id.split(':')[1], newGroup: true })
           },
         },
         {
@@ -80,10 +81,23 @@ const roundTitle = (id, x, colSpan, rounds) => [
     position: [0, x + 1, 0, x + colSpan],
     value: formatRoundTitle(rounds.get(id)),
     classes: "font-bold text-center pr-4",
-    menuItems: [
-      { text: "Add common", cb: console.log },
-      { text: "Add J-kiss", cb: console.log },
-      { text: "Add preferred", cb: console.log },
+    menuItems: (store, { id }) => [
+      {
+        text: "Add common",
+        cb: () => store.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
+      },
+      {
+        text: "Add J-kiss",
+        cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+      },
+      {
+        text: "Add preferred",
+        cb: () => store.commit(ADD_ROUND, { type: "preferred", afterId: id.split(':')[1] }),
+      },
+      {
+        text: "Remove",
+        cb: () => store.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
+      },
     ],
   }
 ];
@@ -108,6 +122,7 @@ function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
 export function roundValues(rounds, investors) {
   return ([acc, prevCol], id) => {
     const round = rounds.get(id);
+
     const { colSpan, cols } = roundOptions[round.type];
 
     return [

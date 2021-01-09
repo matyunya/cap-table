@@ -1,12 +1,11 @@
-export { default as headlong } from "~matyunya/headlong";
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
 import Sheet from "./Sheet.svelte";
+import App from "./App.svelte";
+import HomePage from "./HomePage.svelte";
 
 export { store } from "./store.js";
-
 export { roundTypes } from "./actions.js";
 import { groupNames } from "./actions.js";
-
 export { calcShare, uid } from "./utils.js";
 import { totalInvestorRows } from "./utils.js";
 
@@ -18,9 +17,12 @@ import {
   rowsCount,
 } from "./selectors.js";
 
-export const makeSheetWith = (s, r, i) => sheet({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(s), store: s });
+export const makeSheetWith = (s, r, i) => ({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(s), store: s });
 
 export const sheet = ellxify(Sheet);
+export const app = ellxify(App);
+
+export const homepage = ellxify(HomePage);
 
 export function toBlocks(store) {
   const investors = store.get('investors');
@@ -35,3 +37,14 @@ export function toBlocks(store) {
   ]);
 }
 
+/*
+TODOs:
+
+- sticky first col
+- router
+- drag and drop
+- validate round type when adding
+- add default group for the round
+- round logic
+- prevent empty cell
+*/
