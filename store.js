@@ -29,8 +29,8 @@ export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
 
     const updated = [
       investorId,
-      type === 'common' ? shares : common,
-      type === 'voting' ? shares : voting,
+      type === 'common' ? Number(shares) : common,
+      type === 'voting' ? Number(shares) : voting,
     ]
 
     investments.add(updated);
@@ -40,7 +40,7 @@ export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
 }
 
 export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
-  return ({ update }) => update("rounds", roundId, i => ({ ...i, sharePrice }));
+  return ({ update }) => update("rounds", roundId, i => ({ ...i, sharePrice: Number(sharePrice) }));
 }
 
 export function UPDATE_INVESTOR_NAME({ investorId, name }) {

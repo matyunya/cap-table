@@ -1,4 +1,4 @@
-import { roundOptions, updateSharePrice } from "./actions.js";
+import { roundOptions, updateSharePrice, renameRound } from "./actions.js";
 import {
   getPreviousRounds,
   calcRoundResults,
@@ -81,6 +81,7 @@ const roundTitle = (id, x, colSpan, rounds) => [
     position: [0, x + 1, 0, x + colSpan],
     value: formatRoundTitle(rounds.get(id)),
     classes: "font-bold text-center pr-4",
+    onChange: renameRound,
     menuItems: (store, { id }) => [
       {
         text: "Add common",
@@ -104,7 +105,7 @@ const roundTitle = (id, x, colSpan, rounds) => [
 
 function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
   return [
-    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: updateSharePrice }],
+    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: updateSharePrice, renameRound }],
     [`${id}:new-equity-label`, { value: roundResults.newEquity }],
     [`${id}:pre-money-label`, { value: roundResults.preMoney }],
     [`${id}:post-money-label`, { value: roundResults.postMoney }],

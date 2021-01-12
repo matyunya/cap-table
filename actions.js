@@ -1,4 +1,4 @@
-import { UPDATE_SHARE, UPDATE_SHARE_PRICE, UPDATE_GROUP_NAME, REMOVE_GROUP, ADD_INVESTOR } from "./store.js";
+import { UPDATE_SHARE, UPDATE_SHARE_PRICE, UPDATE_GROUP_NAME, REMOVE_GROUP, ADD_INVESTOR, RENAME_ROUND } from "./store.js";
 
 import {
   firstColClasses,
@@ -98,6 +98,12 @@ const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(round
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
   store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+};
+
+export const renameRound = (store, { id, value }) => {
+  const [, roundId] = id.split(":");
+  console.log(roundId, id);
+  store.commit(RENAME_ROUND, { id: roundId, name: value });
 };
 
 export const updateSharePrice = (store, { id, value }) => {
