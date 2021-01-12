@@ -15,7 +15,7 @@
     right: 0;
   }
 
-  button:focus, input:focus, select:focus {
+  button:focus, input:focus, select:focus, [contenteditable]:focus {
     outline: none;
   }
 </style>
