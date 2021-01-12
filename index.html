@@ -39,12 +39,15 @@
 
     const requireGraph = %requireGraph%;
     const dependencies = %dependencies%;
+    const projectKey = %projectKey%;
     const entryId = %entryId%;
     const nodes = %nodes%;
 
     %Runtime%
 
-    const { CalcGraph, getRequire } = Runtime;
+    const { CalcGraph, getRequire, appLogin, getLogin } = Runtime;
+
+    window.ellx = { login: getLogin(email => appLogin(projectKey, email)) };
 
     const require = getRequire(requireGraph);
 

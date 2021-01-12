@@ -17,7 +17,7 @@ import {
   rowsCount,
 } from "./selectors.js";
 
-export const makeSheetWith = (s, r, i) => ({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(s), store: s });
+export const makeSheetWith = (s, r, i, login) => ({ nRows: rowsCount(i), nCols: colsCount(r), blocks: toBlocks(s), store: s, login });
 
 export const sheet = ellxify(Sheet);
 export const app = ellxify(App);

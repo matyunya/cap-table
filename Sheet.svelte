@@ -40,6 +40,8 @@
   });
 
   function setEditing(onChange, id) {
+    if (editing) save();
+
     if (!onChange) return;
 
     editing = id;

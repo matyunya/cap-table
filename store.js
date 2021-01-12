@@ -1,7 +1,7 @@
 import bootstrap from "~matyunya/store";
-import { uid, lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName } from "./utils.js";
+import { lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName, uid } from "./utils.js";
 
-const founderId = uid();
+const founderId = "FOUNDER_ID";
 
 const defaultStore = {
   rounds: new Map([[
@@ -15,8 +15,8 @@ const defaultStore = {
   ]]),
   investors: new Map([
     [founderId, { name: "Founder name", group: "Founder" }],
-    [uid(), { name: "Partner 1", group: "Partners" }],
-    [uid(), { name: "Employee 1", group: "Partners" }],
+    ["INVESTOR_1", { name: "Partner 1", group: "Partners" }],
+    ["INVESTOR_2", { name: "Employee 1", group: "Partners" }],
   ]),
 };
 
@@ -137,4 +137,67 @@ export function REMOVE_ROUND({ id }) {
   }
 
   return (({ update }) => update('rounds', i => new Map([...i].filter(([i]) => i !== id))))
+}
+
+export function RENAME_ROUND({ id, name }) {
+   return (({ set }) => set('rounds', id, 'name', name));
+}
+
+function iterate(obj) {
+  if (typeof(obj) === "object" && !Array.isArray(obj)) {
+    return Object.keys(obj).reduce((acc, cur) => ({
+      ...acc,
+      [cur]: typeof(obj[cur]) === "object" ? iterate(obj[cur]) : transform(obj[cur]),
+    }), {});
+  }
+
+  return obj;
+}
+
+function fromMap(map) {
+  let obj = {}
+  for(let[k,v] of map) {
+      v instanceof Map
+        ? obj[k] = fromMap(v)
+        : obj[k] = iterate(v);
+  }
+
+  return obj;
+}
+
+function transform(val) {
+  if (val instanceof Map) return fromMap(val);
+
+  if (val instanceof Set) return [...val];
+
+  return val;
+}
+
+export async function bindFirebase(store, appData) {
+  const data = await appData.get();
+
+  if (!data.data().app) {
+    appData.set({
+      app: {
+        investors: transform(store.get('investors')),
+        rounds: transform(store.get('rounds')),
+      },
+    });
+  }
+
+  store.commit = (transaction, payload, ...keyPath) => {
+    const [changes] = commit(transaction, payload, ...keyPath);
+
+    console.log('COMMITING', {
+      [changes.path.join('.')]: transform(changes.newValue),
+    });
+
+    appData.update({
+      ["app." + changes.path.join('.')]: transform(changes.newValue),
+    });
+
+    appData.get().then(d => console.log(d.data()));
+
+    return changes;
+  };
 }

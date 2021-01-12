@@ -11,12 +11,14 @@
     class="block uppercase text-xs font-bold mb-2"
     class:text-gray-700={!error}
     class:text-red-700={error}
+    class:error
     for={id}
     >{label}{error ? " " + error : ""}</label>
   <input
     on:change
     on:input={() => error = ""}
     {id}
+    required
     {type}
     class:ring-blue-200={!error}
     class:ring-red-200={error}

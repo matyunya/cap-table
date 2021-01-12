@@ -1,7 +1,9 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import Input from "./Input.svelte";
   import Select from "./Select.svelte";
+
+  export let login;
 
   const dispatch = createEventDispatcher();
 
@@ -23,10 +25,22 @@
   };
 
   let data = { ...defaultState };
-
   let errors = { ...defaultState };
-
   let error = "";
+  let loading = true;
+
+  onMount(async () => {
+    try {
+      const resp = await login();
+      if (resp && resp.appData) {
+        dispatch('success', { appData: resp.appData });
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      loading = false;
+    }
+  })
 
   async function register() {
     try {
@@ -38,20 +52,35 @@
         errors[key] = !data[key] ? "この項目が必須です。" : false;
       });
 
-      // TODO: submit registration request
-
       if (!Object.keys(errors).reduce((acc, cur) => acc || Boolean(errors[cur]), false)) {
-        dispatch('success');
+        loading = true;
+        const { appData } = await login(data.email);
+
+        appData.set({
+          profile: data,
+        });
+
+        dispatch('success', { appData });
+      } else {
+        const el = document.querySelector('.error');
+        if (el) el.scrollIntoView();
       }
     } catch (e) {
       error = e;
+    } finally {
+      loading = false;
     }
   }
 
-  const update = field => value => data[field] = value;
+  const update = field => e => data[field] = e.target.value;
 </script>
 
-<main>
+<main
+  class:opacity-25={loading}
+  class:opacity-100={!loading}
+  class="transition duration-300"
+  class:pointer-events-none={loading}
+>
   <section class="relative block py-24 lg:pt-0">
     <div class="container mx-auto px-4">
       <h1 class="text-center text-6xl pt-8 font-bold tracking-widest uppercase">
@@ -61,7 +90,9 @@
         資本政策表を失敗せず、簡単に作れる。
       </div>
       <div class="w-full lg:w-6/12 mx-auto my-12 px-4">
-        <img class="w-full shadow rounded" loading="lazy" src="https://i.ibb.co/3SZ2QkR/ezgif-com-gif-maker.gif" alt="cap-table" border="0">
+        {#if !loading}
+          <img class="w-full shadow rounded" loading="lazy" src="https://i.ibb.co/3SZ2QkR/ezgif-com-gif-maker.gif" alt="cap-table" border="0">
+        {/if}
       </div>
       <div class="flex flex-wrap align-center justify-center">
         <div class="w-full lg:w-6/12 px-4">
@@ -71,7 +102,7 @@
             <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
               <b>無料</b>で登録してからすぐ使えます。
             </div>
-            <div class="flex-auto p-5 lg:p-10">
+            <form class="flex-auto p-5 lg:p-10">
               <Input
                 on:change={update('companyName')}
                 error={errors.companyName}
@@ -169,7 +200,7 @@
 
               <div class="text-center mt-6">
                 <button
-                  on:click={() => register(data)}
+                  on:click={register}
                   class="bg-gray-900 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                   type="button"
                 >
@@ -182,7 +213,7 @@
                   {error}
                 </div>
               {/if}
-            </div>
+            </form>
           </div>
         </div>
       </div>

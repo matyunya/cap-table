@@ -3,17 +3,24 @@
   import { onMount, tick } from "svelte";
   import HomePage from "./HomePage.svelte";
   import Sheet from "./Sheet.svelte";
+  import { bindFirebase } from "./store.js";
 
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;
   export let store;
+  export let login = () => {};
 
   let page = "home";
 //   Uncomment to jump straight to the table
 //   page = "cap-table";
 
-  function onRegistered() {
+  async function onAuthenticated(e) {
+    const { commit } = store;
+    const { appData } = e.detail;
+
+//     bindFirebase(store, appData);
+
     page = "cap-table";
   }
 
@@ -31,11 +38,10 @@
       el.classList.add('opacity-100');
     }, 50);
   });
-
 </script>
 
 {#if page === 'home'}
-  <HomePage on:success={onRegistered} />
+  <HomePage on:success={onAuthenticated} {login} />
 {:else}
   <Sheet
     {blocks}
