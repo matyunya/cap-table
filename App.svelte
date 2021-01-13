@@ -26,6 +26,10 @@
     const { commit } = store;
     const { appData, profile } = e.detail;
 
+    const d = await appData.get();
+
+    console.log(profile, d.data());
+
     if (profile) store.commit((p) => ({ set }) => set('profile', p), profile);
 
     unsub = sync(appData, store, () => prefetching = false);

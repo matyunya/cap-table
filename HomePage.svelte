@@ -56,7 +56,7 @@
       });
 
       if (!Object.keys(errors).reduce((acc, cur) => acc || Boolean(errors[cur]), false)) {
-        await signIn(data.email);
+        await signIn(data.email, data);
       } else {
         const el = document.querySelector('.error');
         if (el) el.scrollIntoView();
@@ -69,13 +69,13 @@
     }
   }
 
-  async function signIn(email) {
+  async function signIn(email, profile) {
     try {
       loading = true;
       showEmailNotification = true;
       const { appData } = await login(data.email);
 
-      dispatch('success', { appData, profile: data });
+      dispatch('success', { appData, profile });
     } catch (e) {
       error = e;
       throw e;
@@ -88,7 +88,7 @@
 {#if showEmailNotification}
   <Scrim>
       <div
-        class="items-center z-40 shadow-lg bg-white dark:bg-gray-800 p-12 ring dark:text-white">
+        class="items-center z-40 shadow-lg bg-white p-12 ring text-black">
         認証メールを発信しました。ご確認をお願いします。
       </div>
   </Scrim>
