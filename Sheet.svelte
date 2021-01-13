@@ -81,11 +81,6 @@
 
     if (['Enter', 'Escape'].includes(e.code)) {
       e.preventDefault();
-      const el = document.getElementById(editing);
-      if (!el || !getValue(el)) {
-        blocks = blocks;
-        return;
-      }
     } else {
       return;
     }
@@ -103,7 +98,7 @@
     if (!editing) return;
 
     const node = document.getElementById(editing);
-    if (node && !node.contains(e.target)) {
+    if (node && !node.parentNode.contains(e.target)) {
       save();
     }
   }
@@ -167,13 +162,6 @@
           on:click|stopPropagation={(e) => openContextMenu(menuItems(store, { id }), e)}
           class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 opacity-0 transition duration-150 right-0 rounded-full p-1 text-blue-500 hover:bg-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
       {/if}
-      <span
-        class="w-full h-full"
-        contenteditable={editing === id}
-        {id}
-      >
-        {editing === id ? value : format(value)}
-      </span>
       {#if row === 0 && col === 0}
         <a href="https://ellx.io">
         <svg class="rounded-full p-1 hover:bg-blue-gray-200 transition duration-500 transform cursor-pointer hover:rotate-360" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
@@ -181,6 +169,14 @@
         <button title="Dark mode toggle" class="rounded-full outline-none ring-gray-100 text-xs h-4 w-4 hover:ring-4 transition duration-500" on:click={() => dark = !dark}>
           {dark ? "☀️" : "🌙"}
         </button>
+      {:else}
+        <span
+          class="w-full h-full"
+          contenteditable={editing === id}
+          {id}
+        >
+          {editing === id ? value : format(value)}
+        </span>
       {/if}
     </div>
   {/each}

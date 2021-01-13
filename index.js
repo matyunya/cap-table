@@ -43,8 +43,6 @@ TODOs:
 - sticky first col
 - router
 - drag and drop
-- validate round type when adding
-- round logic
 - prevent empty cell
 - global error handler for production
 */

@@ -4,13 +4,29 @@ import { lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName, uid } from "./
 const founderId = "FOUNDER_ID";
 
 const defaultStore = {
+  profile: {
+    companyName: null,
+    title: null,
+    lastName: null,
+    firstName: null,
+    lastNameKana: null,
+    firstNameKana: null,
+    zipCode: null,
+    address: null,
+    url: null,
+    email: null,
+    phone: null,
+    establishedMonth: null,
+    fiscalYearEndMonth: null,
+    numberOfEmployees: null,
+  },
   rounds: new Map([[
     "founded",
     {
       name: "Founded",
       type: "founded",
       sharePrice: 1000,
-      investments: new Set([[founderId, 1000, 0]]),
+      investments: [[founderId, 1000, 0]],
     },
   ]]),
   investors: new Map([
@@ -25,7 +41,7 @@ export const store = bootstrap(defaultStore);
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", i => {
     const [, common = 0, voting = 0] = [...(i || [])].find(([id]) => investorId === id) || [];
-    const investments = new Set([...(i || [])].filter(([id]) => investorId !== id) || []);
+    const investments = [...(i || [])].filter(([id]) => investorId !== id) || [];
 
     const updated = [
       investorId,
@@ -33,7 +49,7 @@ export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
       type === 'voting' ? Number(shares) : voting,
     ]
 
-    investments.add(updated);
+    investments.push(updated);
 
     return investments;
   });
@@ -44,11 +60,15 @@ export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
 }
 
 export function UPDATE_INVESTOR_NAME({ investorId, name }) {
-  return (({ set }) => set("investors", investorId, 'name', name));
+  return (({ update }) => update("investors", investorId, 'name', i => name || i));
 }
 
 export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
   return (({ update }) => update("investors", i => {
+    if (newGroup && group && [...i.values()].find(g => g.group === group)) {
+      group = uniqueGroupName(i); // prevent group name clashes
+    }
+
     const ids = [...i.keys()];
     const lastId = newGroup ? [...i].reduce(lastInvestorIdInGroup(i.get(afterId).group), "") : afterId;
     const idx = ids.indexOf(lastId) + 1;
@@ -73,7 +93,7 @@ export function REMOVE_INVESTOR({ id }) {
       "rounds",
       r => new Map([...r].map(([roundId, i]) => [roundId, {
         ...i,
-        investments: new Set([...i.investments].filter(notIn([id]))),
+        investments: [...i.investments].filter(notIn([id])),
       }]))
     );
 
@@ -89,7 +109,7 @@ export function REMOVE_GROUP({ group }) {
       "rounds",
       r => new Map([...r].map(([roundId, i]) => [roundId, {
         ...i,
-        investments: new Set([...i.investments].filter(notIn(ids))),
+        investments: [...i.investments].filter(notIn(ids)),
       }]))
     );
 
@@ -98,16 +118,21 @@ export function REMOVE_GROUP({ group }) {
 }
 
 export function UPDATE_GROUP_NAME({ oldName, newName }) {
-  // TODO: disallow renaming into existing group
   return (({ update }) => {
-    update("investors", i => new Map([...i].map(([id, investor]) => [id, {
-      ...investor,
-      group: investor.group === oldName ? newName : investor.group,
-    }])));
+    update("investors", i => {
+      if (!newName || [...i.values()].find(g => g.group === newName)) {
+        return new Map(i);
+      }
+
+      return new Map([...i].map(([id, investor]) => [id, {
+        ...investor,
+        group: investor.group === oldName ? newName : investor.group,
+      }]));
+    });
   });
 }
 
-export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Set() }) {
+export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = [] }) {
   return (({ update, apply, get }) => {
     let roundName;
 
@@ -141,63 +166,4 @@ export function REMOVE_ROUND({ id }) {
 
 export function RENAME_ROUND({ id, name }) {
    return (({ set }) => set('rounds', id, 'name', name));
-}
-
-function iterate(obj) {
-  if (typeof(obj) === "object" && !Array.isArray(obj)) {
-    return Object.keys(obj).reduce((acc, cur) => ({
-      ...acc,
-      [cur]: typeof(obj[cur]) === "object" ? iterate(obj[cur]) : transform(obj[cur]),
-    }), {});
-  }
-
-  return obj;
-}
-
-function fromMap(map) {
-  let obj = {}
-  for(let[k,v] of map) {
-      v instanceof Map
-        ? obj[k] = fromMap(v)
-        : obj[k] = iterate(v);
-  }
-
-  return obj;
-}
-
-function transform(val) {
-  if (val instanceof Map) return fromMap(val);
-
-  if (val instanceof Set) return [...val];
-
-  return val;
-}
-
-export async function bindFirebase(store, appData) {
-  const data = await appData.get();
-
-  if (!data.data().app) {
-    appData.set({
-      app: {
-        investors: transform(store.get('investors')),
-        rounds: transform(store.get('rounds')),
-      },
-    });
-  }
-
-  store.commit = (transaction, payload, ...keyPath) => {
-    const [changes] = commit(transaction, payload, ...keyPath);
-
-    console.log('COMMITING', {
-      [changes.path.join('.')]: transform(changes.newValue),
-    });
-
-    appData.update({
-      ["app." + changes.path.join('.')]: transform(changes.newValue),
-    });
-
-    appData.get().then(d => console.log(d.data()));
-
-    return changes;
-  };
 }

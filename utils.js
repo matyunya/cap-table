@@ -1,8 +1,8 @@
 import { groupClasses } from "./classes.js";
 
-const reduceSumOfShares = (acc, { investments }) => acc + sum([...investments].map(([_, a, b]) => a + b));
+const reduceSumOfShares = (acc, { investments }) => acc + sum(investments.map(([_, a, b]) => a + b));
 
-const reduceSumOfCommonShares = (acc, { investments }) => acc + sum([...investments].map(([_, a]) => a));
+const reduceSumOfCommonShares = (acc, { investments }) => acc + sum(investments.map(([_, a]) => a));
 
 export const uid = (length = 16) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
 
@@ -18,17 +18,17 @@ export const totalCommonShares = (rounds) => [...rounds.values()].reduce(reduceS
 
 export const totalCommonSharesForInvestor = (rounds, investorId) => [...rounds.values()]
   .reduce(
-    (acc, { investments }) => acc + sum([...investments].filter(([id]) => id === investorId).map(([_, i]) => i)
+    (acc, { investments }) => acc + sum(investments.filter(([id]) => id === investorId).map(([_, i]) => i)
   ), 0);
 
 export const totalVotingSharesForInvestor = (rounds, investorId) => [...rounds.values()]
   .reduce(
-    (acc, { investments }) => acc + sum([...investments].filter(([id]) => id === investorId).map(([,, i]) => i)
+    (acc, { investments }) => acc + sum(investments.filter(([id]) => id === investorId).map(([,, i]) => i)
   ), 0);
 
 export const totalSharesForInvestor = (rounds, investorId) => [...rounds.values()]
   .reduce(
-    (acc, { investments }) => acc + sum([...investments].filter(([id]) => id === investorId).map(([_, a, b]) => a + b)
+    (acc, { investments }) => acc + sum(investments.filter(([id]) => id === investorId).map(([_, a, b]) => a + b)
   ), 0);
 
 export const getPreviousRounds = (rounds, id) => {

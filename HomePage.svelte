@@ -2,8 +2,10 @@
   import { createEventDispatcher, onMount } from "svelte";
   import Input from "./Input.svelte";
   import Select from "./Select.svelte";
+  import Scrim from "./Scrim.svelte";
 
   export let login;
+  export let store;
 
   const dispatch = createEventDispatcher();
 
@@ -28,10 +30,11 @@
   let errors = { ...defaultState };
   let error = "";
   let loading = true;
+  let showEmailNotification = false;
 
   onMount(async () => {
     try {
-      const resp = await login();
+      const resp = await login("");
       if (resp && resp.appData) {
         dispatch('success', { appData: resp.appData });
       }
@@ -53,14 +56,7 @@
       });
 
       if (!Object.keys(errors).reduce((acc, cur) => acc || Boolean(errors[cur]), false)) {
-        loading = true;
-        const { appData } = await login(data.email);
-
-        appData.set({
-          profile: data,
-        });
-
-        dispatch('success', { appData });
+        await signIn(data.email);
       } else {
         const el = document.querySelector('.error');
         if (el) el.scrollIntoView();
@@ -69,11 +65,34 @@
       error = e;
     } finally {
       loading = false;
+      showEmailNotification = false;
+    }
+  }
+
+  async function signIn(email) {
+    try {
+      loading = true;
+      showEmailNotification = true;
+      const { appData } = await login(data.email);
+
+      dispatch('success', { appData, profile: data });
+    } catch (e) {
+      error = e;
+      throw e;
     }
   }
 
   const update = field => e => data[field] = e.target.value;
 </script>
+
+{#if showEmailNotification}
+  <Scrim>
+      <div
+        class="items-center z-40 shadow-lg bg-white dark:bg-gray-800 p-12 ring dark:text-white">
+        認証メールを発信しました。ご確認をお願いします。
+      </div>
+  </Scrim>
+{/if}
 
 <main
   class:opacity-25={loading}
@@ -205,6 +224,28 @@
                   type="button"
                 >
                   登録する
+                </button>
+              </div>
+
+            <div class="w-full text-black mt-20 mb-4">
+              すでに登録済みの方
+            </div>
+              <Input
+                on:change={update('email')}
+                error={errors.email}
+                placeholder="email"
+                label="email"
+                id="email"
+                type="email"
+                classes="" />
+
+              <div class="text-center">
+                <button
+                  on:click={() => signIn(data.email)}
+                  class="bg-gray-600 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                  type="button"
+                >
+                  ログイン
                 </button>
               </div>
 

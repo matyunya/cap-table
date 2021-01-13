@@ -4,9 +4,10 @@
   export let id;
   export let type;
   export let error;
+  export let classes = "mt-8"
 </script>
 
-<div class="relative w-full mb-3 mt-8">
+<div class="relative w-full mb-3 {classes}">
   <label
     class="block uppercase text-xs font-bold mb-2"
     class:text-gray-700={!error}
