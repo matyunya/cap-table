@@ -21,20 +21,20 @@
   let node;
   const activeId = writable();
 
-  export async function onClickActivator({ pageX, pageY }) {
+  export async function onClickActivator({ pageX, pageY, ...params }) {
     await tick();
     if (!node) return;
 
     if (window.innerWidth - pageX - node.clientWidth < 0) {
-      node.style.left = `${pageX - node.clientWidth}px`
+      node.style.left = `${pageX - node.clientWidth - window.scrollX}px`
     } else {
-      node.style.left = `${pageX}px`
+      node.style.left = `${pageX - window.scrollX}px`
     }
 
     if (window.innerHeight - pageY - node.clientHeight < 0) {
-      node.style.top = `${pageY - node.clientHeight}px`
+      node.style.top = `${pageY - node.clientHeight - window.scrollY}px`
     } else {
-      node.style.top = `${pageY}px`
+      node.style.top = `${pageY - window.scrollY}px`
     }
   }
 </script>
