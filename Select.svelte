@@ -4,6 +4,7 @@
   export let id;
   export let error;
   export let options = [];
+  export let value;
 
   $: withEmpty = [["", "選択してください"], ...options];
 </script>
@@ -16,7 +17,8 @@
     for={id}
     >{label}{error ? " " + error : ""}</label>
   <select
-    on:select
+    {value}
+    on:change
     {id}
     class:ring-blue-200={!error}
     class:ring-red-200={error}

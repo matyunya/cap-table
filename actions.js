@@ -51,6 +51,18 @@ export function groupNames(investors) {
               ),
             },
             {
+              text: "New group",
+              cb: () => {
+                store.commit(
+                  ADD_INVESTOR,
+                  {
+                    newGroup: true,
+                    afterId: [...store.get('investors')].reduce(lastInvestorIdInGroup(id.split(':')[1]), "")
+                  }
+                )
+              },
+            },
+            {
               text: "Remove",
               cb: () => store.commit(REMOVE_GROUP, { group: id.split(':')[1] }),
             },

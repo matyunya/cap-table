@@ -5,6 +5,7 @@
   export let type;
   export let error;
   export let classes = "mt-8"
+  export let value;
 </script>
 
 <div class="relative w-full mb-3 {classes}">
@@ -17,6 +18,7 @@
     >{label}{error ? " " + error : ""}</label>
   <input
     on:change
+    {value}
     on:input={() => error = ""}
     {id}
     required

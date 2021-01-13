@@ -83,8 +83,8 @@ export function calcRoundResults(rounds, id) {
   const prevId = roundIds[roundIds.indexOf(id) - 1];
   const { sharePrice, ...round } = rounds.get(id);
 
-  const prevRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId));
-  const newEquity = reduceSumOfShares(0, round) * sharePrice;
+  const prevRoundShares = prevId === undefined ? 0 : totalCommonShares(getPreviousRounds(rounds, prevId));
+  const newEquity = reduceSumOfCommonShares(0, round) * sharePrice;
   const preMoney = sharePrice * prevRoundShares;
 
   return {

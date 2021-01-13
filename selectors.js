@@ -87,14 +87,14 @@ const roundTitle = (id, x, colSpan, rounds) => [
         text: "Add common",
         cb: () => store.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
-      {
-        text: "Add J-kiss",
-        cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
-      },
-      {
-        text: "Add preferred",
-        cb: () => store.commit(ADD_ROUND, { type: "preferred", afterId: id.split(':')[1] }),
-      },
+//       {
+//         text: "Add J-kiss",
+//         cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+//       },
+//       {
+//         text: "Add preferred",
+//         cb: () => store.commit(ADD_ROUND, { type: "preferred", afterId: id.split(':')[1] }),
+//       },
       {
         text: "Remove",
         cb: () => store.commit(REMOVE_ROUND, { id: id.split(':')[1] }),

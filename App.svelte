@@ -5,8 +5,11 @@
   import HomePage from "./HomePage.svelte";
   import Sheet from "./Sheet.svelte";
   import Logo from "./Logo.svelte";
+  import ProfileForm from "./ProfileForm.svelte";
   import Scrim from "./Scrim.svelte";
+  import Nav from "./Nav.svelte";
   import { sync } from "./sync.js";
+  import { defaultProfile, UPDATE_PROFILE } from "./store.js";
 
   export let blocks = new Map();
   export let nRows = 10;
@@ -17,6 +20,8 @@
   let page = "home";
   let unsub = () => {};
   let prefetching = false;
+  let showProfile = false;
+  let errors = { ...defaultProfile };
 
 //   Uncomment to jump straight to the table
 //   page = "cap-table";
@@ -25,10 +30,6 @@
     prefetching = true;
     const { commit } = store;
     const { appData, profile } = e.detail;
-
-    const d = await appData.get();
-
-    console.log(profile, d.data());
 
     if (profile) store.commit((p) => ({ set }) => set('profile', p), profile);
 
@@ -40,8 +41,6 @@
   onDestroy(unsub);
 
   onMount(() => {
-    // TODO: goto sheet if auth cookie present
-
     setTimeout(async () => {
       headlong();
       const el = document.getElementById('app');
@@ -53,7 +52,14 @@
       el.classList.add('opacity-100');
     }, 50);
   });
+
+  function updateProfile(data) {
+    store.commit(UPDATE_PROFILE, { profile: data });
+    showProfile = false;
+  }
 </script>
+
+<div class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
 
 {#if page === 'home'}
   <HomePage on:success={onAuthenticated} {login} />
@@ -65,11 +71,27 @@
       </div>
     </div>
   {:else}
-    <Sheet
-      {blocks}
-      {nRows}
-      {nCols}
-      {store}
-    />
+    <Nav logout={() => page = "home"} bind:showProfile />
+    {#if showProfile}
+      <div class="flex flex-wrap align-center justify-center">
+        <div class="w-full lg:w-6/12 px-4">
+          <div
+            class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
+          >
+            <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
+              <b>無料</b>で登録してからすぐ使えます。
+            </div>
+            <ProfileForm label="保存する" data={{ ...(store.get().profile) }} {errors} onSave={updateProfile} />
+          </div>
+        </div>
+      </div>
+    {:else}
+      <Sheet
+        {blocks}
+        {nRows}
+        {nCols}
+        {store}
+      />
+    {/if}
   {/if}
 {/if}

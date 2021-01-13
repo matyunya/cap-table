@@ -36,7 +36,9 @@
 
     const h = headlong();
 
-    return h.unsubscribe;
+    return () => {
+      h.unsubscribe();
+    }
   });
 
   function setEditing(onChange, id) {
@@ -140,9 +142,7 @@
 
 <ContextMenu />
 
-<div class="w-screen h-screen fixed top-0 left-0 bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-200 dark:to-warm-gray-800" />
-
-<div class="m-4 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
+<div class="m-4 mt-12 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
   {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems } (id)}
     <div
       class:editable={onChange}

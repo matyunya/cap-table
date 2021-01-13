@@ -3,23 +3,25 @@ import { lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName, uid } from "./
 
 const founderId = "FOUNDER_ID";
 
+export const defaultProfile = {
+  companyName: "",
+  title: "",
+  lastName: "",
+  firstName: "",
+  lastNameKana: "",
+  firstNameKana: "",
+  zipCode: "",
+  address: "",
+  url: "",
+  email: "",
+  phone: "",
+  establishedMonth: "",
+  fiscalYearEndMonth: "",
+  numberOfEmployees: "",
+};
+
 const defaultStore = {
-  profile: {
-    companyName: null,
-    title: null,
-    lastName: null,
-    firstName: null,
-    lastNameKana: null,
-    firstNameKana: null,
-    zipCode: null,
-    address: null,
-    url: null,
-    email: null,
-    phone: null,
-    establishedMonth: null,
-    fiscalYearEndMonth: null,
-    numberOfEmployees: null,
-  },
+  profile: defaultProfile,
   rounds: new Map([[
     "founded",
     {
@@ -166,4 +168,8 @@ export function REMOVE_ROUND({ id }) {
 
 export function RENAME_ROUND({ id, name }) {
    return (({ set }) => set('rounds', id, 'name', name));
+}
+
+export function UPDATE_PROFILE({ profile }) {
+   return (({ set }) => set('profile', profile));
 }
