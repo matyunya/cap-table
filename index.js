@@ -34,7 +34,7 @@ export function toBlocks(store) {
     ...groupNames(investors),
     ...[...investors.keys()].map(investorNames(investors)),
     ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
-    ...footerLabels(totalInvestorRows(investors) + 3),
+    ...footerLabels(totalInvestorRows(investors) + 4),
   ]);
 }
 

@@ -48,7 +48,7 @@ export const allGroups = investors => [...investors.values()].map(i => i.group);
 export const uniqueGroups = investors => new Set(allGroups(investors));
 
 function calcGroupRow(investors, group) {
-  const investorGroups = allGroups(investors).slice(1);
+  const investorGroups = allGroups(investors);
 
   return investorGroups.reduce((acc, cur, i) => {
     if (typeof acc === "number") return acc;
@@ -57,7 +57,7 @@ function calcGroupRow(investors, group) {
       return acc;
     }
 
-    const y = i + 4 + acc.length;
+    const y = i + 3 + acc.length;
 
     if (cur === group) return y;
 
@@ -70,7 +70,7 @@ function calcGroupRow(investors, group) {
 
 export function getPosition(investors, id, x, colSpan = 0) {
   const { group } = investors.get(id);
-  const y = group.toLowerCase() === 'founder' ? 2 : calcGroupRow(investors, group);
+  const y = calcGroupRow(investors, group);
   const idx = [...getGroupInvestors(investors, group).keys()].indexOf(id);
 
   return [y + idx + 1, x, y + idx + 1, x + colSpan];
@@ -87,11 +87,17 @@ export function calcRoundResults(rounds, id) {
   const newEquity = reduceSumOfCommonShares(0, round) * sharePrice;
   const preMoney = sharePrice * prevRoundShares;
 
+  const prevTotalRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId));
+  const newEquityDiluted = reduceSumOfShares(0, round) * sharePrice;
+  const preMoneyDiluted = sharePrice * prevTotalRoundShares;
+
   return {
     sharePrice,
     newEquity,
     preMoney,
     postMoney: newEquity + preMoney,
+    preMoneyDiluted,
+    postMoneyDiluted: preMoneyDiluted + newEquityDiluted,
   };
 }
 
@@ -132,7 +138,7 @@ export const calcValues = ({
   const individualValues = investments
     .map(fn(investors, previousRounds, y, id, { onChange, format, classes }));
 
-  const groups = [...uniqueGroups(investors)].slice(1);
+  const groups = [...uniqueGroups(investors)];
 
   const groupValues = groups.map(group => {
     const x = calcGroupRow(investors, group)
@@ -150,7 +156,7 @@ export const calcValues = ({
     ...individualValues,
     ...groupValues,
 
-    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 2, { format }),
+    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 3, { format }),
   ].filter(Boolean);
 }
 

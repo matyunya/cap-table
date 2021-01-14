@@ -18,18 +18,18 @@ import {
 } from "./utils.js";
 
 export function groupNames(investors) {
-  const investorGroups = allGroups(investors).slice(1); // omit founders
+  const investorGroups = allGroups(investors);
 
   return investorGroups.reduce((acc, cur, i) => {
     if (investorGroups[i - 1] === cur) {
       return acc;
     }
 
-    const y = i + 4 + acc.length;
+    const y = i + 3 + acc.length;
 
     return [
       ...acc,
-      // Three label rows + 1 founder row
+      // Three label rows
       [
         `group-label:${cur}:${i}`,
         {
@@ -40,16 +40,6 @@ export function groupNames(investors) {
             store.commit(UPDATE_GROUP_NAME, { oldName: cur, newName: value });
           },
           menuItems: (store, { id }) => [
-            {
-              text: "Add investor",
-              cb: () => store.commit(
-                ADD_INVESTOR,
-                {
-                  group: id.split(':')[1],
-                  afterId: [...store.get('investors')].reduce(lastInvestorIdInGroup(id.split(':')[1]), "")
-                }
-              ),
-            },
             {
               text: "New group",
               cb: () => {
@@ -152,14 +142,12 @@ const colTypes = {
     voting: true,
     fn: calcCell(({ votingShares }) => votingShares || 0)("voting-diff"),
     onChange: updateShares("voting"),
-    classes: "text-red-700",
     format: format.number.format,
   },
   votingSharesAmount: {
     label: "#shares",
     hasRowspan: true,
     fn: calcCell(calcCommonVotingShares)("voting-total"),
-    classes: "text-red-700",
     format: format.number.format,
   },
   totalSharesAmount: {

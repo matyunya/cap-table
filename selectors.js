@@ -43,6 +43,8 @@ export const footerLabels = offset => [
   ['new-equity-label', { position: [offset + 1, 0, offset + 1, 1], value: "New equity (¥)", classes: firstColClasses }],
   ['pre-money-label', { position: [offset + 2, 0, offset + 2, 1], value: "Pre money (¥)", classes: firstColClasses }],
   ['post-money-label', { position: [offset + 3, 0, offset + 3, 1], value: "Post money (¥)", classes: firstColClasses }],
+  ['pre-money-diluted-label', { position: [offset + 4, 0, offset + 4, 1], value: "Pre money diluted (¥)", classes: firstColClasses }],
+  ['post-money-diluted-label', { position: [offset + 5, 0, offset + 5, 1], value: "Post money diluted (¥)", classes: firstColClasses }],
 ];
 
 export const investorNames = investors => (id, i) => [
@@ -50,7 +52,7 @@ export const investorNames = investors => (id, i) => [
   {
     position: getPosition(investors, id, 0, 1),
     value: investors.get(id).name,
-    classes: firstColClasses + " pr-4",
+    classes: firstColClasses + " px-4",
     onChange: (store, { id, value }) => {
       const [,investorId] = id.split(':');
 
@@ -62,16 +64,10 @@ export const investorNames = investors => (id, i) => [
           cb: () => store.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
         },
         {
-          text: "New group",
-          cb: () => {
-            store.commit(ADD_INVESTOR, { afterId: id.split(':')[1], newGroup: true })
-          },
-        },
-        {
           text: "Remove",
           cb: () => store.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
         },
-      ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'New group'),
+      ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'Add investor'),
   }
 ];
 
@@ -82,19 +78,16 @@ const roundTitle = (id, x, colSpan, rounds) => [
     value: formatRoundTitle(rounds.get(id)),
     classes: "font-bold text-center pr-4",
     onChange: renameRound,
+    pinMenuToggle: true,
     menuItems: (store, { id }) => [
       {
         text: "Add common",
         cb: () => store.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
-//       {
-//         text: "Add J-kiss",
-//         cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
-//       },
-//       {
-//         text: "Add preferred",
-//         cb: () => store.commit(ADD_ROUND, { type: "preferred", afterId: id.split(':')[1] }),
-//       },
+      {
+        text: "Add J-kiss",
+        cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+      },
       {
         text: "Remove",
         cb: () => store.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
@@ -109,6 +102,8 @@ function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
     [`${id}:new-equity-label`, { value: roundResults.newEquity }],
     [`${id}:pre-money-label`, { value: roundResults.preMoney }],
     [`${id}:post-money-label`, { value: roundResults.postMoney }],
+    [`${id}:pre-money-label-diluted`, { value: roundResults.preMoneyDiluted }],
+    [`${id}:post-money-label-diluted`, { value: roundResults.postMoneyDiluted }],
   ].map(([idx, val], i) => [
     idx,
     {
@@ -132,7 +127,7 @@ export function roundValues(rounds, investors) {
         roundTitle(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
         ...votingColumnHeader(cols, prevCol + 1),
-        ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 3, colSpan, calcRoundResults(rounds, id)),
+        ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, calcRoundResults(rounds, id)),
 
         ...cols.reduce(
           calcValues({
@@ -152,4 +147,4 @@ export function roundValues(rounds, investors) {
 
 export const colsCount = (rounds) => 1 + [...rounds.values()].reduce((acc, r) => acc + roundOptions[r.type].colSpan, 0);
 
-export const rowsCount = (investors) => totalInvestorRows(investors) + 7;
+export const rowsCount = (investors) => totalInvestorRows(investors) + 10;

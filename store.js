@@ -43,7 +43,7 @@ const defaultStore = {
 
 export const store = bootstrap(defaultStore);
 
-export const isAuthenticated = select(store, () => ["profile", "email"]);
+export const isAuthenticated = select(store, () => ["profile", "companyName"]);
 export const language = select(store, () => ["language"]);
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
