@@ -109,7 +109,7 @@
         Cap Table
       </h1>
       <div class="text-center mt-8 text-lg">
-        資本政策表を失敗せず、簡単に作れる。
+        {$_("資本政策表を失敗せず、簡単に作れる。")}
       </div>
       <div class="w-full lg:w-6/12 mx-auto my-12 px-4">
         {#if !loading}
@@ -122,11 +122,11 @@
             class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
           >
             <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
-              <b>無料</b>で登録してからすぐ使えます。
+              {@html $_("<b>無料</b>で登録してからすぐ使えます。")}
             </div>
             <ProfileForm {data} {errors} onSave={register}>
               <div class="w-full text-black mt-20 mb-4">
-                すでに登録済みの方
+                {$_("すでに登録済みの方")}
               </div>
                 <Input
                   on:change={e => email = e.target.value}
@@ -143,7 +143,7 @@
                     class="bg-gray-600 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                     type="button"
                   >
-                    ログイン
+                    {$_("ログイン")}
                   </button>
                 </div>
 

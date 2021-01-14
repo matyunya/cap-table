@@ -124,10 +124,6 @@
     box-shadow: 0 0 0 1.5px rgba(14,165,233,0.7) inset;
   }
 
-  .editing {
-    box-shadow: 0 0 0 0.5px rgb(14,165,233) inset;
-  }
-
   .w-block:hover .toggle {
     opacity: 1;
   }
@@ -148,9 +144,11 @@
       class:dark:text-light-blue-300={onChange}
       on:keydown|stopPropagation={onKeydown}
       on:click={() => setEditing(onChange, id)}
-      class:editing={editing === id}
       class:menuItems
-      class="w-block transition duration-150 tile px-1 absolute overflow-hidden dark:bg-dark-700 dark:text-white border-blue-500 border-1 {classes || ""}"
+      class:w-block={editing !== id}
+      class:bg-light-blue-100={editing === id}
+      class:bg-opacity-25={editing === id}
+      class="tile px-1 absolute overflow-hidden dark:bg-dark-700 dark:text-white  {classes || ""}"
       style={`
         transform: translate(${col * columnWidth}px, ${row * rowHeight}px);
         height: ${rowSpan * rowHeight}px;

@@ -6,6 +6,7 @@
   export let error;
   export let classes = "mt-8"
   export let value = "";
+  export let required = true;
 </script>
 
 <div class="relative w-full mb-3 {classes}">
@@ -15,13 +16,13 @@
     class:text-red-700={error}
     class:error
     for={id}
-    >{label}{error ? " " + error : ""}</label>
+    >{label}{required ? "*" : ""}{error ? " " + error : ""}</label>
   <input
     on:change
     {value}
     on:input={() => error = ""}
     {id}
-    required
+    {required}
     {type}
     class:ring-blue-200={!error}
     class:ring-red-200={error}

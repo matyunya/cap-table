@@ -139,6 +139,7 @@ const colTypes = {
   votingShareDiff: {
     label: "share±",
     hasRowspan: true,
+    classes: "dark:border-blue-800 border-blue-300 border-l",
     voting: true,
     fn: calcCell(({ votingShares }) => votingShares || 0)("voting-diff"),
     onChange: updateShares("voting"),

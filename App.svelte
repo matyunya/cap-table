@@ -9,7 +9,7 @@
   import Scrim from "./Scrim.svelte";
   import Nav from "./Nav.svelte";
   import { sync } from "./sync.js";
-  import { defaultProfile, UPDATE_PROFILE } from "./store.js";
+  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE } from "./store.js";
   import _ from "./intl.js";
 
   export let blocks = new Map();
@@ -45,7 +45,9 @@
 
     if (profile) store.commit((p) => ({ set }) => set('profile', p), profile);
 
-    unsub = sync(appData, store, () => prefetching = false);
+    unsub = sync(appData, store, () => {
+      prefetching = false;
+    });
 
     page = "cap-table";
   }
@@ -97,8 +99,8 @@
           <div
             class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
           >
-            <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
-              プロフィール編集画面
+            <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4 uppercase tracking-widest font-bold">
+              {$_("プロフィール編集画面")}
             </div>
             <ProfileForm
               initial={false}

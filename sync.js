@@ -56,7 +56,10 @@ export function sync(dbRef, store, onInitialSync) {
 
     if (!equal(state, lastRemoteState)) {
       console.log('SYNC: DB -> store', state);
-      store.commit(val => ({ set }) => set(val), lastRemoteState = state);
+      store.commit(val => ({ update }) => update(v => ({
+        ...v,
+        ...val,
+      })), lastRemoteState = state);
     }
   });
 

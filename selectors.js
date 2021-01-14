@@ -123,12 +123,19 @@ export function roundValues(rounds, investors) {
 
     return [
       [
+        [
+          `round-dividers:${id}`,
+          {
+            position: [0, prevCol + 1, totalInvestorRows(investors) + 9, prevCol + colSpan],
+            classes: "pointer-events-none dark:border-blue-800 border-blue-300 border-l",
+            value: "",
+          }
+        ],
         ...acc,
         roundTitle(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
         ...votingColumnHeader(cols, prevCol + 1),
         ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, calcRoundResults(rounds, id)),
-
         ...cols.reduce(
           calcValues({
             prevCol,

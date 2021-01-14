@@ -156,7 +156,7 @@ export const calcValues = ({
     ...individualValues,
     ...groupValues,
 
-    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 3, { format }),
+    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 3, { format, classes: groupClasses + " " + classes }),
   ].filter(Boolean);
 }
 

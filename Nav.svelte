@@ -1,12 +1,13 @@
 <script>
   import Select from "./Select.svelte";
-  import { SET_LANGUAGE, isAuthenticated } from "./store.js";
+  import { SET_LANGUAGE, isAuthenticated, language, store } from "./store.js";
   export let showProfile;
+  import _ from "./intl.js";
 
   export let logout = () => {};
   export let dark;
 
-  const languages = [["EN", "🇬🇧"], ["JA", "🇯🇵"]];
+  const languages = [["en", "🇬🇧"], ["ja", "🇯🇵"]];
 
   function setLanguage({ target }) {
     store.commit(SET_LANGUAGE, { language: target.value });
@@ -27,15 +28,15 @@
       {dark ? "☀️" : "🌙"}
     </button>
     <Select
-      classes="focus:ring-2 transition duration-200 bg-transparent text-lg shadow focus:outline-none rounded mr-3"
+      classes="focus:ring-2 transition duration-200 bg-transparent text-lg shadow focus:outline-none rounded mr-3 text-light-blue-500"
       hasEmpty={false}
-      value={store.get('language')}
+      value={$language}
       on:change={setLanguage}
       options={languages}
     />
     {#if $isAuthenticated}
-      <button class="a cursor-pointer px-3 sm:px-1" on:click={() => showProfile = !showProfile}>プロフィール</button>
-      <button class="a cursor-pointer px-3 sm:px-1" on:click={logout}>ログアウト</button>
+      <button class="a cursor-pointer px-3 sm:px-1" on:click={() => showProfile = !showProfile}>{$_("プロフィール")}</button>
+      <button class="a cursor-pointer px-3 sm:px-1" on:click={logout}>{$_("ログアウト")}</button>
     {/if}
   </div>
 </div>

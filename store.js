@@ -17,13 +17,10 @@ export const defaultProfile = {
   url: "",
   email: "",
   phone: "",
-  establishedMonth: "",
-  fiscalYearEndMonth: "",
-  numberOfEmployees: "",
 };
 
 const defaultStore = {
-  language: "JA",
+  language: "ja",
   profile: defaultProfile,
   rounds: new Map([[
     "founded",
