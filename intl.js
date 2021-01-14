@@ -3,7 +3,7 @@ import { store } from "./store.js";
 
 const translations = {
   "<b>無料</b>で登録してからすぐ使えます。": {
-    en: "Just fill the registration form to use",
+    en: "Cap table service is free, it only requires this simple form.",
   },
   "資本政策表を失敗せず、簡単に作れる。": {
     en: "Dead simple cap table",
@@ -46,6 +46,15 @@ const translations = {
   },
   "保存する": {
     en: "Save",
+  },
+  "登録する": {
+    en: "Start using the app",
+  },
+  "すでに登録済みの方": {
+    en: "Already signed up? Enter your email to log in."
+  },
+  "ログイン": {
+    en: "Log in"
   },
 };
 

@@ -77,11 +77,19 @@
     userProfile = { ...store.get().profile };
     window.scrollTo(0, 0);
   }
+
+  async function logout() {
+    await window.ellx.logout();
+    unsub();
+    store.resetStore();
+    page = "home";
+    unsub = () => {};
+  }
 </script>
 
 <div class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
 
-<Nav {store} bind:dark bind:showProfile />
+<Nav {logout} {store} bind:dark bind:showProfile />
 
 {#if page === 'home'}
   <HomePage on:success={onAuthenticated} {login} />
