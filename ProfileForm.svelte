@@ -2,10 +2,12 @@
   import Input from "./Input.svelte";
   import Select from "./Select.svelte";
   export let onSave = () => {};
+  export let onCancel = () => {};
   export let update = field => e => data[field] = e.target.value;
   export let label = "登録する";
   export let data;
   export let errors;
+  export let initial = true;
 </script>
 
 <form class="flex-auto p-5 lg:p-10">
@@ -76,14 +78,16 @@
     placeholder="URL"
     label="URL"
     id="url" />
-  <Input
-    on:change={update('email')}
-    value={data.email}
-    error={errors.email}
-    placeholder="email"
-    label="email"
-    id="email"
-    type="email" />
+  {#if initial}
+    <Input
+      on:change={update('email')}
+      value={data.email}
+      error={errors.email}
+      placeholder="email"
+      label="email"
+      id="email"
+      type="email" />
+  {/if}
   <Input
     on:change={update('phone')}
     value={data.phone}
@@ -108,15 +112,17 @@
     label="決算月"
     id="fiscal-year-end-date"
     type="month" />
-  <Select
-    on:change={update('numberOfEmployees')}
-    options={[["10", "1~10人"], ["50", "11~50人"], ["100", "51~100人"], ["300", "101~300人"], ["1000", "301~1000人"], ["5000", "1000人以上"]]}
-    value={data.numberOfEmployees}
-    error={errors.numberOfEmployees}
-    placeholder="従業員数"
-    label="従業員数"
-    id="number-of-employees"
-    type="number" />
+  <div class="relative w-full mb-3 mt-8">
+    <Select
+      on:change={update('numberOfEmployees')}
+      options={[["10", "1~10人"], ["50", "11~50人"], ["100", "51~100人"], ["300", "101~300人"], ["1000", "301~1000人"], ["5000", "1000人以上"]]}
+      value={data.numberOfEmployees}
+      error={errors.numberOfEmployees}
+      placeholder="従業員数"
+      label="従業員数"
+      id="number-of-employees"
+      type="number" />
+  </div>
 
   <div class="text-center mt-6">
     <button
@@ -126,6 +132,15 @@
     >
       {label}
     </button>
+    {#if !initial}
+      <button
+        on:click={onCancel}
+        class="bg-gray-500 mt-4 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+        type="button"
+      >
+        キャンセル
+      </button>
+    {/if}
   </div>
 
   <slot />

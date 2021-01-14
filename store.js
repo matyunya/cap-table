@@ -1,4 +1,6 @@
 import bootstrap from "~matyunya/store";
+import { derived, select } from "tinyx";
+
 import { lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName, uid } from "./utils.js";
 
 const founderId = "FOUNDER_ID";
@@ -21,6 +23,7 @@ export const defaultProfile = {
 };
 
 const defaultStore = {
+  language: "JA",
   profile: defaultProfile,
   rounds: new Map([[
     "founded",
@@ -39,6 +42,9 @@ const defaultStore = {
 };
 
 export const store = bootstrap(defaultStore);
+
+export const isAuthenticated = select(store, () => ["profile", "email"]);
+export const language = select(store, () => ["language"]);
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", i => {
@@ -149,7 +155,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = [
       const newId = uid();
       const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
 
-      return new Map(newIds.map(id => [id, i.get(id) || newRound]));;
+      return new Map(newIds.map(id => [id, i.get(id) || newRound]));
     });
 
     const lastId = [...get('investors').keys()].pop();
@@ -171,5 +177,12 @@ export function RENAME_ROUND({ id, name }) {
 }
 
 export function UPDATE_PROFILE({ profile }) {
-   return (({ set }) => set('profile', profile));
+   return (({ update }) => update('profile', p => ({
+     ...profile,
+     email: p.email,
+   })));
+}
+
+export function SET_LANGUAGE({ language }) {
+  return (({ set }) => set("language", language));
 }

@@ -10,6 +10,7 @@
   import Nav from "./Nav.svelte";
   import { sync } from "./sync.js";
   import { defaultProfile, UPDATE_PROFILE } from "./store.js";
+  import _ from "./intl.js";
 
   export let blocks = new Map();
   export let nRows = 10;
@@ -17,11 +18,22 @@
   export let store;
   export let login = () => {};
 
+  let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  $: if (dark) {
+    document.querySelector('body').classList.add('mode-dark');
+  } else {
+    document.querySelector('body').classList.remove('mode-dark');
+  }
+
   let page = "home";
   let unsub = () => {};
   let prefetching = false;
   let showProfile = false;
   let errors = { ...defaultProfile };
+  let userProfile;
+
+  $: userProfile = { ...store.get().profile };
 
 //   Uncomment to jump straight to the table
 //   page = "cap-table";
@@ -57,9 +69,17 @@
     store.commit(UPDATE_PROFILE, { profile: data });
     showProfile = false;
   }
+
+  function onCancelProfileEdit() {
+    showProfile = false;
+    userProfile = { ...store.get().profile };
+    window.scrollTo(0, 0);
+  }
 </script>
 
 <div class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
+
+<Nav {store} bind:dark bind:showProfile />
 
 {#if page === 'home'}
   <HomePage on:success={onAuthenticated} {login} />
@@ -71,22 +91,29 @@
       </div>
     </div>
   {:else}
-    <Nav logout={() => page = "home"} bind:showProfile />
     {#if showProfile}
       <div class="flex flex-wrap align-center justify-center">
-        <div class="w-full lg:w-6/12 px-4">
+        <div class="max-w-xl mx-auto w-full lg:w-6/12 px-4">
           <div
             class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
           >
             <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
-              <b>無料</b>で登録してからすぐ使えます。
+              プロフィール編集画面
             </div>
-            <ProfileForm label="保存する" data={{ ...(store.get().profile) }} {errors} onSave={updateProfile} />
+            <ProfileForm
+              initial={false}
+              label="保存する"
+              data={userProfile}
+              {errors}
+              onSave={updateProfile}
+              onCancel={onCancelProfileEdit}
+            />
           </div>
         </div>
       </div>
     {:else}
       <Sheet
+        bind:dark
         {blocks}
         {nRows}
         {nCols}

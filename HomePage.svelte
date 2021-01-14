@@ -3,6 +3,7 @@
   import Input from "./Input.svelte";
   import Scrim from "./Scrim.svelte";
   import ProfileForm from "./ProfileForm.svelte";
+  import _ from "./intl.js";
 
   export let login;
   export let store;
@@ -29,6 +30,7 @@
   let data = { ...defaultState };
   let errors = { ...defaultState };
   let error = "";
+  let email = "";
   let loading = true;
   let showEmailNotification = false;
 
@@ -69,11 +71,11 @@
     }
   }
 
-  async function signIn(email, profile) {
+  async function signIn(emailAddress, profile) {
     try {
       loading = true;
       showEmailNotification = true;
-      const { appData } = await login(data.email);
+      const { appData } = await login(emailAddress);
 
       dispatch('success', { appData, profile });
     } catch (e) {
@@ -127,17 +129,17 @@
                 すでに登録済みの方
               </div>
                 <Input
-                  on:change={update('email')}
-                  error={errors.email}
+                  on:change={e => email = e.target.value}
                   placeholder="email"
                   label="email"
                   id="email"
                   type="email"
-                  classes="" />
+                  classes=""
+                />
 
                 <div class="text-center">
                   <button
-                    on:click={() => signIn(data.email)}
+                    on:click={() => signIn(email)}
                     class="bg-gray-600 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                     type="button"
                   >
