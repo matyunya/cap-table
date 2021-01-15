@@ -122,7 +122,7 @@
             class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
           >
             <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4">
-              {@html $_("<b>無料</b>で登録してからすぐ使えます。")}
+              {$_("30秒で無料登録、すぐ使えます！")}
             </div>
             <ProfileForm {data} {errors} onSave={register}>
               <div class="w-full text-black mt-20 mb-4">

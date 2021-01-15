@@ -1,4 +1,14 @@
-import { UPDATE_SHARE, UPDATE_SHARE_PRICE, UPDATE_GROUP_NAME, REMOVE_GROUP, ADD_INVESTOR, RENAME_ROUND } from "./store.js";
+import {
+  UPDATE_SHARE,
+  UPDATE_SHARE_PRICE,
+  UPDATE_GROUP_NAME,
+  REMOVE_GROUP,
+  ADD_INVESTOR,
+  RENAME_ROUND,
+  UPDATE_JKISS_INVESTED,
+  UPDATE_VALUATION_CAP,
+  UPDATE_DISCOUNT,
+} from "./store.js";
 
 import {
   firstColClasses,
@@ -41,7 +51,7 @@ export function groupNames(investors) {
           },
           menuItems: (store, { id }) => [
             {
-              text: "New group",
+              text: "グループ追加",
               cb: () => {
                 store.commit(
                   ADD_INVESTOR,
@@ -53,7 +63,7 @@ export function groupNames(investors) {
               },
             },
             {
-              text: "Remove",
+              text: "削除",
               cb: () => store.commit(REMOVE_GROUP, { group: id.split(':')[1] }),
             },
           ],
@@ -97,6 +107,13 @@ const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForI
 
 const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
 
+const calcJkissShares = (params) => {
+  console.log({ params });
+  // if next round post money > this round valuation cap
+  //   return next round share price times
+  return 0;
+}
+
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
   store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
@@ -104,7 +121,6 @@ const updateShares = type => (store, { id, value }) => {
 
 export const renameRound = (store, { id, value }) => {
   const [, roundId] = id.split(":");
-  console.log(roundId, id);
   store.commit(RENAME_ROUND, { id: roundId, name: value });
 };
 
@@ -113,31 +129,40 @@ export const updateSharePrice = (store, { id, value }) => {
   store.commit(UPDATE_SHARE_PRICE, { roundId, sharePrice: Number(value) });
 };
 
+const updateInvestment = (mutation, fieldName) => (store, { id, value }) => {
+  const [, roundId, investorId] = id.split(":");
+  store.commit(mutation, { roundId, investorId, [fieldName]: Number(value) });
+};
+
+const updateValuationCap = updateInvestment(UPDATE_VALUATION_CAP, "valuationCap");
+const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
+const updateDiscount = updateInvestment(UPDATE_DISCOUNT, "discount");
+
 const colTypes = {
   sharesInitial: {
-    label: "#shares",
+    label: "株式数",
     onChange: updateShares("common"),
-    fn: calcCell(({ shares }) => shares)("initial"),
+    fn: calcCell(({ commonShares }) => commonShares)("initial"),
     format: format.number.format,
   },
   shareDiff: {
-    label: "share±",
+    label: "株式増減",
     onChange: updateShares("common"),
-    fn: calcCell(({ shares }) => shares)("diff"),
+    fn: calcCell(({ commonShares }) => commonShares)("diff"),
     format: format.number.format,
   },
   sharesAmount: {
-    label: "#shares",
+    label: "株式数",
     fn: calcCell(calcCommonShares)("amount"),
     format: format.number.format,
   },
   sharesPercent: {
-    label: "%shares",
+    label: "%",
     fn: calcCell(calcSharesPerRound)("percent"),
     format: format.percent.format,
   },
   votingShareDiff: {
-    label: "share±",
+    label: "株式増減",
     hasRowspan: true,
     classes: "dark:border-blue-800 border-blue-300 border-l",
     voting: true,
@@ -145,19 +170,42 @@ const colTypes = {
     onChange: updateShares("voting"),
     format: format.number.format,
   },
+  jkissShares: {
+    label: "株式数",
+    fn: calcCell(calcJkissShares)("jkiss-shares"),
+    format: format.number.format,
+  },
+  jkissInvested: {
+    label: "投資額",
+    fn: calcCell(({ jkissInvested }) => jkissInvested || 0)("jkiss-invested"),
+    format: format.currency.format,
+    onChange: updateJkissInvested,
+  },
+  valuationCap: {
+    label: "バリュエーションキャップ",
+    fn: calcCell(({ valuationCap }) => valuationCap || 0)("valuation-cap"),
+    format: format.currency.format,
+    onChange: updateValuationCap,
+  },
+  discount: {
+    label: "割引",
+    fn: calcCell(({ discount }) => discount || 0)("discount"),
+    format: i => i + "%",
+    onChange: updateDiscount,
+  },
   votingSharesAmount: {
-    label: "#shares",
+    label: "株式数",
     hasRowspan: true,
     fn: calcCell(calcCommonVotingShares)("voting-total"),
     format: format.number.format,
   },
   totalSharesAmount: {
-    label: "Total #shares",
+    label: "発行済株式数",
     fn: calcCell(calcTotalShares)("total-amount"),
     format: format.number.format,
   },
   totalSharesPercent: {
-    label: "Total %shares",
+    label: "%",
     fn: calcCell(calcTotalSharesPerRound)("total-percent"),
     format: format.percent.format,
   },
@@ -172,6 +220,10 @@ const {
   votingSharesAmount,
   totalSharesAmount,
   totalSharesPercent,
+  jkissShares,
+  jkissInvested,
+  valuationCap,
+  discount,
 } = colTypes;
 
 const foundCols = [sharesInitial, sharesPercent];
@@ -186,6 +238,15 @@ const genericCols = [
   totalSharesPercent
 ];
 
+const jkissCols = [
+  jkissShares,
+  jkissInvested,
+  valuationCap,
+  discount,
+  totalSharesAmount,
+  totalSharesPercent,
+];
+
 export const roundOptions = {
   founded: {
     colSpan: foundCols.length,
@@ -196,8 +257,8 @@ export const roundOptions = {
     cols: genericCols,
   },
   "j-kiss": {
-    colSpan: genericCols.length,
-    cols: genericCols,
+    colSpan: jkissCols.length,
+    cols: jkissCols,
   },
   split: {
     colSpan: genericCols.length,

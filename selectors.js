@@ -1,6 +1,8 @@
 import { roundOptions, updateSharePrice, renameRound } from "./actions.js";
+import _ from "./intl.js";
 import {
   getPreviousRounds,
+  getFutureRounds,
   calcRoundResults,
   totalInvestorRows,
   getPosition,
@@ -23,6 +25,7 @@ const columnHeaders = (cols, idx) => cols.map((c, i) => [
     position: [c.hasRowspan ? 2 : 1, idx + i, 2, idx + i],
     value: c.label,
     classes: labelClasses,
+    isLabel: true,
   },
 ]);
 
@@ -31,23 +34,24 @@ const votingColumnHeader = (cols, idx) => cols
     `round-sup:${idx}:${i}`,
     {
       position: [1, idx + i, 1, idx + i + 1],
-      value: "Potentially voting",
+      value: "潜在株式",
+      isLabel: true,
       classes: labelClasses,
     },
 ] : false)
   .filter(Boolean);
 
 export const footerLabels = offset => [
-  ['total-label', { position: [offset - 1, 0, offset - 1, 1], value: "Total", classes: firstColClasses }],
-  ['share-price-label', { position: [offset, 0, offset, 1], value: "Share price", classes: firstColClasses }],
-  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 1], value: "New equity (¥)", classes: firstColClasses }],
-  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 1], value: "Pre money (¥)", classes: firstColClasses }],
-  ['post-money-label', { position: [offset + 3, 0, offset + 3, 1], value: "Post money (¥)", classes: firstColClasses }],
-  ['pre-money-diluted-label', { position: [offset + 4, 0, offset + 4, 1], value: "Pre money diluted (¥)", classes: firstColClasses }],
-  ['post-money-diluted-label', { position: [offset + 5, 0, offset + 5, 1], value: "Post money diluted (¥)", classes: firstColClasses }],
+  ['total-label', { position: [offset - 1, 0, offset - 1, 1], value: "合計", classes: firstColClasses, isLabel: true, }],
+  ['share-price-label', { position: [offset, 0, offset, 1], value: "株価", classes: firstColClasses, isLabel: true, }],
+  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 1], value: "調達金額", classes: firstColClasses, isLabel: true, }],
+  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 1], value: "時価総額（Pre）", classes: firstColClasses, isLabel: true, }],
+  ['post-money-label', { position: [offset + 3, 0, offset + 3, 1], value: "時価総額（Post）", classes: firstColClasses, isLabel: true, }],
+  ['pre-money-diluted-label', { position: [offset + 4, 0, offset + 4, 1], value: "時価総額（Pre/ 潜在込）", classes: firstColClasses, isLabel: true, }],
+  ['post-money-diluted-label', { position: [offset + 5, 0, offset + 5, 1], value: "時価総額（Pre/潜在込）", classes: firstColClasses, isLabel: true, }],
 ];
 
-export const investorNames = investors => (id, i) => [
+export const investorNames = investors => id => [
   'investor:' + id,
   {
     position: getPosition(investors, id, 0, 1),
@@ -60,11 +64,11 @@ export const investorNames = investors => (id, i) => [
     },
     menuItems: (store, { id }) => [
         {
-          text: "Add investor",
+          text: "投資家追加",
           cb: () => store.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
         },
         {
-          text: "Remove",
+          text: "削除",
           cb: () => store.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
         },
       ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'Add investor'),
@@ -81,15 +85,15 @@ const roundTitle = (id, x, colSpan, rounds) => [
     pinMenuToggle: true,
     menuItems: (store, { id }) => [
       {
-        text: "Add common",
+        text: "新ラウンド作成（普通株式）",
         cb: () => store.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
-//       {
-//         text: "Add J-kiss",
-//         cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
-//       },
       {
-        text: "Remove",
+        text: "J-kiss ラウンド作成",
+        cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+      },
+      {
+        text: "ラウンド削除",
         cb: () => store.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
       },
     ],
@@ -98,7 +102,7 @@ const roundTitle = (id, x, colSpan, rounds) => [
 
 function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
   return [
-    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: updateSharePrice, renameRound }],
+    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: roundResults.isJkiss ? false : updateSharePrice, renameRound }],
     [`${id}:new-equity-label`, { value: roundResults.newEquity }],
     [`${id}:pre-money-label`, { value: roundResults.preMoney }],
     [`${id}:post-money-label`, { value: roundResults.postMoney }],
@@ -120,6 +124,7 @@ export function roundValues(rounds, investors) {
     const round = rounds.get(id);
 
     const { colSpan, cols } = roundOptions[round.type];
+    const roundResults = calcRoundResults(rounds, id);
 
     return [
       [
@@ -135,13 +140,12 @@ export function roundValues(rounds, investors) {
         roundTitle(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
         ...votingColumnHeader(cols, prevCol + 1),
-        ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, calcRoundResults(rounds, id)),
+        ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, roundResults),
         ...cols.reduce(
           calcValues({
             prevCol,
             round,
             investors,
-            previousRounds: getPreviousRounds(rounds, id),
             id,
           }),
           []

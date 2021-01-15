@@ -2,6 +2,7 @@
   import { tick } from "svelte";
   import { writable } from "svelte/store";
   import Menu, { onClickActivator } from './Menu.svelte';
+  import _ from "./intl.js";
   const items = writable();
 
   export function openContextMenu(i, e) {
@@ -23,12 +24,12 @@
   <div slot="activator">
     <slot></slot>
   </div>
-  <ul class="text-xs py-1 w-32 truncate">
+  <ul class="text-xs py-1 w-auto max-w-sm truncate">
     {#each ($items || []) as i}
       <li
         class="py-1 cursor-pointer select-none px-2 hover:bg-gray-500 hover:text-white"
         on:click={() => action(i)}
-      >{i.text}</li>
+      >{$_(i.text)}</li>
     {/each}
   </ul>
 </Menu>

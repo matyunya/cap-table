@@ -1,7 +1,7 @@
 import bootstrap from "~matyunya/store";
 import { derived, select } from "tinyx";
 
-import { lastInvestorIdInGroup, uniqueGroupName, uniqueRoundName, uid } from "./utils.js";
+import { lastInvestorIdInGroup, uniqueGroupName, uid } from "./utils.js";
 
 const founderId = "FOUNDER_ID";
 
@@ -28,11 +28,11 @@ const defaultStore = {
       name: "Founded",
       type: "founded",
       sharePrice: 1000,
-      investments: [[founderId, 1000, 0]],
+      investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
     },
   ]]),
   investors: new Map([
-    [founderId, { name: "Founder name", group: "Founder" }],
+    [founderId, { name: "Founder 1", group: "Founders" }],
     ["INVESTOR_1", { name: "Partner 1", group: "Partners" }],
     ["INVESTOR_2", { name: "Employee 1", group: "Partners" }],
   ]),
@@ -44,20 +44,34 @@ export const isAuthenticated = select(store, () => ["profile", "companyName"]);
 export const language = select(store, () => ["language"]);
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
-  return ({ update }) => update("rounds", roundId, "investments", i => {
-    const [, common = 0, voting = 0] = [...(i || [])].find(([id]) => investorId === id) || [];
-    const investments = [...(i || [])].filter(([id]) => investorId !== id) || [];
-
-    const updated = [
-      investorId,
-      type === 'common' ? Number(shares) : common,
-      type === 'voting' ? Number(shares) : voting,
-    ]
-
-    investments.push(updated);
-
-    return investments;
+  return ({ update }) => update("rounds", roundId, "investments", investorId, ({ commonShares = 0, votingShares = 0, ...params } = {}) => {
+    return {
+      ...params,
+      commonShares: type === 'common' ? Number(shares) : commonShares,
+      votingShares: type === 'voting' ? Number(shares) : votingShares,
+    };
   });
+}
+
+export function UPDATE_JKISS_INVESTED({ roundId, investorId, jkissInvested }) {
+  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
+    ...params,
+    jkissInvested,
+  }))
+}
+
+export function UPDATE_VALUATION_CAP({ roundId, investorId, valuationCap }) {
+  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
+    ...params,
+    valuationCap,
+  }))
+}
+
+export function UPDATE_DISCOUNT({ roundId, investorId, discount }) {
+  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
+    ...params,
+    discount,
+  }))
 }
 
 export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
@@ -98,7 +112,7 @@ export function REMOVE_INVESTOR({ id }) {
       "rounds",
       r => new Map([...r].map(([roundId, i]) => [roundId, {
         ...i,
-        investments: [...i.investments].filter(notIn([id])),
+        investments: new Map([...i.investments].filter(notIn([id]))),
       }]))
     );
 
@@ -114,7 +128,7 @@ export function REMOVE_GROUP({ group }) {
       "rounds",
       r => new Map([...r].map(([roundId, i]) => [roundId, {
         ...i,
-        investments: [...i.investments].filter(notIn(ids)),
+        investments: new Map([...i.investments].filter(notIn(ids))),
       }]))
     );
 
@@ -137,7 +151,7 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
   });
 }
 
-export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = [] }) {
+export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map() }) {
   return (({ update, apply, get }) => {
     let roundName;
 
@@ -145,7 +159,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = [
       const ids = [...i.keys()];
       const idx = ids.indexOf(afterId) + 1;
 
-      roundName = name || uniqueRoundName(i);
+      roundName = name || (get("language") === "ja" ? "新しいラウンド" : "New round");
 
       const newRound = { name: roundName, type, sharePrice, investments };
 

@@ -2,11 +2,12 @@
   import headlong from "~matyunya/headlong";
   import { tick, onMount } from "svelte";
   import ContextMenu, { openContextMenu } from "./ContextMenu.svelte";
+  import _ from "./intl.js";
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;
   export let rowHeight = 20;
-  export let columnWidth = 70;
+  export let columnWidth = 80;
   export let store;
 
   let editing = false;
@@ -14,12 +15,12 @@
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
-    value, classes, onChange, menuItems, format = i => i, pinMenuToggle
+    value, classes, onChange, menuItems, format = i => i, pinMenuToggle, isLabel
   }]) => {
     return [
       ...acc,
       { id, pos: [firstRow, firstCol, lastRow - firstRow + 1, lastCol - firstCol + 1],
-       value, classes, onChange, format, menuItems, pinMenuToggle
+       value, classes, onChange, format, menuItems, pinMenuToggle, isLabel
       }
     ]
   }, []);
@@ -137,7 +138,7 @@
 <ContextMenu />
 
 <div class="md:m-12 md:mr-24 dark:text-white text-black m-6 mt-12 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
-  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle } (id)}
+  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle, isLabel } (id)}
     <div
       class:editable={onChange}
       class:text-light-blue-700={onChange}
@@ -165,11 +166,14 @@
         <svg title="Made with Ellx" class="rounded-full p-1 transition duration-500 transform" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
       {:else}
         <span
-          class="w-full h-full"
           contenteditable={editing === id}
           {id}
         >
-          {editing === id ? value : format(value)}
+          {#if isLabel}
+            {$_(value)}
+          {:else}
+            {editing === id ? value : format(value)}
+          {/if}
         </span>
       {/if}
     </div>
