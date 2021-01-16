@@ -142,8 +142,6 @@ const updateRound = (mutation, fieldName) => (store, { id, value }) => {
 
 export const renameRound = updateRound(RENAME_ROUND, "name");
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
-const updateValuationCap = updateRound(UPDATE_VALUATION_CAP, "valuationCap");
-const updateDiscount = updateRound(UPDATE_DISCOUNT, "discount");
 
 const colTypes = {
   sharesInitial: {
@@ -179,7 +177,7 @@ const colTypes = {
   },
   jkissShares: {
     label: "株式数",
-    fn: calcCell(calcJkissShares)("jkiss-shares"),
+    fn: calcCell(({ commonShares }) => commonShares || 0)("jkiss"),
     colSpan: 2,
     format: format.number.format,
   },

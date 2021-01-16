@@ -14,13 +14,13 @@ export const sum = i => i.reduce((acc, cur) => acc + cur, 0);
 
 export const lastInvestorIdInGroup = search => (res, [investorId, { group }]) => group === search ? investorId : res;
 
-export const totalBasicShares = (rounds) => [...rounds.values()].reduce(reduceSumOfShares, 0);
+export const totalShares = (rounds) => [...rounds.values()].reduce(reduceSumOfShares, 0);
 
 export const totalCommonShares = (rounds) => [...rounds.values()].reduce(reduceSumOfCommonShares, 0);
 
 export const calcOffset = (cols, idx) => cols.slice(0, idx).reduce((acc, cur) => acc + (cur.colSpan || 1), 0);
 
-const totalJkissShares = (rounds, futureRounds, investorId) => {
+const totalJkissShares = (rounds, investorId) => {
   return [...rounds].reduce((acc, [id, { investments, discount, valuationCap }]) => {
     const futureRounds = getFutureRounds(rounds, id);
     const nextRoundResults = futureRounds.size
@@ -40,9 +40,9 @@ const totalJkissShares = (rounds, futureRounds, investorId) => {
   }, 0);
 }
 
-export const totalShares = (rounds, futureRounds, investorId) => {
-  return totalBasicShares(rounds) + totalJkissShares(rounds, futureRounds, investorId);
-}
+// export const totalShares = (rounds, futureRounds, investorId) => {
+//   return totalBasicShares(rounds) + totalJkissShares(rounds, investorId);
+// }
 
 export const totalCommonSharesForInvestor = (rounds, investorId) => [...rounds.values()]
   .reduce(
@@ -52,12 +52,8 @@ export const totalVotingSharesForInvestor = (rounds, investorId) => [...rounds.v
   .reduce(
     (acc, { investments }) => acc + ((investments.get(investorId) || {}).votingShares || 0), 0);
 
-export const totalSharesForInvestor = (rounds, investorId, futureRounds) => {
-  const totalCommon = totalCommonSharesForInvestor(rounds, investorId);
-  const totalVoting = totalVotingSharesForInvestor(rounds, investorId);
-  const totalJKiss = totalJkissShares(rounds, futureRounds, investorId);
-
-  return totalJKiss + totalVoting + totalCommon;
+export const totalSharesForInvestor = (rounds, investorId) => {
+  return totalCommonSharesForInvestor(rounds, investorId) + totalVotingSharesForInvestor(rounds, investorId);
 }
 
 export const getPreviousRounds = (rounds, id) => {
@@ -72,10 +68,10 @@ export const getFutureRounds = (rounds, id) => {
   return new Map([...rounds].slice(idx + 1));
 }
 
-export const calcJkissShares = ({ nextRoundResults, rounds, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
+export const calcJkissShares = ({ nextRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
   if (!jkissInvested || !nextRoundResults) return 0;
 
-  if (valuationCap > nextRoundResults.preMoneyDiluted) {
+  if (valuationCap > (nextRoundResults.preMoneyDiluted - jkissInvested)) {
     return Math.floor(jkissInvested / (nextRoundResults.sharePrice * discount / 100));
   } else {
     return Math.floor(jkissInvested / nextRoundResults.sharePrice);
@@ -123,7 +119,11 @@ export function getPosition(investors, id, x, colSpan = 0) {
 
 export const totalInvestorRows = investors => investors.size + (new Set(allGroups(investors))).size;
 
-export function calcRoundResults(rounds, id) {
+export function calcRoundResults(r, id) {
+  if (r.get(id).type === "j-kiss") return {};
+
+  const rounds = new Map([...r].filter(([, { type }]) => type !== "j-kiss"));
+
   const roundIds = [...rounds.keys()];
   let prevId = roundIds[roundIds.indexOf(id) - 1];
   const round = rounds.get(id);
@@ -134,7 +134,7 @@ export function calcRoundResults(rounds, id) {
   const newEquity = reduceSumOfCommonShares(0, round) * sharePrice;
   const preMoney = sharePrice * prevRoundShares;
 
-  const prevTotalRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId), getFutureRounds(rounds, id));
+  const prevTotalRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId));
   const newEquityDiluted = reduceSumOfShares(0, round) * sharePrice;
   const preMoneyDiluted = sharePrice * prevTotalRoundShares;
 

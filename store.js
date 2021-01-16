@@ -97,15 +97,15 @@ export function UPDATE_JKISS_INVESTED({ roundId, investorId, jkissInvested }) {
 }
 
 export function UPDATE_VALUATION_CAP({ roundId, value }) {
-  return ({ set }) => set("rounds", roundId, "valuationCap", value);
+  return ({ set }) => set("rounds", roundId, "valuationCap", Number(value));
 }
 
 export function UPDATE_DISCOUNT({ roundId, value }) {
-  return ({ update }) => update("rounds", roundId, "discount", value);
+  return ({ set }) => set("rounds", roundId, "discount", Number(value));
 }
 
 export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
-  return ({ update }) => update("rounds", roundId, i => ({ ...i, sharePrice: Number(sharePrice) }));
+  return ({ set }) => set("rounds", roundId, "sharePrice", Number(sharePrice));
 }
 
 export function UPDATE_INVESTOR_NAME({ investorId, name }) {

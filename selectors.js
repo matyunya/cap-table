@@ -20,6 +20,10 @@ import {
   calcValues,
   calcOffset,
   format,
+  calcJkissShares,
+  totalCommonShares,
+  totalShares,
+  getPreviousRounds,
 } from "./utils.js";
 import {
   labelClasses,
@@ -33,6 +37,8 @@ import {
   ADD_ROUND,
   REMOVE_ROUND,
   UPDATE_DOCUMENT_TITLE,
+  UPDATE_VALUATION_CAP,
+  UPDATE_DISCOUNT,
   docId,
   store,
 } from "./store.js"
@@ -121,9 +127,9 @@ const roundTitle = (id, x, colSpan, rounds) => [
   }
 ];
 
-function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
+function roundResultsWithPosition(id, x, y, colSpan, roundResults, isJkiss) {
   return [
-    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: roundResults.isJkiss ? false : updateSharePrice, renameRound }],
+    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: isJkiss ? false : updateSharePrice, renameRound }],
     [`${id}:new-equity-label`, { value: roundResults.newEquity }],
     [`${id}:pre-money-label`, { value: roundResults.preMoney }],
     [`${id}:post-money-label`, { value: roundResults.postMoney }],
@@ -140,12 +146,115 @@ function roundResultsWithPosition(id, x, y, colSpan, roundResults) {
   ]);
 }
 
-export function roundValues(rounds, investors) {
+function jkissCells(round, roundId, x, y) {
+  if (round.type !== "j-kiss") return [];
+
+  return [
+    [`valuation-label:${roundId}`, {
+      position: [y + 6, x, y + 6, x + 1],
+      value: "バリュエーションキャップ",
+      classes: "dark:bg-gray-800 bg-white",
+      isLabel: true,
+    }],
+    [`discount-label:${roundId}`, {
+      position: [y + 7, x, y + 7, x + 1],
+      value: "割引",
+      classes: "dark:bg-gray-800 bg-white",
+      isLabel: true,
+    }],
+    [`valuation:${roundId}`, {
+      position: [y + 6, x + 2, y + 6, x + 3],
+      value: round.valuationCap || 0,
+      onChange: (store, { value }) => store.commit(UPDATE_VALUATION_CAP, { roundId, value }),
+      format: format.currency.format,
+      classes: "dark:bg-gray-800 bg-white",
+    }],
+    [`discount:${roundId}`, {
+      position: [y + 7, x + 2, y + 7, x + 3],
+      value: round.discount || 0,
+      onChange: (store, { value }) => store.commit(UPDATE_DISCOUNT, { roundId, value }),
+      format: i => i + '%',
+      classes: "dark:bg-gray-800 bg-white",
+    }],
+  ]
+}
+
+function jkissRoundResults(rounds, id, x, y) {
+  const roundIds = [...rounds.keys()];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
+  const nextId = roundIds[roundIds.indexOf(id) + 1];
+
+  const { sharePrice } = rounds.get(prevId);
+  const previousRounds = getPreviousRounds(rounds, prevId);
+  const atInvestmentPreMoney = totalCommonShares(previousRounds) * sharePrice;
+  const atInvestmentPreMoneyDiluted = totalShares(previousRounds) * sharePrice;
+  const newEquity = [...(rounds.get(id).investments.values())].reduce((acc, { jkissInvested }) => acc + (jkissInvested || 0), 0);
+
+  const jkissResultsAtInvestment = {
+    sharePrice,
+    newEquity,
+    preMoney: atInvestmentPreMoney,
+    postMoney: atInvestmentPreMoney + newEquity,
+    preMoneyDiluted: atInvestmentPreMoneyDiluted,
+    postMoneyDiluted: atInvestmentPreMoneyDiluted + newEquity,
+  };
+
+  if (!nextId) {
+    return roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true);
+  }
+
+  const nextRoundResults = calcRoundResults(rounds, nextId);
+
+  const jkissResultsBeforeNextRound = {
+    ...nextRoundResults,
+    newEquity: 0,
+    postMoney: nextRoundResults.preMoney,
+    postMoneyDiluted: nextRoundResults.preMoneyDiluted,
+  };
+
+  return [
+    ...roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true),
+    ...roundResultsWithPosition(id + "A", x + 2, y, 2, jkissResultsBeforeNextRound, true),
+  ];
+}
+
+const convertSingleRoundToJkiss = rounds => ([id, round]) => {
+  if (round.type !== "j-kiss") return [id, round];
+
+  const roundIds = [...rounds.keys()];
+  const nextId = roundIds[roundIds.indexOf(id) + 1];
+  if (!nextId) return [id, round];
+
+  const nextRoundResults = calcRoundResults(rounds, nextId);
+
+  return [id, {
+    ...round,
+    investments: new Map([...round.investments].map(([id, investment]) => {
+      if (!investment.jkissInvested) return [id, investment];
+
+      return [id, {
+        ...investment,
+        commonShares: calcJkissShares({ nextRoundResults, ...investment, ...round }),
+      }];
+    })),
+  }];
+}
+
+function convertJkissToCommonShares(rounds) {
+  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds)));
+}
+
+export function roundValues(r, investors) {
   return ([acc, prevCol], id) => {
+    const rounds = convertJkissToCommonShares(r, investors);
+
     const round = rounds.get(id);
 
     const { colSpan, cols } = roundOptions[round.type];
-    const roundResults = calcRoundResults(rounds, id);
+    const roundResults = round.type === "j-kiss"
+      ? jkissRoundResults(rounds, id, prevCol, totalInvestorRows(investors) + 4)
+      : roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, calcRoundResults(rounds, id));
+
     const futureRounds = getFutureRounds(rounds, id);
     const nextRoundResults = futureRounds.size
       ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
@@ -164,8 +273,9 @@ export function roundValues(rounds, investors) {
         ...acc,
         roundTitle(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
+        ...jkissCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
         ...votingColumnHeader(cols, prevCol + 1),
-        ...roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, roundResults),
+        ...roundResults,
         ...cols.reduce(
           calcValues({
             prevCol,
