@@ -48,8 +48,8 @@
       options={languages}
     />
     {#if $isAuthenticated}
-      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer px-3 sm:px-1" on:click={() => showProfile = !showProfile}>{$_("プロフィール")}</button>
-      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer px-3 sm:px-1" on:click={logout}>{$_("ログアウト")}</button>
+      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1" on:click={() => showProfile = !showProfile}>{$_("プロフィール")}</button>
+      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1" on:click={logout}>{$_("ログアウト")}</button>
     {/if}
   </div>
 </div>

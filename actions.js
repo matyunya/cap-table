@@ -9,9 +9,9 @@ import {
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
   TOGGLE_PUBLIC,
-  SET_DOCUMENT,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
+  RESET_DOCUMENT,
   docId,
 } from "./store.js";
 
@@ -30,7 +30,6 @@ import {
   getPosition,
   allGroups,
   lastInvestorIdInGroup,
-  calcRoundResults,
   calcJkissShares,
   uid,
 } from "./utils.js";
@@ -83,12 +82,12 @@ export function groupNames(investors) {
 
 const calcCell = calcFn =>
   prefix =>
-  (investors, rounds, futureRounds, nextRoundResults, col, id, ...options) =>
+  (investors, rounds, futureRounds, nextRoundResults, col, id, colSpan, ...options) =>
   ([investorId, { commonShares, votingShares, ...investment }]) => {
   return [
     `${prefix}:${id}:${investorId}`,
     {
-      position: getPosition(investors, investorId, col),
+      position: getPosition(investors, investorId, col, colSpan ? (colSpan - 1) : 0),
       value: calcFn({
         commonShares,
         votingShares,
@@ -129,24 +128,22 @@ const updateShares = type => (store, { id, value }) => {
   store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
 };
 
-export const renameRound = (store, { id, value }) => {
-  const [, roundId] = id.split(":");
-  store.commit(RENAME_ROUND, { id: roundId, name: value });
-};
-
-export const updateSharePrice = (store, { id, value }) => {
-  const [roundId] = id.split(":");
-  store.commit(UPDATE_SHARE_PRICE, { roundId, sharePrice: Number(value) });
-};
-
 const updateInvestment = (mutation, fieldName) => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
   store.commit(mutation, { roundId, investorId, [fieldName]: Number(value) });
 };
 
-const updateValuationCap = updateInvestment(UPDATE_VALUATION_CAP, "valuationCap");
 const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
-const updateDiscount = updateInvestment(UPDATE_DISCOUNT, "discount");
+
+const updateRound = (mutation, fieldName) => (store, { id, value }) => {
+  const [roundId] = id.split(":");
+  store.commit(mutation, { roundId, [fieldName]: value });
+};
+
+export const renameRound = updateRound(RENAME_ROUND, "name");
+export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
+const updateValuationCap = updateRound(UPDATE_VALUATION_CAP, "valuationCap");
+const updateDiscount = updateRound(UPDATE_DISCOUNT, "discount");
 
 const colTypes = {
   sharesInitial: {
@@ -183,25 +180,15 @@ const colTypes = {
   jkissShares: {
     label: "株式数",
     fn: calcCell(calcJkissShares)("jkiss-shares"),
+    colSpan: 2,
     format: format.number.format,
   },
   jkissInvested: {
     label: "投資額",
     fn: calcCell(({ jkissInvested }) => jkissInvested || 0)("jkiss-invested"),
+    colSpan: 2,
     format: format.currency.format,
     onChange: updateJkissInvested,
-  },
-  valuationCap: {
-    label: "バリュエーションキャップ",
-    fn: calcCell(({ valuationCap }) => valuationCap || 0)("valuation-cap"),
-    format: format.currency.format,
-    onChange: updateValuationCap,
-  },
-  discount: {
-    label: "割引",
-    fn: calcCell(({ discount }) => discount || 0)("discount"),
-    format: i => i + "%",
-    onChange: updateDiscount,
   },
   votingSharesAmount: {
     label: "株式数",
@@ -232,8 +219,6 @@ const {
   totalSharesPercent,
   jkissShares,
   jkissInvested,
-  valuationCap,
-  discount,
 } = colTypes;
 
 const foundCols = [sharesInitial, sharesPercent];
@@ -249,10 +234,8 @@ const genericCols = [
 ];
 
 const jkissCols = [
-  jkissShares,
   jkissInvested,
-  valuationCap,
-  discount,
+  jkissShares,
 ];
 
 export const roundOptions = {
@@ -265,7 +248,7 @@ export const roundOptions = {
     cols: genericCols,
   },
   "j-kiss": {
-    colSpan: jkissCols.length,
+    colSpan: jkissCols.reduce((acc, cur) => acc + cur.colSpan, 0),
     cols: jkissCols,
   },
   split: {
@@ -292,8 +275,11 @@ export const createDocument = (store, { from } = {}) => {
   docId.set(to);
 }
 
+export const resetDocument = (store) => {
+  store.commit(RESET_DOCUMENT);
+}
+
 export const removeDocument = (store, { id }) => {
-  const to = uid();
   const ids = [...store.get('documents').keys()];
   const idx = ids.indexOf(id);
 

@@ -8,6 +8,7 @@ import {
   togglePublic,
   createDocument,
   removeDocument,
+  resetDocument,
 } from "./actions.js";
 import _ from "./intl.js";
 import {
@@ -17,6 +18,7 @@ import {
   totalInvestorRows,
   getPosition,
   calcValues,
+  calcOffset,
   format,
 } from "./utils.js";
 import {
@@ -38,10 +40,10 @@ import {
 const formatRoundTitle = ({ name, date }) => `${name}`
   + (date ? ` (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})` : '');
 
-const columnHeaders = (cols, idx) => cols.map((c, i) => [
-  `round-label:${idx}:${i}`,
+const columnHeaders = (cols, xStart) => cols.map((c, i, idx) => [
+  `round-label:${xStart}:${i}`,
   {
-    position: [c.hasRowspan ? 2 : 1, idx + i, 2, idx + i],
+    position: [c.hasRowspan ? 2 : 1, xStart + calcOffset(cols, i), 2, xStart + calcOffset(cols, i) + (c.colSpan - 1)],
     value: c.label,
     classes: labelClasses,
     isLabel: true,
@@ -107,15 +109,15 @@ const roundTitle = (id, x, colSpan, rounds) => [
         text: "新ラウンド作成（普通株式）",
         cb: () => s.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
-      {
+      rounds.get(id.split(':')[1]).type !== "j-kiss" ? {
         text: "J-kiss ラウンド作成",
         cb: () => s.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
-      },
-      {
+      } : false,
+      rounds.get(id.split(':')[1]).type !== "founded" ? {
         text: "ラウンド削除",
         cb: () => s.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
-      },
-    ],
+      } : false,
+    ].filter(Boolean),
   }
 ];
 
@@ -173,6 +175,7 @@ export function roundValues(rounds, investors) {
             previousRounds: getPreviousRounds(rounds, id),
             futureRounds,
             nextRoundResults,
+            cols,
           }),
           []
         ),
@@ -214,6 +217,10 @@ export function toBlocks(s) {
           {
             text: "削除",
             cb: () => removeDocument(store, { id: get(docId) }),
+          },
+          {
+            text: "リセット",
+            cb: () => resetDocument(s),
           },
         ]
       }

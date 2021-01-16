@@ -41,7 +41,7 @@
   }
 
   let page = "home";
-  let unsubs = [];
+  let unsubs = new Map();
   let prefetching = false;
   let showProfile = false;
   let errors = { ...defaultProfile };
@@ -58,7 +58,10 @@
   function selectDoc(id) {
     if (!appData) return;
 
-    unsubs.push(
+    if (unsubs.has(id)) return;
+
+    unsubs.set(
+      id,
       sync(appData.doc(id), select(store, () => ["documents", id]), () => {
         prefetching = false;
       })
@@ -79,13 +82,13 @@
     // TODO: change subscription on doc change
     appData.get().then(docs => {
       docs.forEach(doc => {
-        if (doc.id === $docId) return;
+        if (doc.id === $docId || unsubs.has(doc.id)) return;
 
         const selector = doc.id === "profile"
           ? userProfile
           : select(store, () => ["documents", doc.id]);
 
-          unsubs.push(sync(appData.doc(doc.id), selector));
+          unsubs.set(doc.id, (sync(appData.doc(doc.id), selector)));
       });
 
       selectDoc($docId);
@@ -94,9 +97,7 @@
     page = "cap-table";
   }
 
-  onDestroy(() => {
-    unsubs();
-  });
+  onDestroy(() => [...unsubs.values()]);
 
   onMount(() => {
     setTimeout(async () => {
@@ -123,7 +124,8 @@
 
   async function logout() {
     await window.ellx.logout();
-    unsubs.forEach(a => a());
+    [...unsubs.values()].forEach(a => a());
+    unsubs = new Map();
     $docId = "DOC_0";
     store.resetStore();
     page = "home";

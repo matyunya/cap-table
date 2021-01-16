@@ -18,8 +18,10 @@ export const totalBasicShares = (rounds) => [...rounds.values()].reduce(reduceSu
 
 export const totalCommonShares = (rounds) => [...rounds.values()].reduce(reduceSumOfCommonShares, 0);
 
+export const calcOffset = (cols, idx) => cols.slice(0, idx).reduce((acc, cur) => acc + (cur.colSpan || 1), 0);
+
 const totalJkissShares = (rounds, futureRounds, investorId) => {
-  return [...rounds].reduce((acc, [id, { investments }]) => {
+  return [...rounds].reduce((acc, [id, { investments, discount, valuationCap }]) => {
     const futureRounds = getFutureRounds(rounds, id);
     const nextRoundResults = futureRounds.size
       ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
@@ -30,6 +32,8 @@ const totalJkissShares = (rounds, futureRounds, investorId) => {
       .filter(([id, i]) => i.jkissInvested && investorId ? investorId === id : true)
       .map(([, investment]) => calcJkissShares({
         ...investment,
+        discount,
+        valuationCap,
         rounds: getPreviousRounds(rounds, id),
         nextRoundResults
       })))
@@ -122,25 +126,16 @@ export const totalInvestorRows = investors => investors.size + (new Set(allGroup
 export function calcRoundResults(rounds, id) {
   const roundIds = [...rounds.keys()];
   let prevId = roundIds[roundIds.indexOf(id) - 1];
-  let round = rounds.get(id);
-
-  const isJkiss = round.type === "j-kiss";
-
-  const jKissEquity = reduceSumOfJkissInvested(0, round);
-
-  if (isJkiss && roundIds[roundIds.indexOf(id) + 1]) {
-    round = rounds.get(roundIds[roundIds.indexOf(id) + 1]);
-    prevId = id;
-  }
+  const round = rounds.get(id);
 
   const { sharePrice } = round;
 
   const prevRoundShares = prevId === undefined ? 0 : totalCommonShares(getPreviousRounds(rounds, prevId));
-  const newEquity = reduceSumOfCommonShares(0, round) * sharePrice + jKissEquity;
+  const newEquity = reduceSumOfCommonShares(0, round) * sharePrice;
   const preMoney = sharePrice * prevRoundShares;
 
   const prevTotalRoundShares = prevId === undefined ? 0 : totalShares(getPreviousRounds(rounds, prevId), getFutureRounds(rounds, id));
-  const newEquityDiluted = reduceSumOfShares(0, round) * sharePrice + jKissEquity;
+  const newEquityDiluted = reduceSumOfShares(0, round) * sharePrice;
   const preMoneyDiluted = sharePrice * prevTotalRoundShares;
 
   return {
@@ -150,17 +145,16 @@ export function calcRoundResults(rounds, id) {
     postMoney: newEquity + preMoney,
     preMoneyDiluted,
     postMoneyDiluted: preMoneyDiluted + newEquityDiluted,
-    isJkiss,
   };
 }
 
-function getAggregateValue(prefix, individualValues, x, y, ...options) {
+function getAggregateValue(prefix, individualValues, x, y, colSpan, ...options) {
   const [idx] = individualValues[individualValues.length - 1] || [];
 
   if (!idx) return false;
 
   return [`${prefix}:${idx}`, {
-    position: [y, x, y, x],
+    position: [y, x, y, x + (colSpan ? colSpan - 1 : 0)],
     value: individualValues.reduce((acc, [k, { value }]) => acc + value, 0),
     ...options[0],
   }];
@@ -184,13 +178,14 @@ export const calcValues = ({
   previousRounds,
   futureRounds,
   nextRoundResults,
-}) => (acc, { onChange, fn, format, classes }, i) => {
+  cols,
+}) => (acc, { onChange, fn, format, classes, colSpan }, i) => {
   if (!fn) return acc;
 
-  const y = prevCol + i + 1;
+  const y = prevCol + calcOffset(cols, i) + 1;
   const investments = fillEmptyInvestments(round, investors);
   const individualValues = investments
-    .map(fn(investors, previousRounds, futureRounds, nextRoundResults, y, id, { onChange, format, classes }));
+    .map(fn(investors, previousRounds, futureRounds, nextRoundResults, y, id, colSpan, { onChange, format, classes }));
 
   const groups = [...uniqueGroups(investors)];
 
@@ -198,11 +193,11 @@ export const calcValues = ({
     const x = calcGroupRow(investors, group)
     const groupInvestors = getGroupInvestors(investors, group);
     const groupInvestorsValues = (investments.filter(([id]) => groupInvestors.has(id)) || [])
-      .map(fn(groupInvestors, previousRounds, futureRounds, nextRoundResults, y, id, { onChange, format, classes }));
+      .map(fn(groupInvestors, previousRounds, futureRounds, nextRoundResults, y, id, colSpan, { onChange, format, classes }));
 
     if (!groupInvestorsValues.length) return false;
 
-    return getAggregateValue("group", groupInvestorsValues, y, x, { format, classes: groupClasses + " " + classes });
+    return getAggregateValue("group", groupInvestorsValues, y, x, colSpan, { format, classes: groupClasses + " " + classes });
   }).filter(Boolean);
 
   return [
@@ -210,7 +205,7 @@ export const calcValues = ({
     ...individualValues,
     ...groupValues,
 
-    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 3, { format, classes: groupClasses + " " + classes }),
+    getAggregateValue("total", individualValues, y, totalInvestorRows(investors) + 3, colSpan, { format, classes: groupClasses + " " + classes }),
   ].filter(Boolean);
 }
 

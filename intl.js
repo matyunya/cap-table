@@ -137,6 +137,9 @@ const translations = {
   "新しいテーブル": {
     en: "New table"
   },
+  "リセット": {
+    en: "Reset table",
+  },
 };
 
 const translate = (key, lang) => {

@@ -96,18 +96,12 @@ export function UPDATE_JKISS_INVESTED({ roundId, investorId, jkissInvested }) {
   }))
 }
 
-export function UPDATE_VALUATION_CAP({ roundId, investorId, valuationCap }) {
-  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
-    ...params,
-    valuationCap,
-  }))
+export function UPDATE_VALUATION_CAP({ roundId, value }) {
+  return ({ set }) => set("rounds", roundId, "valuationCap", value);
 }
 
-export function UPDATE_DISCOUNT({ roundId, investorId, discount }) {
-  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
-    ...params,
-    discount,
-  }))
+export function UPDATE_DISCOUNT({ roundId, value }) {
+  return ({ update }) => update("rounds", roundId, "discount", value);
 }
 
 export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
@@ -258,6 +252,10 @@ export function COPY_DOCUMENT({ from, to }) {
 
 export function UPDATE_DOCUMENT_TITLE({ value }) {
   return ({ set }) => set("title", value);
+}
+
+export function RESET_DOCUMENT() {
+  return ({ set }) => set(defaultDocument);
 }
 
 export function REMOVE_DOCUMENT({ id }) {
