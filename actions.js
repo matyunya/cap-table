@@ -25,6 +25,8 @@ import {
   getPosition,
   allGroups,
   lastInvestorIdInGroup,
+  calcRoundResults,
+  calcJkissShares,
 } from "./utils.js";
 
 export function groupNames(investors) {
@@ -75,44 +77,46 @@ export function groupNames(investors) {
 
 const calcCell = calcFn =>
   prefix =>
-  (investors, rounds, col, id, ...options) =>
-  ([investorId, shares, votingShares]) => {
+  (investors, rounds, futureRounds, nextRoundResults, col, id, ...options) =>
+  ([investorId, { commonShares, votingShares, ...investment }]) => {
   return [
     `${prefix}:${id}:${investorId}`,
     {
       position: getPosition(investors, investorId, col),
-      value: calcFn({ shares, votingShares, rounds, investors, investorId }),
+      value: calcFn({
+        commonShares,
+        votingShares,
+        rounds,
+        futureRounds,
+        nextRoundResults,
+        investors,
+        investorId,
+        ...investment
+      }),
       ...options[0],
     }
   ];
 };
 
-const calcSharesPerRound = ({ rounds, investorId }) => {
+const calcSharesPerRound = ({ rounds, investorId, futureRounds }) => {
   const total = totalCommonShares(rounds);
-  const previousRoundShares = totalCommonSharesForInvestor(rounds, investorId);
+  const previousRoundShares = totalCommonSharesForInvestor(rounds, investorId, futureRounds);
 
   return previousRoundShares / total;
 };
 
-const calcTotalSharesPerRound = ({ rounds, investorId }) => {
-  const total = totalShares(rounds);
-  const previousRoundShares = totalSharesForInvestor(rounds, investorId);
+const calcTotalSharesPerRound = ({ rounds, investorId, futureRounds }) => {
+  const total = totalShares(rounds, futureRounds);
+  const previousRoundShares = totalSharesForInvestor(rounds, investorId, futureRounds);
 
   return previousRoundShares / total;
 };
 
-const calcCommonShares = ({ rounds, investorId }) => totalCommonSharesForInvestor(rounds, investorId);
+const calcCommonShares = ({ rounds, investorId, futureRounds }) => totalCommonSharesForInvestor(rounds, investorId, futureRounds);
 
 const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForInvestor(rounds, investorId);
 
-const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
-
-const calcJkissShares = (params) => {
-  console.log({ params });
-  // if next round post money > this round valuation cap
-  //   return next round share price times
-  return 0;
-}
+const calcTotalShares = ({ rounds, investorId, futureRounds }) => totalSharesForInvestor(rounds, investorId, futureRounds);
 
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
@@ -142,13 +146,13 @@ const colTypes = {
   sharesInitial: {
     label: "株式数",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares)("initial"),
+    fn: calcCell(({ commonShares }) => commonShares || 0)("initial"),
     format: format.number.format,
   },
   shareDiff: {
     label: "株式増減",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares)("diff"),
+    fn: calcCell(({ commonShares }) => commonShares || 0)("diff"),
     format: format.number.format,
   },
   sharesAmount: {
@@ -243,8 +247,6 @@ const jkissCols = [
   jkissInvested,
   valuationCap,
   discount,
-  totalSharesAmount,
-  totalSharesPercent,
 ];
 
 export const roundOptions = {

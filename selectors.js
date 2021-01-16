@@ -125,6 +125,10 @@ export function roundValues(rounds, investors) {
 
     const { colSpan, cols } = roundOptions[round.type];
     const roundResults = calcRoundResults(rounds, id);
+    const futureRounds = getFutureRounds(rounds, id);
+    const nextRoundResults = futureRounds.size
+      ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
+      : false;
 
     return [
       [
@@ -147,6 +151,9 @@ export function roundValues(rounds, investors) {
             round,
             investors,
             id,
+            previousRounds: getPreviousRounds(rounds, id),
+            futureRounds,
+            nextRoundResults,
           }),
           []
         ),

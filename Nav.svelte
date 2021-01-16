@@ -34,9 +34,9 @@
       on:change={setLanguage}
       options={languages}
     />
-    {#if $isAuthenticated}
+<!--     {#if $isAuthenticated} -->
       <button class="a cursor-pointer px-3 sm:px-1" on:click={() => showProfile = !showProfile}>{$_("プロフィール")}</button>
       <button class="a cursor-pointer px-3 sm:px-1" on:click={logout}>{$_("ログアウト")}</button>
-    {/if}
+<!--     {/if} -->
   </div>
 </div>
