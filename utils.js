@@ -128,9 +128,9 @@ export function calcRoundResults(rounds, id) {
 
   const jKissEquity = reduceSumOfJkissInvested(0, round);
 
-  if (isJkiss) {
-    round = rounds.get(prevId);
-    prevId = roundIds[roundIds.indexOf(prevId) - 1];
+  if (isJkiss && roundIds[roundIds.indexOf(id) + 1]) {
+    round = rounds.get(roundIds[roundIds.indexOf(id) + 1]);
+    prevId = id;
   }
 
   const { sharePrice } = round;

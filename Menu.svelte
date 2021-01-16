@@ -57,8 +57,6 @@
       open = false;
     }
   }
-
-  $: if ($activeId && $activeId === id) console.log({ open, $activeId, id, node });
 </script>
 
 <svelte:window on:keydown={onKeydown} />

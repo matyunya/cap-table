@@ -1,4 +1,4 @@
-import { roundOptions, updateSharePrice, renameRound } from "./actions.js";
+import { roundOptions, updateSharePrice, renameRound, groupNames } from "./actions.js";
 import _ from "./intl.js";
 import {
   getPreviousRounds,
@@ -166,3 +166,15 @@ export function roundValues(rounds, investors) {
 export const colsCount = (rounds) => 1 + [...rounds.values()].reduce((acc, r) => acc + roundOptions[r.type].colSpan, 0);
 
 export const rowsCount = (investors) => totalInvestorRows(investors) + 10;
+
+export function toBlocks(s) {
+  const { investors, rounds } = s.get();
+
+  return new Map([
+    ["ellx-logo", { position: [0,0,2,1], value: "", classes: "flex items-center justify-center" }],
+    ...groupNames(investors),
+    ...[...investors.keys()].map(investorNames(investors)),
+    ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
+    ...footerLabels(totalInvestorRows(investors) + 4),
+  ]);
+}

@@ -1,5 +1,5 @@
 import { derived } from "tinyx";
-import { store } from "./store.js";
+import { language } from "./store.js";
 
 const translations = {
   "30秒で無料登録、すぐ使えます！": {
@@ -122,6 +122,18 @@ const translations = {
   "割引": {
     en: "Discount"
   },
+  "共有する": {
+    en: "Share"
+  },
+  "このテーブルをコピー": {
+    en: "Make a copy"
+  },
+  "認証メールを発信しました。ご確認をお願いします。": {
+    en: "Please check your email."
+  },
+  "エラーが発生しました。恐れ入りますが、リフレッシュしてもう一度発信してみてください。": {
+    en: "Unexpected error. Please refresh the page."
+  }
 };
 
 const translate = (key, lang) => {
@@ -134,4 +146,4 @@ const translate = (key, lang) => {
   return translations[key][lang]
 };
 
-export default derived(store, (s) => key => translate(key, s.language));
+export default derived(language, (s) => key => translate(key, s));

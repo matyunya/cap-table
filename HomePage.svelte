@@ -4,8 +4,8 @@
   import Scrim from "./Scrim.svelte";
   import ProfileForm from "./ProfileForm.svelte";
   import _ from "./intl.js";
+  import { language } from "./store.js";
 
-  export let login;
   export let store;
 
   const dispatch = createEventDispatcher();
@@ -36,7 +36,7 @@
 
   onMount(async () => {
     try {
-      const resp = await login("");
+      const resp = await window.ellx.login("");
       if (resp && resp.appData) {
         dispatch('success', { appData: resp.appData });
       }
@@ -75,7 +75,7 @@
     try {
       loading = true;
       showEmailNotification = true;
-      const { appData } = await login(emailAddress);
+      const { appData } = await window.ellx.login(emailAddress, { language: $language });
 
       dispatch('success', { appData, profile });
     } catch (e) {
@@ -92,7 +92,7 @@
       <div
         class:ring-red-500={error}
         class="items-center z-40 shadow-lg bg-white p-12 ring text-black">
-        {error ? "エラーが発生しました。恐れ入りますが、リフレッシュしてもう一度発信してみてください。" : "認証メールを発信しました。ご確認をお願いします。"}
+        {error ? $_("エラーが発生しました。恐れ入りますが、リフレッシュしてもう一度発信してみてください。") : $_("認証メールを発信しました。ご確認をお願いします。")}
       </div>
   </Scrim>
 {/if}

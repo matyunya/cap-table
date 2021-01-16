@@ -8,6 +8,8 @@ import {
   UPDATE_JKISS_INVESTED,
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
+  TOGGLE_PUBLIC,
+  SET_DOCUMENT
 } from "./store.js";
 
 import {
@@ -273,3 +275,11 @@ export const roundOptions = {
 };
 
 export const roundTypes = Object.keys(roundOptions);
+
+export const togglePublic = (store) => {
+  store.commit(TOGGLE_PUBLIC);
+};
+
+export const setDocument = (store, { id, data }) => {
+  store.commit(SET_DOCUMENT, { id, data });
+}

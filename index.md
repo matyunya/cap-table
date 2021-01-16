@@ -1,4 +1,4 @@
-{ app(makeSheetWith(store, $r, $i, login)) }
+{ app(makeSheetWith(store)) }
 
 <style>
   #md ul {

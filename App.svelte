@@ -1,5 +1,6 @@
 <script>
   import { scale } from "svelte/transition";
+  import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
   import { onMount, onDestroy, tick } from "svelte";
   import HomePage from "./HomePage.svelte";
@@ -10,13 +11,20 @@
   import Nav from "./Nav.svelte";
   import { sync } from "./sync.js";
   import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE } from "./store.js";
+  import { togglePublic, setDocument } from "./actions.js";
+  import {
+    colsCount,
+    rowsCount,
+    toBlocks,
+  } from "./selectors.js";
   import _ from "./intl.js";
 
-  export let blocks = new Map();
-  export let nRows = 10;
-  export let nCols = 5;
+  let blocks = new Map();
+  let nRows = 10;
+  let nCols = 5;
   export let store;
-  export let login = () => {};
+
+  let docId = "DOC_0";
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -26,14 +34,23 @@
     document.querySelector('body').classList.remove('mode-dark');
   }
 
+  let activeSheet = select(store, () => ["documents", docId]);
+
+  $: {
+     blocks = toBlocks(activeSheet, docId);
+     nRows = rowsCount($activeSheet.investors);
+     nCols = colsCount($activeSheet.rounds);
+  }
+
   let page = "home";
-  let unsub = () => {};
+  let unsubs = [];
   let prefetching = false;
   let showProfile = false;
   let errors = { ...defaultProfile };
-  let userProfile;
 
-  $: userProfile = { ...store.get().profile };
+  let userProfile = select(store, () => ["profile"]);
+
+  $: console.log({ $activeSheet });
 
 //   Uncomment to jump straight to the table
 //   page = "cap-table";
@@ -43,16 +60,37 @@
     const { commit } = store;
     const { appData, profile } = e.detail;
 
-    if (profile) store.commit((p) => ({ set }) => set('profile', p), profile);
+    console.log({ appData, store });
 
-    unsub = sync(appData, store, () => {
-      prefetching = false;
+    activeSheet = select(store, () => ["documents", docId]);
+
+    if (profile) {
+      store.commit((p) => ({ set }) => set('profile', p), profile);
+    }
+
+    // TODO: change subscription on doc change
+    appData.get().then(docs => {
+      docs.forEach(doc => {
+        console.log({ id: doc.id });
+
+        const selector = doc.id === "profile"
+          ? userProfile
+          : select(store, () => ["documents", doc.id]);
+
+          unsubs.push(
+            sync(appData.doc(doc.id), selector, () => {
+              if (doc.id === docId) {
+                prefetching = false;
+              }
+            })
+          );
+      });
     });
 
     page = "cap-table";
   }
 
-  onDestroy(unsub);
+  onDestroy(unsubs);
 
   onMount(() => {
     setTimeout(async () => {
@@ -74,25 +112,30 @@
 
   function onCancelProfileEdit() {
     showProfile = false;
-    userProfile = { ...store.get().profile };
     window.scrollTo(0, 0);
   }
 
   async function logout() {
     await window.ellx.logout();
-    unsub();
+    unsubs.forEach(a => a());
     store.resetStore();
     page = "home";
-    unsub = () => {};
   }
 </script>
 
 <div class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
 
-<Nav {logout} {store} bind:dark bind:showProfile />
+<Nav
+  bind:dark
+  bind:showProfile
+  togglePublic={() => togglePublic(activeSheet)}
+  {docId}
+  {logout}
+  {store}
+/>
 
 {#if page === 'home'}
-  <HomePage on:success={onAuthenticated} {login} />
+  <HomePage on:success={onAuthenticated} />
 {:else}
   {#if prefetching}
     <div class="h-full w-full absolute flex items-center justify-center">
@@ -113,7 +156,7 @@
             <ProfileForm
               initial={false}
               label="保存する"
-              data={userProfile}
+              data={{ ...$userProfile}}
               {errors}
               onSave={updateProfile}
               onCancel={onCancelProfileEdit}
@@ -127,7 +170,7 @@
         {blocks}
         {nRows}
         {nCols}
-        {store}
+        store={activeSheet}
       />
     {/if}
   {/if}

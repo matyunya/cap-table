@@ -1,7 +1,30 @@
 import bootstrap from "~matyunya/store";
-import { derived, select } from "tinyx";
+import { select, derived } from "tinyx";
 
 import { lastInvestorIdInGroup, uniqueGroupName, uid } from "./utils.js";
+
+const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
+
+const defaultNames = {
+  docTitle: {
+    en: "New table",
+    ja: "新しいキャップテーブル",
+  },
+  founded: {
+    en: "Founded",
+    ja: "創立",
+  },
+  founders: {
+    en: "Founders",
+    ja: "創業メンバー"
+  },
+  partners: {
+    en: "Partners",
+    ja: "パートナー"
+  },
+};
+
+const defaultName = n => defaultNames[n][DEFAULT_LANGUAGE];
 
 const founderId = "FOUNDER_ID";
 
@@ -17,31 +40,39 @@ export const defaultProfile = {
   url: "",
   email: "",
   phone: "",
+  language: DEFAULT_LANGUAGE,
 };
 
 const defaultStore = {
-  language: "ja",
   profile: defaultProfile,
-  rounds: new Map([[
-    "founded",
-    {
-      name: "Founded",
-      type: "founded",
-      sharePrice: 1000,
-      investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
-    },
+  documents: new Map([[
+    "DOC_0", {
+      title: defaultName("docTitle"),
+      rounds: new Map([[
+        "founded",
+        {
+          name: defaultName("founded"),
+          type: "founded",
+          sharePrice: 1000,
+          investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
+        },
+      ]]),
+      investors: new Map([
+        [founderId, { name: "Founder 1", group: defaultName("founders") }],
+        ["INVESTOR_1", { name: "Partner 1", group: defaultName("partners") }],
+        ["INVESTOR_2", { name: "Employee 1", group: defaultName("partners") }],
+      ]),
+    }
   ]]),
-  investors: new Map([
-    [founderId, { name: "Founder 1", group: "Founders" }],
-    ["INVESTOR_1", { name: "Partner 1", group: "Partners" }],
-    ["INVESTOR_2", { name: "Employee 1", group: "Partners" }],
-  ]),
 };
 
 export const store = bootstrap(defaultStore);
 
 export const isAuthenticated = select(store, () => ["profile", "companyName"]);
-export const language = select(store, () => ["language"]);
+
+export const language = select(store, () => ["profile", "language"]);
+
+export const documentIds = derived(store, ({ documents }) => [...documents].map(([id, { title }]) => [id, title]));
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", investorId, ({ commonShares = 0, votingShares = 0, ...params } = {}) => {
@@ -83,7 +114,7 @@ export function UPDATE_INVESTOR_NAME({ investorId, name }) {
 }
 
 export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
-  return (({ update }) => update("investors", i => {
+  return (({ update, get }) => update("investors", i => {
     if (newGroup && group && [...i.values()].find(g => g.group === group)) {
       group = uniqueGroupName(i); // prevent group name clashes
     }
@@ -94,7 +125,7 @@ export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
 
     const newInvestor = {
       group: group || (newGroup ? uniqueGroupName(i) : i.get(afterId).group),
-      name: "New investor"
+      name: (language.get() === "ja" ? "投資家名" : "New investor"),
     };
 
     const newId = uid();
@@ -152,14 +183,14 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
 }
 
 export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map() }) {
-  return (({ update, apply, get }) => {
+  return (({ update, apply }) => {
     let roundName;
 
     update('rounds', i => {
       const ids = [...i.keys()];
       const idx = ids.indexOf(afterId) + 1;
 
-      roundName = name || (get("language") === "ja" ? "新しいラウンド" : "New round");
+      roundName = name || (language.get() === "ja" ? "新しいラウンド" : "New round");
 
       const newRound = { name: roundName, type, sharePrice, investments };
 
@@ -190,10 +221,21 @@ export function RENAME_ROUND({ id, name }) {
 export function UPDATE_PROFILE({ profile }) {
    return (({ update }) => update('profile', p => ({
      ...profile,
+     language: p.language,
      email: p.email,
    })));
 }
 
 export function SET_LANGUAGE({ language }) {
-  return (({ set }) => set("language", language));
+  return (({ set }) => set("profile", "language", language));
+}
+
+export function TOGGLE_PUBLIC() {
+  return (({ update }) => update("access", (access = {}) => ({
+    access: { read: { public: access.read ? !$file.access.read.public : true } },
+  })));
+}
+
+export function SET_DOCUMENT({ id, data }) {
+  return (({ set }) => set("documents", id, data));
 }
