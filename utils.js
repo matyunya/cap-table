@@ -71,7 +71,7 @@ export const getFutureRounds = (rounds, id) => {
 export const calcJkissShares = ({ nextRoundResults, rounds, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
   if (!jkissInvested || !nextRoundResults) return 0;
 
-  if (valuationCap > nextRoundResults.postMoney) {
+  if (valuationCap > nextRoundResults.preMoneyDiluted) {
     return Math.floor(jkissInvested / (nextRoundResults.sharePrice * discount / 100));
   } else {
     return Math.floor(jkissInvested / nextRoundResults.sharePrice);

@@ -162,20 +162,16 @@
           class:opacity-0={!pinMenuToggle}
           class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 transition duration-150 right-0 rounded-full p-1 text-light-blue-500 border-light-blue-300 hover:bg-light-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
       {/if}
-      {#if row === 0 && col === 0}
-        <svg title="Made with Ellx" class="rounded-full p-1 transition duration-500 transform" width="24px" height="24px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><g><ellipse ry="40" rx="40" id="dot_1" cy="110" cx="200"></ellipse><ellipse ry="40" rx="40" id="dot_2" cy="250" cx="100"></ellipse><ellipse ry="40" rx="40" id="dot_3" cy="250" cx="300"></ellipse></g></svg>
-      {:else}
-        <span
-          contenteditable={editing === id}
-          {id}
-        >
-          {#if isLabel}
-            {$_(value)}
-          {:else}
-            {editing === id ? value : format(value)}
-          {/if}
-        </span>
-      {/if}
+      <span
+        contenteditable={editing === id}
+        {id}
+      >
+        {#if isLabel}
+          {$_(value)}
+        {:else}
+          {editing === id ? value : format(value)}
+        {/if}
+      </span>
     </div>
   {/each}
 </div>

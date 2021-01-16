@@ -123,7 +123,7 @@ const translations = {
     en: "Discount"
   },
   "共有する": {
-    en: "Share"
+    en: "Make public",
   },
   "このテーブルをコピー": {
     en: "Make a copy"
@@ -133,7 +133,10 @@ const translations = {
   },
   "エラーが発生しました。恐れ入りますが、リフレッシュしてもう一度発信してみてください。": {
     en: "Unexpected error. Please refresh the page."
-  }
+  },
+  "新しいテーブル": {
+    en: "New table"
+  },
 };
 
 const translate = (key, lang) => {

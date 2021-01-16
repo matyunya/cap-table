@@ -1,15 +1,12 @@
 <script>
   import Select from "./Select.svelte";
-  import { SET_LANGUAGE, isAuthenticated, language, store, documentIds } from "./store.js";
+  import { SET_LANGUAGE, isAuthenticated, language, store, documentIds, docId } from "./store.js";
   export let showProfile;
   import _ from "./intl.js";
 
   export let logout = () => {};
   export let dark;
-  export let docId;
   export let togglePublic = () => {};
-  export let duplicateDocument = () => {};
-  export let setActiveDoc = () => {};
 
   const languages = [["en", "🇬🇧"], ["ja", "🇯🇵"]];
 
@@ -25,19 +22,20 @@
 </style>
 
 <div
-  class="fixed w-full h-8 top-0 z-20 blurred-bg flex justify-between"
+  class="fixed w-full h-8 top-0 z-20 blurred-bg flex"
 >
-  <div class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8">
-    <Select
-      classes="focus:ring-2 transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
-      hasEmpty={false}
-      value={docId}
-      on:change={setActiveDoc}
-      options={$documentIds}
-    />
-    <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer px-3 sm:px-1" on:click={togglePublic}>{$_("共有する")}</button>
-    <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer px-3 sm:px-1" on:click={duplicateDocument}>{$_("このテーブルをコピー")}</button>
-  </div>
+  {#if $isAuthenticated}
+    <div class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8">
+      <Select
+        classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+        hasEmpty={false}
+        value={$docId}
+        on:change={({ target }) => docId.set(target.value)}
+        options={$documentIds}
+      />
+    </div>
+  {/if}
+  <div class="flex-grow" />
   <div class="select-none flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8">
     <button title="Dark mode toggle" class="rounded-full outline-none ring-gray-100 mr-3 text-base h-6 w-6 hover:ring-4 transition duration-500" on:click={() => dark = !dark}>
       {dark ? "☀️" : "🌙"}

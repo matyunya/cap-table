@@ -10,8 +10,8 @@
   import Scrim from "./Scrim.svelte";
   import Nav from "./Nav.svelte";
   import { sync } from "./sync.js";
-  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE } from "./store.js";
-  import { togglePublic, setDocument } from "./actions.js";
+  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE, docId } from "./store.js";
+  import { togglePublic } from "./actions.js";
   import {
     colsCount,
     rowsCount,
@@ -24,8 +24,6 @@
   let nCols = 5;
   export let store;
 
-  let docId = "DOC_0";
-
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   $: if (dark) {
@@ -34,10 +32,10 @@
     document.querySelector('body').classList.remove('mode-dark');
   }
 
-  let activeSheet = select(store, () => ["documents", docId]);
+  $: activeSheet = select(store, () => ["documents", $docId]);
 
   $: {
-     blocks = toBlocks(activeSheet, docId);
+     blocks = toBlocks(activeSheet, $docId);
      nRows = rowsCount($activeSheet.investors);
      nCols = colsCount($activeSheet.rounds);
   }
@@ -50,19 +48,29 @@
 
   let userProfile = select(store, () => ["profile"]);
 
-  $: console.log({ $activeSheet });
+  let appData, profile;
 
 //   Uncomment to jump straight to the table
 //   page = "cap-table";
 
+  $: if ($docId) selectDoc($docId);
+
+  function selectDoc(id) {
+    if (!appData) return;
+
+    unsubs.push(
+      sync(appData.doc(id), select(store, () => ["documents", id]), () => {
+        prefetching = false;
+      })
+    );
+  }
+
   async function onAuthenticated(e) {
     prefetching = true;
     const { commit } = store;
-    const { appData, profile } = e.detail;
+    ({ appData, profile } = e.detail);
 
     console.log({ appData, store });
-
-    activeSheet = select(store, () => ["documents", docId]);
 
     if (profile) {
       store.commit((p) => ({ set }) => set('profile', p), profile);
@@ -71,26 +79,24 @@
     // TODO: change subscription on doc change
     appData.get().then(docs => {
       docs.forEach(doc => {
-        console.log({ id: doc.id });
+        if (doc.id === $docId) return;
 
         const selector = doc.id === "profile"
           ? userProfile
           : select(store, () => ["documents", doc.id]);
 
-          unsubs.push(
-            sync(appData.doc(doc.id), selector, () => {
-              if (doc.id === docId) {
-                prefetching = false;
-              }
-            })
-          );
+          unsubs.push(sync(appData.doc(doc.id), selector));
       });
+
+      selectDoc($docId);
     });
 
     page = "cap-table";
   }
 
-  onDestroy(unsubs);
+  onDestroy(() => {
+    unsubs();
+  });
 
   onMount(() => {
     setTimeout(async () => {
@@ -118,6 +124,7 @@
   async function logout() {
     await window.ellx.logout();
     unsubs.forEach(a => a());
+    $docId = "DOC_0";
     store.resetStore();
     page = "home";
   }
@@ -129,7 +136,6 @@
   bind:dark
   bind:showProfile
   togglePublic={() => togglePublic(activeSheet)}
-  {docId}
   {logout}
   {store}
 />

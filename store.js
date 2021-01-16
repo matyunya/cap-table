@@ -1,14 +1,17 @@
+import { writable } from "svelte/store";
 import bootstrap from "~matyunya/store";
 import { select, derived } from "tinyx";
 
 import { lastInvestorIdInGroup, uniqueGroupName, uid } from "./utils.js";
+
+export const docId = writable("DOC_0"); // TODO: bind to router but what about dev?
 
 const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
 
 const defaultNames = {
   docTitle: {
     en: "New table",
-    ja: "新しいキャップテーブル",
+    ja: "新しいテーブル",
   },
   founded: {
     en: "Founded",
@@ -43,26 +46,28 @@ export const defaultProfile = {
   language: DEFAULT_LANGUAGE,
 };
 
+const defaultDocument = {
+  title: defaultName("docTitle"),
+  rounds: new Map([[
+    "founded",
+    {
+      name: defaultName("founded"),
+      type: "founded",
+      sharePrice: 1000,
+      investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
+    },
+  ]]),
+  investors: new Map([
+    [founderId, { name: "Founder 1", group: defaultName("founders") }],
+    ["INVESTOR_1", { name: "Partner 1", group: defaultName("partners") }],
+    ["INVESTOR_2", { name: "Employee 1", group: defaultName("partners") }],
+  ]),
+};
+
 const defaultStore = {
   profile: defaultProfile,
   documents: new Map([[
-    "DOC_0", {
-      title: defaultName("docTitle"),
-      rounds: new Map([[
-        "founded",
-        {
-          name: defaultName("founded"),
-          type: "founded",
-          sharePrice: 1000,
-          investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
-        },
-      ]]),
-      investors: new Map([
-        [founderId, { name: "Founder 1", group: defaultName("founders") }],
-        ["INVESTOR_1", { name: "Partner 1", group: defaultName("partners") }],
-        ["INVESTOR_2", { name: "Employee 1", group: defaultName("partners") }],
-      ]),
-    }
+    "DOC_0", defaultDocument,
   ]]),
 };
 
@@ -114,7 +119,7 @@ export function UPDATE_INVESTOR_NAME({ investorId, name }) {
 }
 
 export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
-  return (({ update, get }) => update("investors", i => {
+  return (({ update }) => update("investors", i => {
     if (newGroup && group && [...i.values()].find(g => g.group === group)) {
       group = uniqueGroupName(i); // prevent group name clashes
     }
@@ -183,7 +188,7 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
 }
 
 export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map() }) {
-  return (({ update, apply }) => {
+  return (({ update, apply, get }) => {
     let roundName;
 
     update('rounds', i => {
@@ -238,4 +243,37 @@ export function TOGGLE_PUBLIC() {
 
 export function SET_DOCUMENT({ id, data }) {
   return (({ set }) => set("documents", id, data));
+}
+
+export function COPY_DOCUMENT({ from, to }) {
+  return ({ set, get }) => {
+    const newDoc = from ? {
+      ...get("documents", from),
+      title: get("documents", from).title + (language.get() === "ja" ? "コピー" : " copy")
+    } : defaultDocument;
+
+    set("documents", to, newDoc)
+  };
+}
+
+export function UPDATE_DOCUMENT_TITLE({ value }) {
+  return ({ set }) => set("title", value);
+}
+
+export function REMOVE_DOCUMENT({ id }) {
+  return ({ update }) => update("documents", d => {
+    if (d.size === 1) {
+      throw new Error("Cannot delete last document");
+    }
+
+    if (id === "DOC_0") {
+      throw new Error("Cannot delete initial document"); // Allow when routing works
+    }
+
+    const updated = new Map(d);
+
+    updated.delete(id);
+
+    return updated; // TODO: sync deletion?
+  })
 }

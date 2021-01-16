@@ -9,7 +9,10 @@ import {
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
   TOGGLE_PUBLIC,
-  SET_DOCUMENT
+  SET_DOCUMENT,
+  COPY_DOCUMENT,
+  REMOVE_DOCUMENT,
+  docId,
 } from "./store.js";
 
 import {
@@ -29,6 +32,7 @@ import {
   lastInvestorIdInGroup,
   calcRoundResults,
   calcJkissShares,
+  uid,
 } from "./utils.js";
 
 export function groupNames(investors) {
@@ -280,6 +284,21 @@ export const togglePublic = (store) => {
   store.commit(TOGGLE_PUBLIC);
 };
 
-export const setDocument = (store, { id, data }) => {
-  store.commit(SET_DOCUMENT, { id, data });
+export const createDocument = (store, { from } = {}) => {
+  const to = uid();
+  store.commit(COPY_DOCUMENT, { from, to });
+
+  // TODO: redirect
+  docId.set(to);
+}
+
+export const removeDocument = (store, { id }) => {
+  const to = uid();
+  const ids = [...store.get('documents').keys()];
+  const idx = ids.indexOf(id);
+
+  store.commit(REMOVE_DOCUMENT, { id });
+
+  // TODO: redirect
+  docId.set(ids[idx - 1]);
 }

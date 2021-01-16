@@ -40,14 +40,26 @@ export function sync(dbRef, store, onInitialSync) {
     if (!lastRemoteState || state === lastRemoteState) return;
 
     console.log('SYNC: store -> DB', state);
-    dbRef.set(serialize(lastRemoteState = state));
+    const newVal = serialize(lastRemoteState = state);
+    if (newVal) {
+      dbRef.set(newVal);
+    } else {
+      dbRef.delete();
+    }
   });
 
   const dbOff = dbRef.onSnapshot(doc => {
     if (!doc.exists) {
       console.log('INITIAL SYNC: store -> DB', lastLocalState);
       if (typeof onInitialSync === 'function') onInitialSync(lastLocalState);
-      dbRef.set(serialize(lastRemoteState = lastLocalState));
+
+      const newVal = serialize(lastRemoteState = lastLocalState);
+
+      if (newVal) {
+        dbRef.set(newVal);
+      } else {
+        dbRef.delete();
+      }
       return;
     }
 

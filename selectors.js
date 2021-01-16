@@ -1,4 +1,14 @@
-import { roundOptions, updateSharePrice, renameRound, groupNames } from "./actions.js";
+import { get } from "svelte/store";
+
+import {
+  roundOptions,
+  updateSharePrice,
+  renameRound,
+  groupNames,
+  togglePublic,
+  createDocument,
+  removeDocument,
+} from "./actions.js";
 import _ from "./intl.js";
 import {
   getPreviousRounds,
@@ -14,7 +24,16 @@ import {
   firstColClasses,
 } from "./classes.js";
 
-import { UPDATE_INVESTOR_NAME, ADD_INVESTOR, REMOVE_INVESTOR, ADD_ROUND, REMOVE_ROUND } from "./store.js"
+import {
+  UPDATE_INVESTOR_NAME,
+  ADD_INVESTOR,
+  REMOVE_INVESTOR,
+  ADD_ROUND,
+  REMOVE_ROUND,
+  UPDATE_DOCUMENT_TITLE,
+  docId,
+  store,
+} from "./store.js"
 
 const formatRoundTitle = ({ name, date }) => `${name}`
   + (date ? ` (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})` : '');
@@ -57,19 +76,19 @@ export const investorNames = investors => id => [
     position: getPosition(investors, id, 0, 1),
     value: investors.get(id).name,
     classes: firstColClasses + " px-4",
-    onChange: (store, { id, value }) => {
+    onChange: (s, { id, value }) => {
       const [,investorId] = id.split(':');
 
-      store.commit(UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
+      s.commit(UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
     },
-    menuItems: (store, { id }) => [
+    menuItems: (s, { id }) => [
         {
           text: "投資家追加",
-          cb: () => store.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
+          cb: () => s.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
         },
         {
           text: "削除",
-          cb: () => store.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
+          cb: () => s.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
         },
       ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'Add investor'),
   }
@@ -83,18 +102,18 @@ const roundTitle = (id, x, colSpan, rounds) => [
     classes: "font-bold text-center pr-4",
     onChange: renameRound,
     pinMenuToggle: true,
-    menuItems: (store, { id }) => [
+    menuItems: (s, { id }) => [
       {
         text: "新ラウンド作成（普通株式）",
-        cb: () => store.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
+        cb: () => s.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
       {
         text: "J-kiss ラウンド作成",
-        cb: () => store.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+        cb: () => s.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
       },
       {
         text: "ラウンド削除",
-        cb: () => store.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
+        cb: () => s.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
       },
     ],
   }
@@ -168,10 +187,37 @@ export const colsCount = (rounds) => 1 + [...rounds.values()].reduce((acc, r) =>
 export const rowsCount = (investors) => totalInvestorRows(investors) + 10;
 
 export function toBlocks(s) {
-  const { investors, rounds } = s.get();
+  const { investors, rounds, title } = s.get();
 
   return new Map([
-    ["ellx-logo", { position: [0,0,2,1], value: "", classes: "flex items-center justify-center" }],
+    [
+      "document-name",
+      {
+        position: [0,0,2,1],
+        value: title,
+        classes: "flex items-center justify-center",
+        onChange: (s, value) => s.commit(UPDATE_DOCUMENT_TITLE, value),
+        pinMenuToggle: true,
+        menuItems: (s) => [
+          {
+            text: "新しいテーブル",
+            cb: () => createDocument(store),
+          },
+          {
+            text: "共有する",
+            cb: () => togglePublic(s),
+          },
+          {
+            text: "このテーブルをコピー",
+            cb: () => createDocument(store, { from: get(docId) }),
+          },
+          {
+            text: "削除",
+            cb: () => removeDocument(store, { id: get(docId) }),
+          },
+        ]
+      }
+    ],
     ...groupNames(investors),
     ...[...investors.keys()].map(investorNames(investors)),
     ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
