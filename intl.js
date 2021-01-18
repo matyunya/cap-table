@@ -11,6 +11,9 @@ const translations = {
   "プロフィール編集画面": {
     en: "Edit profile",
   },
+  "創業メンバー%": {
+    en: "Founder share",
+  },
   プロフィール: {
     en: "Profile",
   },

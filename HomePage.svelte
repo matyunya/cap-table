@@ -36,9 +36,11 @@
 
   onMount(async () => {
     try {
-      const resp = await window.ellx.login("");
-      if (resp && resp.appData) {
-        dispatch('success', { appData: resp.appData });
+      const authInfo = await window.ellx.login("");
+      if (authInfo && authInfo.userId) {
+        dispatch('success', { appData: getAppData(authInfo), authInfo });
+      } else {
+        dispatch('failed');
       }
     } catch (e) {
       console.log(e);
@@ -75,9 +77,9 @@
     try {
       loading = true;
       showEmailNotification = true;
-      const { appData } = await window.ellx.login(emailAddress, { language: $language });
+      const authInfo = await window.ellx.login(emailAddress, { language: $language });
 
-      dispatch('success', { appData, profile });
+      dispatch('success', { appData: getAppData(authInfo), authInfo, profile });
     } catch (e) {
       error = e;
       throw e;

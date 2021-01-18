@@ -6,6 +6,7 @@ import HomePage from "./HomePage.svelte";
 export { store } from "./store.js";
 export { roundTypes } from "./actions.js";
 export { calcShare, uid } from "./utils.js";
+export { default as router } from "./router.js";
 
 export const makeSheetWith = (s, docId) => ({ store: s, docId });
 

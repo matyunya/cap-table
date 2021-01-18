@@ -204,7 +204,9 @@ export function roundValues(r, investors) {
         totalInvestorRows(investors) + 4,
         colSpan,
         calcRoundResults(rounds, id),
-        round.type !== "split" ? updateSharePrice : false
+        updateSharePrice,
+        // Do we need to disable editing for split rounds?
+        // round.type !== "split" ? updateSharePrice : false
       );
 
     const futureRounds = getFutureRounds(rounds, id);

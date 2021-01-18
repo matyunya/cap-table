@@ -12,7 +12,11 @@ import {
   getPreviousRounds,
 } from "./utils.js";
 
-export const docId = writable("DOC_0"); // TODO: bind to router but what about dev?
+export const docId = writable("DOC_0");
+export const user = writable({
+  userId: null,
+  appId: null
+});
 
 const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
 
@@ -285,7 +289,7 @@ export function SET_LANGUAGE({ language }) {
 
 export function TOGGLE_PUBLIC() {
   return (({ update }) => update("access", (access = {}) => ({
-    access: { read: { public: access.read ? !$file.access.read.public : true } },
+    read: { public: access.read ? !access.read.public : true }
   })));
 }
 

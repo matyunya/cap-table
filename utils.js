@@ -155,8 +155,6 @@ export const calcValues = ({
   investors,
   id,
   previousRounds,
-  futureRounds,
-  nextRoundResults,
   cols,
 }) => (acc, { onChange, fn, format, classes, colSpan }, i) => {
   if (!fn) return acc;
@@ -164,7 +162,7 @@ export const calcValues = ({
   const y = prevCol + calcOffset(cols, i) + 1;
   const investments = fillEmptyInvestments(round, investors);
   const individualValues = investments
-    .map(fn(investors, previousRounds, futureRounds, nextRoundResults, y, id, colSpan, { onChange, format, classes }))
+    .map(fn(investors, previousRounds, y, id, colSpan, { onChange, format, classes }))
     .map(([id, val]) => [id, { ...val, disabled: round.type === "split" }]);
 
   const groups = [...uniqueGroups(investors)];
@@ -173,7 +171,7 @@ export const calcValues = ({
     const x = calcGroupRow(investors, group)
     const groupInvestors = getGroupInvestors(investors, group);
     const groupInvestorsValues = (investments.filter(([id]) => groupInvestors.has(id)) || [])
-      .map(fn(groupInvestors, previousRounds, futureRounds, nextRoundResults, y, id, colSpan, { onChange, format, classes }));
+      .map(fn(groupInvestors, previousRounds, y, id, colSpan, { onChange, format, classes }));
 
     if (!groupInvestorsValues.length) return false;
 
@@ -281,4 +279,18 @@ export function roundResultsWithPosition(id, x, y, colSpan, roundResults, onChan
       classes: "text-center",
     }
   ]);
+}
+
+export function calcFounderShare({ investors, rounds } = {}) {
+  if (!investors || !investors.size || !rounds || !rounds.size) return 0;
+
+  const roundsConverted = convertJkissToCommonShares(rounds, investors);
+  const groupInvestors = getGroupInvestors(investors, ([...investors.values()][0] || {}).group);
+
+  return [...groupInvestors.keys()].reduce((acc, id) => {
+    const total = totalShares(roundsConverted);
+    const previousRoundShares = totalSharesForInvestor(roundsConverted, id);
+
+    return acc + previousRoundShares / total;
+  }, 0);
 }

@@ -82,7 +82,7 @@ export function groupNames(investors) {
 
 const calcCell = calcFn =>
   prefix =>
-  (investors, rounds, futureRounds, nextRoundResults, col, id, colSpan, ...options) =>
+  (investors, rounds, col, id, colSpan, ...options) =>
   ([investorId, { commonShares, votingShares, ...investment }]) => {
   return [
     `${prefix}:${id}:${investorId}`,
@@ -92,8 +92,6 @@ const calcCell = calcFn =>
         commonShares,
         votingShares,
         rounds,
-        futureRounds,
-        nextRoundResults,
         investors,
         investorId,
         ...investment
@@ -103,25 +101,25 @@ const calcCell = calcFn =>
   ];
 };
 
-const calcSharesPerRound = ({ rounds, investorId, futureRounds }) => {
+const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
-  const previousRoundShares = totalCommonSharesForInvestor(rounds, investorId, futureRounds);
+  const previousRoundShares = totalCommonSharesForInvestor(rounds, investorId);
 
   return previousRoundShares / total;
 };
 
-const calcTotalSharesPerRound = ({ rounds, investorId, futureRounds }) => {
-  const total = totalShares(rounds, futureRounds);
-  const previousRoundShares = totalSharesForInvestor(rounds, investorId, futureRounds);
+const calcTotalSharesPerRound = ({ rounds, investorId }) => {
+  const total = totalShares(rounds);
+  const previousRoundShares = totalSharesForInvestor(rounds, investorId);
 
   return previousRoundShares / total;
 };
 
-const calcCommonShares = ({ rounds, investorId, futureRounds }) => totalCommonSharesForInvestor(rounds, investorId, futureRounds);
+const calcCommonShares = ({ rounds, investorId }) => totalCommonSharesForInvestor(rounds, investorId);
 
 const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForInvestor(rounds, investorId);
 
-const calcTotalShares = ({ rounds, investorId, futureRounds }) => totalSharesForInvestor(rounds, investorId, futureRounds);
+const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
 
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
