@@ -12,6 +12,7 @@
   import { sync } from "./sync.js";
   import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE, docId } from "./store.js";
   import { togglePublic } from "./actions.js";
+  import router from "./router.js";
   import {
     colsCount,
     rowsCount,

@@ -2,13 +2,13 @@ import { get } from "svelte/store";
 
 import {
   roundOptions,
-  updateSharePrice,
   renameRound,
   groupNames,
   togglePublic,
   createDocument,
   removeDocument,
   resetDocument,
+  updateSharePrice,
 } from "./actions.js";
 import _ from "./intl.js";
 import {
@@ -24,6 +24,9 @@ import {
   totalCommonShares,
   totalShares,
   getPreviousRounds,
+  convertJkissToCommonShares,
+  jkissRoundResults,
+  roundResultsWithPosition
 } from "./utils.js";
 import {
   labelClasses,
@@ -35,10 +38,12 @@ import {
   ADD_INVESTOR,
   REMOVE_INVESTOR,
   ADD_ROUND,
+  ADD_SPLIT_ROUND,
   REMOVE_ROUND,
   UPDATE_DOCUMENT_TITLE,
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
+  UPDATE_SPLIT_BY,
   docId,
   store,
 } from "./store.js"
@@ -116,9 +121,13 @@ const roundTitle = (id, x, colSpan, rounds) => [
         cb: () => s.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
       rounds.get(id.split(':')[1]).type !== "j-kiss" ? {
-        text: "J-kiss ラウンド作成",
+        text: "J-kissラウンド作成",
         cb: () => s.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
       } : false,
+      {
+        text: "Splitラウンド作成",
+        cb: () => s.commit(ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
+      },
       rounds.get(id.split(':')[1]).type !== "founded" ? {
         text: "ラウンド削除",
         cb: () => s.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
@@ -126,25 +135,6 @@ const roundTitle = (id, x, colSpan, rounds) => [
     ].filter(Boolean),
   }
 ];
-
-function roundResultsWithPosition(id, x, y, colSpan, roundResults, isJkiss) {
-  return [
-    [`${id}:share-price-label`, { value: roundResults.sharePrice, onChange: isJkiss ? false : updateSharePrice, renameRound }],
-    [`${id}:new-equity-label`, { value: roundResults.newEquity }],
-    [`${id}:pre-money-label`, { value: roundResults.preMoney }],
-    [`${id}:post-money-label`, { value: roundResults.postMoney }],
-    [`${id}:pre-money-label-diluted`, { value: roundResults.preMoneyDiluted }],
-    [`${id}:post-money-label-diluted`, { value: roundResults.postMoneyDiluted }],
-  ].map(([idx, val], i) => [
-    idx,
-    {
-      ...val,
-      format: format.currency.format,
-      position: [y + i, x + 1, y + i, x + colSpan],
-      classes: "text-center",
-    }
-  ]);
-}
 
 function jkissCells(round, roundId, x, y) {
   if (round.type !== "j-kiss") return [];
@@ -179,69 +169,24 @@ function jkissCells(round, roundId, x, y) {
   ]
 }
 
-function jkissRoundResults(rounds, id, x, y) {
-  const roundIds = [...rounds.keys()];
-  const prevId = roundIds[roundIds.indexOf(id) - 1];
-  const nextId = roundIds[roundIds.indexOf(id) + 1];
-
-  const { sharePrice } = rounds.get(prevId);
-  const previousRounds = getPreviousRounds(rounds, prevId);
-  const atInvestmentPreMoney = totalCommonShares(previousRounds) * sharePrice;
-  const atInvestmentPreMoneyDiluted = totalShares(previousRounds) * sharePrice;
-  const newEquity = [...(rounds.get(id).investments.values())].reduce((acc, { jkissInvested }) => acc + (jkissInvested || 0), 0);
-
-  const jkissResultsAtInvestment = {
-    sharePrice,
-    newEquity,
-    preMoney: atInvestmentPreMoney,
-    postMoney: atInvestmentPreMoney + newEquity,
-    preMoneyDiluted: atInvestmentPreMoneyDiluted,
-    postMoneyDiluted: atInvestmentPreMoneyDiluted + newEquity,
-  };
-
-  if (!nextId) {
-    return roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true);
-  }
-
-  const nextRoundResults = calcRoundResults(rounds, nextId);
-
-  const jkissResultsBeforeNextRound = {
-    ...nextRoundResults,
-    newEquity: 0,
-    postMoney: nextRoundResults.preMoney,
-    postMoneyDiluted: nextRoundResults.preMoneyDiluted,
-  };
+function splitCells(round, roundId, x, y) {
+  if (round.type !== "split") return [];
 
   return [
-    ...roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true),
-    ...roundResultsWithPosition(id + "A", x + 2, y, 2, jkissResultsBeforeNextRound, true),
-  ];
-}
-
-const convertSingleRoundToJkiss = rounds => ([id, round]) => {
-  if (round.type !== "j-kiss") return [id, round];
-
-  const roundIds = [...rounds.keys()];
-  const nextId = roundIds[roundIds.indexOf(id) + 1];
-  if (!nextId) return [id, round];
-
-  const nextRoundResults = calcRoundResults(rounds, nextId);
-
-  return [id, {
-    ...round,
-    investments: new Map([...round.investments].map(([id, investment]) => {
-      if (!investment.jkissInvested) return [id, investment];
-
-      return [id, {
-        ...investment,
-        commonShares: calcJkissShares({ nextRoundResults, ...investment, ...round }),
-      }];
-    })),
-  }];
-}
-
-function convertJkissToCommonShares(rounds) {
-  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds)));
+    [`split-by-label:${roundId}`, {
+      position: [y + 6, x, y + 6, x + 1],
+      value: "Split by",
+      classes: "dark:bg-gray-800 bg-white",
+      isLabel: true,
+    }],
+    [`split-by:${roundId}`, {
+      position: [y + 6, x + 2, y + 6, x + 3],
+      value: round.splitBy || 0,
+      onChange: (store, { value }) => store.commit(UPDATE_SPLIT_BY, { roundId, value }),
+      format: format.number.format,
+      classes: "dark:bg-gray-800 bg-white",
+    }],
+  ]
 }
 
 export function roundValues(r, investors) {
@@ -253,7 +198,14 @@ export function roundValues(r, investors) {
     const { colSpan, cols } = roundOptions[round.type];
     const roundResults = round.type === "j-kiss"
       ? jkissRoundResults(rounds, id, prevCol, totalInvestorRows(investors) + 4)
-      : roundResultsWithPosition(id, prevCol, totalInvestorRows(investors) + 4, colSpan, calcRoundResults(rounds, id));
+      : roundResultsWithPosition(
+        id,
+        prevCol,
+        totalInvestorRows(investors) + 4,
+        colSpan,
+        calcRoundResults(rounds, id),
+        round.type !== "split" ? updateSharePrice : false
+      );
 
     const futureRounds = getFutureRounds(rounds, id);
     const nextRoundResults = futureRounds.size
@@ -274,6 +226,7 @@ export function roundValues(r, investors) {
         roundTitle(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
         ...jkissCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
+        ...splitCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
         ...votingColumnHeader(cols, prevCol + 1),
         ...roundResults,
         ...cols.reduce(
@@ -299,42 +252,46 @@ export const colsCount = (rounds) => 1 + [...rounds.values()].reduce((acc, r) =>
 
 export const rowsCount = (investors) => totalInvestorRows(investors) + 10;
 
+function documentNameBlock(s, title) {
+  return [
+      "document-name",
+    {
+      position: [0,0,2,1],
+      value: title,
+      classes: "flex items-center justify-center",
+      onChange: (s, value) => s.commit(UPDATE_DOCUMENT_TITLE, value),
+      pinMenuToggle: true,
+      menuItems: (s) => [
+        {
+          text: "新しいテーブル",
+          cb: () => createDocument(store),
+        },
+        {
+          text: "共有する",
+          cb: () => togglePublic(s),
+        },
+        {
+          text: "このテーブルをコピー",
+          cb: () => createDocument(store, { from: get(docId) }),
+        },
+        {
+          text: "削除",
+          cb: () => removeDocument(store, { id: get(docId) }),
+        },
+        {
+          text: "リセット",
+          cb: () => resetDocument(s),
+        },
+      ]
+    }
+  ];
+}
+
 export function toBlocks(s) {
   const { investors, rounds, title } = s.get();
 
   return new Map([
-    [
-      "document-name",
-      {
-        position: [0,0,2,1],
-        value: title,
-        classes: "flex items-center justify-center",
-        onChange: (s, value) => s.commit(UPDATE_DOCUMENT_TITLE, value),
-        pinMenuToggle: true,
-        menuItems: (s) => [
-          {
-            text: "新しいテーブル",
-            cb: () => createDocument(store),
-          },
-          {
-            text: "共有する",
-            cb: () => togglePublic(s),
-          },
-          {
-            text: "このテーブルをコピー",
-            cb: () => createDocument(store, { from: get(docId) }),
-          },
-          {
-            text: "削除",
-            cb: () => removeDocument(store, { id: get(docId) }),
-          },
-          {
-            text: "リセット",
-            cb: () => resetDocument(s),
-          },
-        ]
-      }
-    ],
+    documentNameBlock(s, title),
     ...groupNames(investors),
     ...[...investors.keys()].map(investorNames(investors)),
     ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],

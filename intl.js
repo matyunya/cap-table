@@ -98,8 +98,11 @@ const translations = {
   "新ラウンド作成（普通株式）": {
     en: "Add new round (Ordinary share)",
   },
-  "J-kiss ラウンド作成": {
+  "J-kissラウンド作成": {
     en: "Add J-kiss round",
+  },
+  "Splitラウンド作成": {
+    en: "Add split round",
   },
   "ラウンド削除": {
     en: "Remove this round",
@@ -119,7 +122,7 @@ const translations = {
   "バリュエーションキャップ": {
     en: "Valuation cap"
   },
-  "割引": {
+  "割引率": {
     en: "Discount"
   },
   "共有する": {

@@ -15,12 +15,12 @@
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
-    value, classes, onChange, menuItems, format = i => i, pinMenuToggle, isLabel
+    value, classes, onChange, menuItems, format = i => i, pinMenuToggle, isLabel, disabled
   }]) => {
     return [
       ...acc,
       { id, pos: [firstRow, firstCol, lastRow - firstRow + 1, lastCol - firstCol + 1],
-       value, classes, onChange, format, menuItems, pinMenuToggle, isLabel
+       value, classes, onChange: disabled ? false : onChange, format, menuItems, pinMenuToggle, isLabel
       }
     ]
   }, []);
@@ -138,7 +138,7 @@
 <ContextMenu />
 
 <div class="md:m-12 md:mr-24 dark:text-white text-black m-6 mt-12 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
-  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle, isLabel } (id)}
+  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle, isLabel, disabled } (id)}
     <div
       class:editable={onChange}
       class:text-light-blue-700={onChange}

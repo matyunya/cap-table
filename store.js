@@ -2,7 +2,15 @@ import { writable } from "svelte/store";
 import bootstrap from "~matyunya/store";
 import { select, derived } from "tinyx";
 
-import { lastInvestorIdInGroup, uniqueGroupName, uid } from "./utils.js";
+import {
+  lastInvestorIdInGroup,
+  uniqueGroupName,
+  uid,
+  convertJkissToCommonShares,
+  totalCommonSharesForInvestor,
+  totalVotingSharesForInvestor,
+  getPreviousRounds,
+} from "./utils.js";
 
 export const docId = writable("DOC_0"); // TODO: bind to router but what about dev?
 
@@ -58,7 +66,7 @@ const defaultDocument = {
     },
   ]]),
   investors: new Map([
-    [founderId, { name: "Founder 1", group: defaultName("founders") }],
+    [founderId, { name: "Founder 1", group: defaultName("founders"), type: "founder" }],
     ["INVESTOR_1", { name: "Partner 1", group: defaultName("partners") }],
     ["INVESTOR_2", { name: "Employee 1", group: defaultName("partners") }],
   ]),
@@ -106,6 +114,22 @@ export function UPDATE_DISCOUNT({ roundId, value }) {
 
 export function UPDATE_SHARE_PRICE({ roundId, sharePrice }) {
   return ({ set }) => set("rounds", roundId, "sharePrice", Number(sharePrice));
+}
+
+export function UPDATE_SPLIT_BY({ roundId, value }) {
+  return ({ update, get }) => update("rounds", roundId, r => {
+    const rounds = convertJkissToCommonShares(get("rounds"));
+    const roundIds = [...rounds.keys()];
+    const prevId = roundIds[roundIds.indexOf(roundId) - 1];
+    const prevSharePrice = rounds.get(prevId).sharePrice;
+
+    return {
+      ...r,
+      sharePrice: prevSharePrice / value,
+      splitBy: Number(value),
+      investments: calcSplitByInvestments(getPreviousRounds(rounds, prevId), get("investors"), Number(value)),
+    };
+  });
 }
 
 export function UPDATE_INVESTOR_NAME({ investorId, name }) {
@@ -181,7 +205,7 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
   });
 }
 
-export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map() }) {
+export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map(), ...params }) {
   return (({ update, apply, get }) => {
     let roundName;
 
@@ -191,7 +215,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
 
       roundName = name || (language.get() === "ja" ? "新しいラウンド" : "New round");
 
-      const newRound = { name: roundName, type, sharePrice, investments };
+      const newRound = { name: roundName, type, sharePrice, investments, ...params };
 
       const newId = uid();
       const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
@@ -202,7 +226,37 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
     const lastId = [...get('investors').keys()].pop();
 
     apply(ADD_INVESTOR({ newGroup: true, afterId: lastId, group: roundName }));
-  })
+  });
+}
+
+function calcSplitByInvestments(rounds, investors, splitBy) {
+  return new Map([...investors.keys()].map(id => {
+    const commonShares = totalCommonSharesForInvestor(rounds, id);
+    const votingShares = totalVotingSharesForInvestor(rounds, id);
+
+    return [id, {
+      commonShares: commonShares ? commonShares + commonShares * (splitBy - 2) : 0,
+      votingShares: votingShares ? votingShares + votingShares * (splitBy - 2) : 0,
+    }];
+  }));
+}
+
+export function ADD_SPLIT_ROUND({ afterId, name, sharePrice = 0, splitBy }) {
+  return (({ apply, get }) => {
+    const rounds = convertJkissToCommonShares(get("rounds"));
+    const prevSharePrice = rounds.get(afterId).sharePrice;
+
+    apply(
+      ADD_ROUND({
+        afterId,
+        type: "split",
+        name: "Split",
+        splitBy,
+        sharePrice: prevSharePrice / splitBy,
+        investments: calcSplitByInvestments(getPreviousRounds(rounds, afterId), get("investors"), splitBy),
+      })
+    );
+  });
 }
 
 export function REMOVE_ROUND({ id }) {
