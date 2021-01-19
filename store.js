@@ -1,6 +1,7 @@
-import { writable } from "svelte/store";
+import { writable, derived as svDerived } from "svelte/store";
 import bootstrap from "~matyunya/store";
 import { select, derived } from "tinyx";
+import router from "./router.js";
 
 import {
   lastInvestorIdInGroup,
@@ -12,7 +13,10 @@ import {
   getPreviousRounds,
 } from "./utils.js";
 
-export const docId = writable("DOC_0");
+export const docId = svDerived(router, r => {
+  return (r || window.location.hash || "").split("/")[2];
+});
+
 export const user = writable({
   userId: null,
   appId: null
@@ -48,8 +52,6 @@ export const defaultProfile = {
   title: "",
   lastName: "",
   firstName: "",
-  lastNameKana: "",
-  firstNameKana: "",
   zipCode: "",
   address: "",
   url: "",
@@ -58,7 +60,7 @@ export const defaultProfile = {
   language: DEFAULT_LANGUAGE,
 };
 
-const defaultDocument = {
+export const defaultDocument = {
   title: defaultName("docTitle"),
   rounds: new Map([[
     "founded",
@@ -85,7 +87,7 @@ const defaultStore = {
 
 export const store = bootstrap(defaultStore);
 
-export const isAuthenticated = select(store, () => ["profile", "companyName"]);
+export const isAuthenticated = svDerived(user, ({ userId }) => Boolean(userId));
 
 export const language = select(store, () => ["profile", "language"]);
 
@@ -271,8 +273,8 @@ export function REMOVE_ROUND({ id }) {
   return (({ update }) => update('rounds', i => new Map([...i].filter(([i]) => i !== id))))
 }
 
-export function RENAME_ROUND({ id, name }) {
-   return (({ set }) => set('rounds', id, 'name', name));
+export function RENAME_ROUND({ roundId, name }) {
+   return (({ set }) => set('rounds', roundId, 'name', name));
 }
 
 export function UPDATE_PROFILE({ profile }) {
@@ -289,7 +291,7 @@ export function SET_LANGUAGE({ language }) {
 
 export function TOGGLE_PUBLIC() {
   return (({ update }) => update("access", (access = {}) => ({
-    read: { public: access.read ? !access.read.public : true }
+    read: { public: true }
   })));
 }
 

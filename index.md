@@ -1,4 +1,4 @@
-{ app(makeSheetWith(store)) }
+  { app(makeSheetWith(store)) }
 
 <style>
   #md ul {

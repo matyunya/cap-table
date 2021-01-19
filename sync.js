@@ -10,7 +10,7 @@ function serializeEntry([key, value]) {
   return [key, serialize(value)];
 }
 
-function serialize(value) {
+export function serialize(value) {
   if (!value || typeof value !== 'object') return value;
   if (value instanceof Map || value instanceof Set || Array.isArray(value)) return serialize({ '[]': value });
   return Object.fromEntries(Object.entries(value).map(serializeEntry));
@@ -22,7 +22,7 @@ function deserializeEntry([key, value]) {
   return [key, deserialize(value)];
 }
 
-function deserialize(snapshot) {
+export function deserialize(snapshot) {
   if (!snapshot || typeof snapshot !== 'object') return snapshot;
   if (Array.isArray(snapshot)) return snapshot.map(deserialize);
 
@@ -31,7 +31,7 @@ function deserialize(snapshot) {
   return obj;
 }
 
-export function sync(dbRef, store, onInitialSync) {
+export function sync(dbRef, store, owner, onInitialSync) {
   let lastLocalState = null;
   let lastRemoteState = null;
 
@@ -56,7 +56,10 @@ export function sync(dbRef, store, onInitialSync) {
       const newVal = serialize(lastRemoteState = lastLocalState);
 
       if (newVal) {
-        dbRef.set(newVal);
+        dbRef.set({
+          userId,
+          ...newVal,
+        });
       } else {
         dbRef.delete();
       }

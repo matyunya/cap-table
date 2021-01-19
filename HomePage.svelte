@@ -4,50 +4,19 @@
   import Scrim from "./Scrim.svelte";
   import ProfileForm from "./ProfileForm.svelte";
   import _ from "./intl.js";
-  import { language } from "./store.js";
+  import { language, defaultProfile } from "./store.js";
+  import { getAppData } from "./firebase.js";
 
   export let store;
+  export let loading = true;
 
   const dispatch = createEventDispatcher();
 
-  const defaultState = {
-    companyName: "",
-    title: "",
-    lastName: "",
-    firstName: "",
-    lastNameKana: "",
-    firstNameKana: "",
-    zipCode: "",
-    address: "",
-    url: "",
-    email: "",
-    phone: "",
-    establishedMonth: "",
-    fiscalYearEndMonth: "",
-    numberOfEmployees: "",
-  };
-
-  let data = { ...defaultState };
-  let errors = { ...defaultState };
+  let data = { ...defaultProfile };
+  let errors = { ...defaultProfile };
   let error = "";
   let email = "";
-  let loading = true;
   let showEmailNotification = false;
-
-  onMount(async () => {
-    try {
-      const authInfo = await window.ellx.login("");
-      if (authInfo && authInfo.userId) {
-        dispatch('success', { appData: getAppData(authInfo), authInfo });
-      } else {
-        dispatch('failed');
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      loading = false;
-    }
-  })
 
   async function register() {
     try {

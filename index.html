@@ -30,7 +30,7 @@
 </style>
 
 <body>
-  <div id="app" class="hidden transition duration-500 opacity-0">
+  <div id="app" class="hidden transition duration-1000 opacity-0">
     %parsed%
   </div>
   %scripts%
@@ -45,9 +45,12 @@
 
     %Runtime%
 
-    const { CalcGraph, getRequire, appLogin, getLogin } = Runtime;
+    const { CalcGraph, getRequire, appLogin, appLogout, getLogin, getLogout } = Runtime;
 
-    window.ellx = { login: getLogin(email => appLogin(projectKey, email)) };
+    window.ellx = {
+      login: getLogin(email => appLogin(projectKey, email)),
+      logout: getLogout(() => appLogout(projectKey))
+    };
 
     const require = getRequire(requireGraph);
 

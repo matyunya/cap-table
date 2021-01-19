@@ -1,7 +1,7 @@
 <script>
   import route from "./router.js";
   import Select from "./Select.svelte";
-  import { SET_LANGUAGE, isAuthenticated, language, store, documentIds, docId } from "./store.js";
+  import { SET_LANGUAGE, isAuthenticated, language, store, documentIds, docId, user } from "./store.js";
   export let showProfile;
   import _ from "./intl.js";
   import { format } from "./utils.js";
@@ -33,7 +33,7 @@
         classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
         value={$docId}
-        on:change={({ target }) => docId.set(target.value)}
+        on:change={({ target }) => route.set(`${$user.userId}/${$user.appId}/${target.value}`)}
         options={$documentIds}
       />
     </div>
@@ -44,8 +44,8 @@
         <div
           class="text-xs mr-3 font-mono"
           class:text-green-500={founderShare > 0.5}
-          class:text-yellow-500={founderShare < 0.5 && founderShare > 0.36}
-          class:text-red-500={founderShare < 0.36}>
+          class:text-yellow-500={founderShare < 0.5 && founderShare > 0.34}
+          class:text-red-300={founderShare < 0.34}>
           {$_("創業メンバー%")} {format.percent.format(founderShare)}
         </div>
     {/if}

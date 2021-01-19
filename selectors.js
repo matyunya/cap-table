@@ -20,7 +20,6 @@ import {
   calcValues,
   calcOffset,
   format,
-  calcJkissShares,
   totalCommonShares,
   totalShares,
   getPreviousRounds,
@@ -290,7 +289,9 @@ function documentNameBlock(s, title) {
 }
 
 export function toBlocks(s) {
-  const { investors, rounds, title } = s.get();
+  const { investors, rounds, title, readOnly } = s.get() || {};
+
+  if (!investors) return new Map([]);
 
   return new Map([
     documentNameBlock(s, title),
@@ -298,5 +299,9 @@ export function toBlocks(s) {
     ...[...investors.keys()].map(investorNames(investors)),
     ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
     ...footerLabels(totalInvestorRows(investors) + 4),
-  ]);
+  ].map(([id, cell]) => {
+    if (!readOnly) return [id, cell];
+
+    return [id, { ...cell, onChange: false, menuItems: false }];
+  }));
 }

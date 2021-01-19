@@ -1,3 +1,5 @@
+import { get } from "svelte/store";
+
 import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
@@ -13,6 +15,7 @@ import {
   REMOVE_DOCUMENT,
   RESET_DOCUMENT,
   docId,
+  user,
 } from "./store.js";
 
 import {
@@ -30,9 +33,10 @@ import {
   getPosition,
   allGroups,
   lastInvestorIdInGroup,
-  calcJkissShares,
   uid,
 } from "./utils.js";
+
+import router from "./router.js";
 
 export function groupNames(investors) {
   const investorGroups = allGroups(investors);
@@ -138,7 +142,10 @@ const updateRound = (mutation, fieldName) => (store, { id, value }) => {
   store.commit(mutation, { roundId, [fieldName]: value });
 };
 
-export const renameRound = updateRound(RENAME_ROUND, "name");
+export const renameRound = (store, { id, value }) => {
+  const [,roundId] = id.split(":");
+  store.commit(RENAME_ROUND, { roundId, name: value });
+};
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
 const colTypes = {
@@ -259,16 +266,43 @@ export const roundOptions = {
 
 export const roundTypes = Object.keys(roundOptions);
 
+function copyToClipboard(text) {
+  var textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // Avoid scrolling to bottom
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Fallback: Copying text command was ' + msg);
+  } catch (err) {
+    console.error('Fallback: Oops, unable to copy', err);
+  }
+
+  document.body.removeChild(textArea);
+}
+
 export const togglePublic = (store) => {
   store.commit(TOGGLE_PUBLIC);
+
+  copyToClipboard(window.location.hash.slice(1));
 };
 
 export const createDocument = (store, { from } = {}) => {
   const to = uid();
   store.commit(COPY_DOCUMENT, { from, to });
 
-  // TODO: redirect
-  docId.set(to);
+  const { userId, appId } = get(user);
+
+  router.set(`${userId}/${appId}/${to}`);
 }
 
 export const resetDocument = (store) => {
@@ -281,6 +315,7 @@ export const removeDocument = (store, { id }) => {
 
   store.commit(REMOVE_DOCUMENT, { id });
 
-  // TODO: redirect
-  docId.set(ids[idx - 1]);
+  const { userId, appId } = get(user);
+
+  router.set(`${userId}/${appId}/${ids[idx - 1]}`);
 }

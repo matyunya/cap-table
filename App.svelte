@@ -1,4 +1,6 @@
 <script>
+  import { tx } from "tinyx";
+  import { writable } from "svelte/store";
   import { scale } from "svelte/transition";
   import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
@@ -9,10 +11,12 @@
   import ProfileForm from "./ProfileForm.svelte";
   import Scrim from "./Scrim.svelte";
   import Nav from "./Nav.svelte";
-  import { sync } from "./sync.js";
-  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE, docId } from "./store.js";
+  import { sync, deserialize } from "./sync.js";
+  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE, docId, user, defaultDocument } from "./store.js";
   import { togglePublic } from "./actions.js";
-  import router from "./router.js";
+  import route from "./router.js";
+  import { calcFounderShare } from "./utils.js";
+  import { getAppData, getDoc, addDoc } from "./firebase.js";
   import {
     colsCount,
     rowsCount,
@@ -23,6 +27,8 @@
   let blocks = new Map();
   let nRows = 10;
   let nCols = 5;
+  let founderShare = 100;
+  let loading = true;
   export let store;
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -33,84 +39,164 @@
     document.querySelector('body').classList.remove('mode-dark');
   }
 
-  $: activeSheet = select(store, () => ["documents", $docId]);
-
   $: {
-     blocks = toBlocks(activeSheet, $docId);
-     nRows = rowsCount($activeSheet.investors);
-     nCols = colsCount($activeSheet.rounds);
+    blocks = toBlocks(activeSheet, $docId);
+    nRows = $activeSheet ? rowsCount($activeSheet.investors) : 0;
+    nCols = $activeSheet ? colsCount($activeSheet.rounds) : 0;
+    founderShare = calcFounderShare($activeSheet);
   }
 
-  let page = "home";
   let unsubs = new Map();
-  let prefetching = false;
   let showProfile = false;
+  let activeSheet = select(store, () => ["documents", $docId || "DOC_0"]);
   let errors = { ...defaultProfile };
 
   let userProfile = select(store, () => ["profile"]);
+  let ids = new Set();
 
   let appData, profile;
 
-//   Uncomment to jump straight to the table
-//   page = "cap-table";
+  $: if ($route) selectDoc(...$route.split('/'));
 
-  $: if ($docId) selectDoc($docId);
+  async function getDocAnon({ userId, appId, id }) {
+    try {
+      const doc = await getDoc(id, { appId });
 
-  function selectDoc(id) {
+      console.log('Anonymous user fetching', { userId, appId, id, $user, userId });
+
+      activeSheet = select(store, () => ["anonymous"]);
+
+      await doc.get().then(d => {
+        console.log("anon doc data", deserialize(d.data()));
+        activeSheet.commit(() => ({ set }) => set({
+          ...deserialize(d.data()),
+          readOnly: true,
+        }));
+      });
+    } catch (e) {
+      console.log('Error fetching doc', e);
+    }
+  }
+
+  async function getDocAuth(id) {
     if (!appData) return;
 
-    if (unsubs.has(id)) return;
+    activeSheet = select(store, () => ["documents", id]);
+
+    if (unsubs.has(id)) {
+      unsubs.get(id)();
+    }
+
+    if (!ids.has(id)) {
+      try {
+        const res = await addDoc(id, $user, defaultDocument);
+      } catch (e) {
+        console.error("ADD DOC ERROR", e);
+      }
+    }
 
     unsubs.set(
       id,
-      sync(appData.doc(id), select(store, () => ["documents", id]), () => {
-        prefetching = false;
+      sync(getDoc(id, $user), activeSheet, $user.userId, () => {
+        loading = false;
       })
     );
   }
 
-  async function onAuthenticated(e) {
-    prefetching = true;
-    const { commit } = store;
-    ({ appData, profile } = e.detail);
+  async function selectDoc(userId, appId, id) {
+    loading = true;
+    console.log("selecting", { userId, appId, id });
 
-    console.log({ appData, store });
+    if (!$user.userId) {
+      try {
+        $user = await window.ellx.login();
+      } catch (e) {
+        console.log('is anonymous user');
+        // anonymous user
+      }
+    }
+
+    try {
+      if (!$user.userId || ($user.userId && $user.userId !== userId)) {
+        await getDocAnon({ userId, appId, id });
+        return;
+      }
+
+      if (userId && $user.userId === userId) {
+        await getDocAuth(id);
+      }
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function onAuthenticated(e) {
+    loading = true;
+    const { commit } = store;
+    ({ appData, profile, authInfo } = e.detail);
+
+    console.log({ appData, store, authInfo });
 
     if (profile) {
       store.commit((p) => ({ set }) => set('profile', p), profile);
+      await addDoc("profile", authInfo, profile);
     }
 
-    // TODO: change subscription on doc change
-    appData.get().then(docs => {
+    $user = authInfo;
+
+    await appData.get().then(docs => {
       docs.forEach(doc => {
-        if (doc.id === $docId || unsubs.has(doc.id)) return;
+        ids.add(doc.id);
+        console.log("ID", doc.id);
+        if (unsubs.has(doc.id)) return;
 
         const selector = doc.id === "profile"
           ? userProfile
           : select(store, () => ["documents", doc.id]);
 
-          unsubs.set(doc.id, (sync(appData.doc(doc.id), selector)));
+        console.log('Trying to sync', doc.id);
+        unsubs.set(doc.id, (sync(getDoc(doc.id, $user), selector, $user.userId)));
       });
 
-      selectDoc($docId);
+      selectDoc($user.userId, $user.appId, ($docId || "DOC_0"));
     });
 
-    page = "cap-table";
+    if (!$docId) {
+      $route = $user.userId + "/" +  $user.appId + "/" + "DOC_0";
+    }
   }
 
   onDestroy(() => [...unsubs.values()]);
 
-  onMount(() => {
+  onMount(async () => {
     setTimeout(async () => {
       headlong();
+
       const el = document.getElementById('app');
       if (!el) return;
 
       el.classList.remove('hidden');
-      el.classList.remove('opacity-0');
       await tick();
+      setTimeout(() => el.classList.remove('opacity-0'), 50);
       el.classList.add('opacity-100');
     }, 50);
+
+    tick().then(() => route.set(window.location.hash.slice(1)));
+
+    console.log($route, "route on mount");
+    try {
+      const authInfo = await window.ellx.login();
+      console.log({ authInfo });
+      if (authInfo && authInfo.userId) {
+        await onAuthenticated({ detail: { appData: getAppData(authInfo), authInfo } });
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      loading = false;
+    }
+
+    if ($route) selectDoc(...$route.split("/"));
   });
 
   function updateProfile(data) {
@@ -127,9 +213,11 @@
     await window.ellx.logout();
     [...unsubs.values()].forEach(a => a());
     unsubs = new Map();
-    $docId = "DOC_0";
     store.resetStore();
-    page = "home";
+    activeSheet = select(store, () => ["documents", "DOC_0"]);
+    $route = "";
+    $user = { userId: null, appId: null };
+    loading = false;
   }
 </script>
 
@@ -141,12 +229,13 @@
   togglePublic={() => togglePublic(activeSheet)}
   {logout}
   {store}
+  {founderShare}
 />
 
-{#if page === 'home'}
-  <HomePage on:success={onAuthenticated} />
+{#if !$route}
+  <HomePage bind:loading on:success={onAuthenticated} />
 {:else}
-  {#if prefetching}
+  {#if loading}
     <div class="h-full w-full absolute flex items-center justify-center">
       <div transition:scale={{ delay: 200 }}>
         <Logo animated size={64} />

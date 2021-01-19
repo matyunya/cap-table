@@ -46,10 +46,11 @@ export const getFutureRounds = (rounds, id) => {
   return new Map([...rounds].slice(idx + 1));
 }
 
-export const calcJkissShares = ({ nextRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
-  if (!jkissInvested || !nextRoundResults) return 0;
+export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
+  if (!jkissInvested || !nextRoundResults || !prevRoundResults) return 0;
 
-  const { sharePrice, totalShares, preMoneyDiluted } = nextRoundResults;
+  const { sharePrice, preMoneyDiluted } = nextRoundResults;
+  const { totalShares } = prevRoundResults;
 
   const jkissPrice = Math.min(sharePrice * discount / 100, (preMoneyDiluted - jkissInvested) / totalShares);
 
@@ -242,8 +243,10 @@ const convertSingleRoundToJkiss = rounds => ([id, round]) => {
   const roundIds = [...rounds.keys()];
   const nextId = roundIds[roundIds.indexOf(id) + 1];
   if (!nextId) return [id, round];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
 
   const nextRoundResults = calcRoundResults(rounds, nextId);
+  const prevRoundResults = calcRoundResults(rounds, prevId);
 
   return [id, {
     ...round,
@@ -252,7 +255,7 @@ const convertSingleRoundToJkiss = rounds => ([id, round]) => {
 
       return [id, {
         ...investment,
-        commonShares: calcJkissShares({ nextRoundResults, ...investment, ...round }),
+        commonShares: calcJkissShares({ nextRoundResults, prevRoundResults, ...investment, ...round }),
       }];
     })),
   }];
