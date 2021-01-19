@@ -89,7 +89,7 @@
 
     if (!ids.has(id)) {
       try {
-        const res = await addDoc(id, $user, defaultDocument);
+        const res = await addDoc(id, $user, store.get("documents").get(id) || defaultDocument);
       } catch (e) {
         console.error("ADD DOC ERROR", e);
       }

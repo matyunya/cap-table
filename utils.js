@@ -46,15 +46,31 @@ export const getFutureRounds = (rounds, id) => {
   return new Map([...rounds].slice(idx + 1));
 }
 
+// if valuation cap < next round premoney diluted (minus jkiss invested)
+//   then jkiss invested / (val cap / prevRound totalShares)
+//   else jkiss invested / nextRound share price * (1 - discount)
 export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
   if (!jkissInvested || !nextRoundResults || !prevRoundResults) return 0;
 
   const { sharePrice, preMoneyDiluted } = nextRoundResults;
   const { totalShares } = prevRoundResults;
 
-  const jkissPrice = Math.min(sharePrice * discount / 100, (preMoneyDiluted - jkissInvested) / totalShares);
+  const jkissPrice = valuationCap < (preMoneyDiluted - jkissInvested)
+    ? valuationCap / totalShares
+    : sharePrice * (1 - (discount * 0.01));
 
-  return Math.floor(jkissInvested / jkissPrice);
+  console.log({
+    jkissPrice,
+    sharePrice,
+    a: sharePrice * (1 - (discount * 0.01)),
+    b: (preMoneyDiluted - jkissInvested) / totalShares,
+    totalShares,
+    preMoneyDiluted,
+    valuationCap,
+    jkissInvested,
+  })
+
+  return Math.ceil(jkissInvested / jkissPrice);
 }
 
 export const format = {
@@ -124,7 +140,7 @@ export function calcRoundResults(r, id) {
     postMoney: newEquity + preMoney,
     preMoneyDiluted,
     postMoneyDiluted: preMoneyDiluted + newEquityDiluted,
-    totalShares: totalShares(rounds),
+    totalShares: totalShares(getPreviousRounds(rounds, id)),
   };
 }
 
