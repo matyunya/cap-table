@@ -178,7 +178,7 @@
 
 {#if !$route}
   {#if $documentIds.length > 0}
-   <section class="relative block py-24 lg:pt-0">
+   <section class="relative block py-24 lg:pt-0 md:mt-24">
     <div class="max-w-sm mx-auto px-4">
        <ul class="p-4 max-w-sm mx-auto relative flex flex-col space-y-2">
         {#each $documentIds as [id, title]}
