@@ -100,7 +100,7 @@
     label={$_("TEL")}
     id="phone"
     type="tel" />
-  {#if language === "ja"}
+  {#if $language === "ja"}
     <Input
       on:change={update('establishedMonth')}
       value={data.establishedMonth}

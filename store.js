@@ -14,9 +14,11 @@ import {
   getPreviousRounds,
 } from "/utils/index.js";
 
-export const getActiveDocId = (r) => (r || window.location.hash || "").split("/")[2];
+export const getActiveDocId = (r) => {
+  return (r || window.location.hash || "").split("/")[2]
+};
 
-export const docId = svDerived(router, getActiveDocId);
+export const docId = derived(router, getActiveDocId);
 
 export const user = writable({
   userId: null,
@@ -86,26 +88,35 @@ const defaultStore = {
 
 export const store = bootstrap(defaultStore);
 
-export function getActiveDocRef() {
-  const docId = getActiveDocId();
-
+export function getActiveDocRef(id) {
   const { appId, userId } = ellx.auth() || {};
 
   return firebase.firestore()
     .collection('apps')
     .doc(appId)
     .collection('files')
-    .doc(docId)
+    .doc(id || docId.get())
 }
-
 
 export function syncUp(st, TRANSACTION, payload) {
   const reducer = produce(TRANSACTION(payload));
 
-  console.log(serialize(reducer(st.get())));
+  const val = serialize(reducer(st.get()));
 
-  getActiveDocRef().set(serialize(reducer(st.get())));
+  console.log("SYNCING UP", val);
+
+  getActiveDocRef().set(val);
 };
+
+export function syncDocumentUp(st, TRANSACTION, payload, id) {
+  const reducer = produce(TRANSACTION(payload));
+
+  const newDoc = serialize(reducer(st)).documents[id];
+  console.log("SYNCING UP DOC", newDoc);
+
+  getActiveDocRef(id).set(newDoc);
+};
+
 
 export const isAuthenticated = svDerived(user, ({ userId }) => Boolean(userId));
 
@@ -327,8 +338,8 @@ export function SET_DOCUMENT({ id, data }) {
 export function COPY_DOCUMENT({ from, to }) {
   return ({ set, get }) => {
     const newDoc = from ? {
-      ...get("documents", from),
-      title: get("documents", from).title + (language.get() === "ja" ? "コピー" : " copy")
+      ...from,
+      title: from.title + (language.get() === "ja" ? "コピー" : " copy")
     } : defaultDocument;
 
     set("documents", to, {
@@ -355,14 +366,10 @@ export function REMOVE_DOCUMENT({ id }) {
       throw new Error("Cannot delete last document");
     }
 
-    if (id === "DOC_0") {
-      throw new Error("Cannot delete initial document"); // Allow when routing works
-    }
-
     const updated = new Map(d);
 
     updated.delete(id);
 
-    return updated; // TODO: sync deletion?
+    return updated;
   })
 }

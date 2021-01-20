@@ -107,7 +107,7 @@
                   on:change={e => email = e.target.value}
                   placeholder="email"
                   label="email"
-                  id="email"
+                  id="email-signin"
                   type="email"
                   classes=""
                 />

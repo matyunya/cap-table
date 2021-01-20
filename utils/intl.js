@@ -149,6 +149,9 @@ const translations = {
   "共有をキャンセル": {
     en: "Make private",
   },
+  "このページは見つかりませんでした。": {
+    en: "This page does not exist"
+  },
 };
 
 const translate = (key, lang) => {

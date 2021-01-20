@@ -6,7 +6,7 @@ const reduceSumOfCommonShares = (acc, { investments }) => acc + sum([...investme
 
 const reduceSumOfJkissInvested = (acc, { investments }) => acc + sum([...investments.values()].map(({ jkissInvested = 0 }) => jkissInvested));
 
-export const uid = (length = 16) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
+export const uid = (length = 32) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
 
 export const calcShare = (myShare, total) => (myShare * 100 / total).toFixed(1);
 
@@ -58,17 +58,6 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
   const jkissPrice = valuationCap < (preMoneyDiluted - jkissInvested)
     ? valuationCap / totalShares
     : sharePrice * (1 - (discount * 0.01));
-
-  console.log({
-    jkissPrice,
-    sharePrice,
-    a: sharePrice * (1 - (discount * 0.01)),
-    b: (preMoneyDiluted - jkissInvested) / totalShares,
-    totalShares,
-    preMoneyDiluted,
-    valuationCap,
-    jkissInvested,
-  })
 
   return Math.ceil(jkissInvested / jkissPrice);
 }
@@ -235,7 +224,7 @@ export function jkissRoundResults(rounds, id, x, y) {
   };
 
   if (!nextId) {
-    return roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true);
+    return roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, false);
   }
 
   const nextRoundResults = calcRoundResults(rounds, nextId);
@@ -248,8 +237,8 @@ export function jkissRoundResults(rounds, id, x, y) {
   };
 
   return [
-    ...roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, true),
-    ...roundResultsWithPosition(id + "A", x + 2, y, 2, jkissResultsBeforeNextRound, true),
+    ...roundResultsWithPosition(id, x, y, 2, jkissResultsAtInvestment, false),
+    ...roundResultsWithPosition(id + "A", x + 2, y, 2, jkissResultsBeforeNextRound, false),
   ];
 }
 

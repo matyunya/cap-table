@@ -11,14 +11,22 @@ function getProfileRef() {
     .where("owner", "==", userId);
 }
 
-export function connect() {
+export function connect(onFirstSnapshot = () => {}) {
+  let initial = true;
   const { appId, userId } = ellx.auth() || {};
 
   return getProfileRef()
     .onSnapshot(
-      querySnapshot => querySnapshot.empty
-        ? updateProfile({ ...defaultProfile, owner: userId })
-        : store.commit(SYNC_PROFILE, querySnapshot)
+      querySnapshot => {
+        querySnapshot.empty
+          ? updateProfile({ ...defaultProfile, owner: userId })
+          : store.commit(SYNC_PROFILE, querySnapshot);
+
+        if (initial) {
+          onFirstSnapshot();
+          initial = false;
+        }
+      }
   );
 }
 

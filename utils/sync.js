@@ -31,59 +31,6 @@ export function deserialize(snapshot) {
   return obj;
 }
 
-export function sync(dbRef, store, owner, onInitialSync) {
-  let lastLocalState = null;
-  let lastRemoteState = null;
-
-  const storeOff = store.subscribe(state => {
-    lastLocalState = state;
-    if (!lastRemoteState || state === lastRemoteState) return;
-
-    console.log('SYNC: store -> DB', state);
-    const newVal = serialize(lastRemoteState = state);
-    if (newVal) {
-      dbRef.set(newVal);
-    } else {
-      dbRef.delete();
-    }
-  });
-
-  const dbOff = dbRef.onSnapshot(doc => {
-    if (!doc.exists) {
-      console.log('INITIAL SYNC: store -> DB', lastLocalState);
-      if (typeof onInitialSync === 'function') onInitialSync(lastLocalState);
-
-      const newVal = serialize(lastRemoteState = lastLocalState);
-
-      if (newVal) {
-        dbRef.set({
-          userId,
-          ...newVal,
-        });
-      } else {
-        dbRef.delete();
-      }
-      return;
-    }
-
-    const state = deserialize(doc.data());
-    if (!lastRemoteState && typeof onInitialSync === 'function') onInitialSync(state);
-
-    if (!equal(state, lastRemoteState)) {
-      console.log('SYNC: DB -> store', state);
-      store.commit(val => ({ update }) => update(v => ({
-        ...v,
-        ...val,
-      })), lastRemoteState = state);
-    }
-  });
-
-  return () => {
-    dbOff();
-    storeOff();
-  }
-}
-
 export function SYNC_DOCS(querySnapshot) {
   return ({ set, remove }) => {
     for (let { type, doc } of querySnapshot.docChanges()) {

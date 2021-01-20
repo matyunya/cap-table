@@ -39,7 +39,7 @@
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) => route.set(`${$user.userId}/${$user.appId}/${target.value}`)}
-        options={$documentIds}
+        options={$documentIds.find(([id]) => $docId) ? $documentIds : [[$docId, "--"], ...$documentIds]}
       />
     </div>
   {/if}

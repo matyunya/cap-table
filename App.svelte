@@ -1,6 +1,5 @@
 <script>
   import { tx } from "tinyx";
-  import { writable } from "svelte/store";
   import { scale } from "svelte/transition";
   import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
@@ -13,12 +12,12 @@
   import Logo from "/components/Logo.svelte";
   import Nav from "/components/Nav.svelte";
   import { deserialize } from "/utils/sync.js";
-  import { docId, user } from "./store.js";
+  import { docId, user, store } from "./store.js";
   import { togglePublic } from "/utils/actions.js";
   import route from "/utils/router.js";
   import { calcFounderShare } from "/utils/index.js";
   import { getDoc } from "/utils/firebase.js";
-  import { connect, getActiveDocRef } from "/models/docs.js";
+  import { connect } from "/models/docs.js";
   import { connect as connectProfile } from "/models/profile.js";
   import {
     colsCount,
@@ -35,8 +34,6 @@
   let disconnect = i => i;
   let disconnectProfile = i => i;
   let showNotFound = false;
-
-  export let store;
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -66,9 +63,19 @@
   let ids = new Set();
 
   $: if ($route) {
+    console.log("NEW ROUTE", $route);
     showNotFound = false;
     selectDoc(...$route.split('/'));
   }
+
+  $: console.log({ $activeSheet });
+
+// TODO: set showNotFound after store is set
+//   $: if ($docId && !loading) {
+//     tick().then(() => {
+//       showNotFound = !$activeSheet || $activeSheet.size === 0;
+//     });
+//   }
 
   async function getDocAnon({ userId, appId, id }) {
     try {
@@ -77,7 +84,6 @@
       console.log('Anonymous user fetching', { userId, appId, id, $user, userId });
 
       await doc.get().then(d => {
-        console.log("anon doc data", deserialize(d.data()));
         store.commit(() => ({ set }) => set("anonymous", {
           ...deserialize(d.data()),
           readOnly: true,
@@ -113,18 +119,12 @@
     }
   }
 
-  async function onAuthenticated() {
-    loading = true;
+  function onAuthenticated() {
     $user = ellx.auth();
     disconnectProfile = connectProfile();
-
-    if (disconnect) disconnect();
-
+    // TODO:
+    // always redirect if no doc id
     disconnect = connect();
-    loading = false;
-    if (!$docId) {
-      $route = $user.userId + "/" +  $user.appId + "/" + "DOC_0";
-    }
   }
 
   onDestroy(disconnect);
@@ -152,8 +152,6 @@
     } finally {
       loading = false;
     }
-
-    if ($route) selectDoc(...$route.split("/"));
   });
 
   async function logout() {
@@ -174,7 +172,6 @@
   bind:showProfile
   togglePublic={() => togglePublic(activeSheet)}
   {logout}
-  {store}
   {founderShare}
 />
 
@@ -191,8 +188,8 @@
     {#if showProfile}
       <EditProfilePage bind:showProfile />
     {:else if showNotFound}
-      <div class="w-full text-center mt-8 text-lg relative text-red-500">
-        Doc not found
+      <div class="w-full text-center mt-16 text-lg relative text-red-400">
+        {$_("このページは見つかりませんでした。")}
       </div>
     {:else}
       <Sheet
