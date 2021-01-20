@@ -45,12 +45,12 @@
 
     %Runtime%
 
-    const { CalcGraph, getRequire, appLogin, appLogout, getLogin, getLogout } = Runtime;
+    const { CalcGraph, getRequire, appLogin, appLogout, initializeEllxAuth } = Runtime;
 
-    window.ellx = {
-      login: getLogin(email => appLogin(projectKey, email)),
-      logout: getLogout(() => appLogout(projectKey))
-    };
+    initializeEllxAuth(
+      (...args) => appLogin(projectKey, ...args),
+      () => appLogout(projectKey)
+    );
 
     const require = getRequire(requireGraph);
 

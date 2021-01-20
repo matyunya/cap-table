@@ -1,13 +1,12 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import Input from "./Input.svelte";
-  import Scrim from "./Scrim.svelte";
-  import ProfileForm from "./ProfileForm.svelte";
-  import _ from "./intl.js";
-  import { language, defaultProfile } from "./store.js";
-  import { getAppData } from "./firebase.js";
+  import Input from "/components/Input.svelte";
+  import Scrim from "/components/Scrim.svelte";
+  import ProfileForm from "/components/ProfileForm.svelte";
+  import _ from "/utils/intl.js";
+  import { language, defaultProfile, store } from "/store.js";
+  import { connect, updateProfile } from "/models/profile.js";
 
-  export let store;
   export let loading = true;
 
   const dispatch = createEventDispatcher();
@@ -48,7 +47,12 @@
       showEmailNotification = true;
       const authInfo = await window.ellx.login(emailAddress, { language: $language });
 
-      dispatch('success', { appData: getAppData(authInfo), authInfo, profile });
+      if (profile) {
+        connect();
+        updateProfile(profile);
+      }
+
+      dispatch('success', { authInfo });
     } catch (e) {
       error = e;
       throw e;

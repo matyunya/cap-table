@@ -1,8 +1,8 @@
 <script>
   import Input from "./Input.svelte";
   import Select from "./Select.svelte";
-  import { language } from "./store.js";
-  import _ from "./intl.js";
+  import { language } from "/store.js";
+  import _ from "/utils/intl.js";
   export let onSave = () => {};
   export let onCancel = () => {};
   export let update = field => e => data[field] = e.target.value;

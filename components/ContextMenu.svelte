@@ -2,7 +2,7 @@
   import { tick } from "svelte";
   import { writable } from "svelte/store";
   import Menu, { onClickActivator } from './Menu.svelte';
-  import _ from "./intl.js";
+  import _ from "/utils/intl.js";
   const items = writable();
 
   export function openContextMenu(i, e) {

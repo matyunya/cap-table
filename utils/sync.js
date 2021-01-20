@@ -83,3 +83,21 @@ export function sync(dbRef, store, owner, onInitialSync) {
     storeOff();
   }
 }
+
+export function SYNC_DOCS(querySnapshot) {
+  return ({ set, remove }) => {
+    for (let { type, doc } of querySnapshot.docChanges()) {
+      if (type === 'removed') remove("documents", doc.id);
+      else set("documents", doc.id, deserialize(doc.data()));
+    }
+  }
+}
+
+export function SYNC_PROFILE(querySnapshot) {
+  return ({ set, remove }) => {
+    for (let { type, doc } of querySnapshot.docChanges()) {
+      if (type === 'removed') remove("profile");
+      else set("profile", deserialize(doc.data()));
+    }
+  }
+}

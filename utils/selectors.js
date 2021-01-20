@@ -26,7 +26,7 @@ import {
   convertJkissToCommonShares,
   jkissRoundResults,
   roundResultsWithPosition
-} from "./utils.js";
+} from "./index.js";
 import {
   labelClasses,
   firstColClasses,
@@ -45,7 +45,8 @@ import {
   UPDATE_SPLIT_BY,
   docId,
   store,
-} from "./store.js"
+  syncUp,
+} from "/store.js"
 
 const formatRoundTitle = ({ name, date }) => `${name}`
   + (date ? ` (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})` : '');
@@ -91,16 +92,16 @@ export const investorNames = investors => id => [
     onChange: (s, { id, value }) => {
       const [,investorId] = id.split(':');
 
-      s.commit(UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
+      syncUp(s, UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
     },
     menuItems: (s, { id }) => [
         {
           text: "投資家追加",
-          cb: () => s.commit(ADD_INVESTOR, { afterId: id.split(':')[1] }),
+          cb: () => syncUp(s, ADD_INVESTOR, { afterId: id.split(':')[1] }),
         },
         {
           text: "削除",
-          cb: () => s.commit(REMOVE_INVESTOR, { id: id.split(':')[1] }),
+          cb: () => syncUp(s, REMOVE_INVESTOR, { id: id.split(':')[1] }),
         },
       ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'Add investor'),
   }
@@ -117,19 +118,19 @@ const roundTitle = (id, x, colSpan, rounds) => [
     menuItems: (s, { id }) => [
       {
         text: "新ラウンド作成（普通株式）",
-        cb: () => s.commit(ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
+        cb: () => syncUp(s, ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
       },
       rounds.get(id.split(':')[1]).type !== "j-kiss" ? {
         text: "J-kissラウンド作成",
-        cb: () => s.commit(ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+        cb: () => syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
       } : false,
       {
         text: "Splitラウンド作成",
-        cb: () => s.commit(ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
+        cb: () => syncUp(s, ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
       },
       rounds.get(id.split(':')[1]).type !== "founded" ? {
         text: "ラウンド削除",
-        cb: () => s.commit(REMOVE_ROUND, { id: id.split(':')[1] }),
+        cb: () => syncUp(s, REMOVE_ROUND, { id: id.split(':')[1] }),
       } : false,
     ].filter(Boolean),
   }
@@ -154,14 +155,14 @@ function jkissCells(round, roundId, x, y) {
     [`valuation:${roundId}`, {
       position: [y + 6, x + 2, y + 6, x + 3],
       value: round.valuationCap || 0,
-      onChange: (store, { value }) => store.commit(UPDATE_VALUATION_CAP, { roundId, value }),
+      onChange: (store, { value }) => syncUp(store, UPDATE_VALUATION_CAP, { roundId, value }),
       format: format.currency.format,
       classes: "dark:bg-gray-800 bg-white",
     }],
     [`discount:${roundId}`, {
       position: [y + 7, x + 2, y + 7, x + 3],
       value: round.discount || 0,
-      onChange: (store, { value }) => store.commit(UPDATE_DISCOUNT, { roundId, value }),
+      onChange: (store, { value }) => syncUp(store, UPDATE_DISCOUNT, { roundId, value }),
       format: i => i + '%',
       classes: "dark:bg-gray-800 bg-white",
     }],
@@ -181,7 +182,7 @@ function splitCells(round, roundId, x, y) {
     [`split-by:${roundId}`, {
       position: [y + 6, x + 2, y + 6, x + 3],
       value: round.splitBy || 0,
-      onChange: (store, { value }) => store.commit(UPDATE_SPLIT_BY, { roundId, value }),
+      onChange: (store, { value }) => syncUp(store, UPDATE_SPLIT_BY, { roundId, value }),
       format: format.number.format,
       classes: "dark:bg-gray-800 bg-white",
     }],
@@ -260,7 +261,7 @@ function documentNameBlock(s, title) {
       position: [0,0,2,1],
       value: title,
       classes: "flex items-center justify-center",
-      onChange: (s, value) => s.commit(UPDATE_DOCUMENT_TITLE, value),
+      onChange: (s, value) => syncUp(s, UPDATE_DOCUMENT_TITLE, value),
       pinMenuToggle: true,
       menuItems: (s) => [
         {
@@ -268,14 +269,14 @@ function documentNameBlock(s, title) {
           cb: () => createDocument(store),
         },
         {
-          text: "共有する",
+          text: s.get("access", "read", "public") ? "共有をキャンセル" : "共有する",
           cb: () => togglePublic(s),
         },
         {
           text: "このテーブルをコピー",
           cb: () => createDocument(store, { from: get(docId) }),
         },
-        {
+        store.get("documents").size > 1 && {
           text: "削除",
           cb: () => removeDocument(store, { id: get(docId) }),
         },
@@ -283,7 +284,7 @@ function documentNameBlock(s, title) {
           text: "リセット",
           cb: () => resetDocument(s),
         },
-      ]
+      ].filter(Boolean)
     }
   ];
 }

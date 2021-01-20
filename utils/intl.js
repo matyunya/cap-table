@@ -1,5 +1,5 @@
 import { derived } from "tinyx";
-import { language } from "./store.js";
+import { language } from "/store.js";
 
 const translations = {
   "30秒で無料登録、すぐ使えます！": {
@@ -145,6 +145,9 @@ const translations = {
   },
   "リセット": {
     en: "Reset table",
+  },
+  "共有をキャンセル": {
+    en: "Make private",
   },
 };
 

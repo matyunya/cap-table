@@ -5,30 +5,37 @@
   import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
   import { onMount, onDestroy, tick } from "svelte";
+
   import HomePage from "./HomePage.svelte";
-  import Sheet from "./Sheet.svelte";
-  import Logo from "./Logo.svelte";
-  import ProfileForm from "./ProfileForm.svelte";
-  import Scrim from "./Scrim.svelte";
-  import Nav from "./Nav.svelte";
-  import { sync, deserialize } from "./sync.js";
-  import { defaultProfile, UPDATE_PROFILE, SET_LANGUAGE, docId, user, defaultDocument } from "./store.js";
-  import { togglePublic } from "./actions.js";
-  import route from "./router.js";
-  import { calcFounderShare } from "./utils.js";
-  import { getAppData, getDoc, addDoc } from "./firebase.js";
+  import EditProfilePage from "./EditProfilePage.svelte";
+
+  import Sheet from "/components/Sheet.svelte";
+  import Logo from "/components/Logo.svelte";
+  import Nav from "/components/Nav.svelte";
+  import { deserialize } from "/utils/sync.js";
+  import { docId, user } from "./store.js";
+  import { togglePublic } from "/utils/actions.js";
+  import route from "/utils/router.js";
+  import { calcFounderShare } from "/utils/index.js";
+  import { getDoc } from "/utils/firebase.js";
+  import { connect, getActiveDocRef } from "/models/docs.js";
+  import { connect as connectProfile } from "/models/profile.js";
   import {
     colsCount,
     rowsCount,
     toBlocks,
-  } from "./selectors.js";
-  import _ from "./intl.js";
+  } from "/utils/selectors.js";
+  import _ from "/utils/intl.js";
 
   let blocks = new Map();
   let nRows = 10;
   let nCols = 5;
-  let founderShare = 100;
+  let founderShare = 1;
   let loading = true;
+  let disconnect = i => i;
+  let disconnectProfile = i => i;
+  let showNotFound = false;
+
   export let store;
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -46,17 +53,22 @@
     founderShare = calcFounderShare($activeSheet);
   }
 
-  let unsubs = new Map();
   let showProfile = false;
-  let activeSheet = select(store, () => ["documents", $docId || "DOC_0"]);
-  let errors = { ...defaultProfile };
 
-  let userProfile = select(store, () => ["profile"]);
+  $: activeSheet = select(store, () => {
+    const [routeUserId] = ($route || "").split("/");
+
+    return routeUserId === $user.userId
+      ? ["documents", $docId]
+      : ["anonymous"];
+  });
+
   let ids = new Set();
 
-  let appData, profile;
-
-  $: if ($route) selectDoc(...$route.split('/'));
+  $: if ($route) {
+    showNotFound = false;
+    selectDoc(...$route.split('/'));
+  }
 
   async function getDocAnon({ userId, appId, id }) {
     try {
@@ -64,43 +76,17 @@
 
       console.log('Anonymous user fetching', { userId, appId, id, $user, userId });
 
-      activeSheet = select(store, () => ["anonymous"]);
-
       await doc.get().then(d => {
         console.log("anon doc data", deserialize(d.data()));
-        activeSheet.commit(() => ({ set }) => set({
+        store.commit(() => ({ set }) => set("anonymous", {
           ...deserialize(d.data()),
           readOnly: true,
         }));
       });
     } catch (e) {
       console.log('Error fetching doc', e);
+      showNotFound = true;
     }
-  }
-
-  async function getDocAuth(id) {
-    if (!appData) return;
-
-    activeSheet = select(store, () => ["documents", id]);
-
-    if (unsubs.has(id)) {
-      unsubs.get(id)();
-    }
-
-    if (!ids.has(id)) {
-      try {
-        const res = await addDoc(id, $user, store.get("documents").get(id) || defaultDocument);
-      } catch (e) {
-        console.error("ADD DOC ERROR", e);
-      }
-    }
-
-    unsubs.set(
-      id,
-      sync(getDoc(id, $user), activeSheet, $user.userId, () => {
-        loading = false;
-      })
-    );
   }
 
   async function selectDoc(userId, appId, id) {
@@ -122,51 +108,26 @@
         return;
       }
 
-      if (userId && $user.userId === userId) {
-        await getDocAuth(id);
-      }
     } finally {
       loading = false;
     }
   }
 
-  async function onAuthenticated(e) {
+  async function onAuthenticated() {
     loading = true;
-    const { commit } = store;
-    ({ appData, profile, authInfo } = e.detail);
+    $user = ellx.auth();
+    disconnectProfile = connectProfile();
 
-    console.log({ appData, store, authInfo });
+    if (disconnect) disconnect();
 
-    if (profile) {
-      store.commit((p) => ({ set }) => set('profile', p), profile);
-      await addDoc("profile", authInfo, profile);
-    }
-
-    $user = authInfo;
-
-    await appData.get().then(docs => {
-      docs.forEach(doc => {
-        ids.add(doc.id);
-        console.log("ID", doc.id);
-        if (unsubs.has(doc.id)) return;
-
-        const selector = doc.id === "profile"
-          ? userProfile
-          : select(store, () => ["documents", doc.id]);
-
-        console.log('Trying to sync', doc.id);
-        unsubs.set(doc.id, (sync(getDoc(doc.id, $user), selector, $user.userId)));
-      });
-
-      selectDoc($user.userId, $user.appId, ($docId || "DOC_0"));
-    });
-
+    disconnect = connect();
+    loading = false;
     if (!$docId) {
       $route = $user.userId + "/" +  $user.appId + "/" + "DOC_0";
     }
   }
 
-  onDestroy(() => [...unsubs.values()]);
+  onDestroy(disconnect);
 
   onMount(async () => {
     setTimeout(async () => {
@@ -181,14 +142,10 @@
       el.classList.add('opacity-100');
     }, 50);
 
-    tick().then(() => route.set(window.location.hash.slice(1)));
-
-    console.log($route, "route on mount");
     try {
       const authInfo = await window.ellx.login();
-      console.log({ authInfo });
       if (authInfo && authInfo.userId) {
-        await onAuthenticated({ detail: { appData: getAppData(authInfo), authInfo } });
+        await onAuthenticated();
       }
     } catch (e) {
       console.log(e);
@@ -199,29 +156,18 @@
     if ($route) selectDoc(...$route.split("/"));
   });
 
-  function updateProfile(data) {
-    store.commit(UPDATE_PROFILE, { profile: data });
-    showProfile = false;
-  }
-
-  function onCancelProfileEdit() {
-    showProfile = false;
-    window.scrollTo(0, 0);
-  }
-
   async function logout() {
     await window.ellx.logout();
-    [...unsubs.values()].forEach(a => a());
-    unsubs = new Map();
-    store.resetStore();
-    activeSheet = select(store, () => ["documents", "DOC_0"]);
     $route = "";
     $user = { userId: null, appId: null };
+    disconnect();
+    disconnectProfile();
+    store.resetStore();
     loading = false;
   }
 </script>
 
-<div class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
+<div class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
 
 <Nav
   bind:dark
@@ -243,24 +189,10 @@
     </div>
   {:else}
     {#if showProfile}
-      <div class="flex flex-wrap align-center justify-center">
-        <div class="max-w-xl mx-auto w-full lg:w-6/12 px-4">
-          <div
-            class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow rounded bg-gray-300 mt-8 text-gray-800 antialiased bg-gradient-to-r from-blue-gray-100 via-gray-200 to-warm-gray-200"
-          >
-            <div class="w-full text-center text-lg md:text-2xl text-black mt-12 px-4 uppercase tracking-widest font-bold">
-              {$_("プロフィール編集画面")}
-            </div>
-            <ProfileForm
-              initial={false}
-              label="保存する"
-              data={{ ...$userProfile}}
-              {errors}
-              onSave={updateProfile}
-              onCancel={onCancelProfileEdit}
-            />
-          </div>
-        </div>
+      <EditProfilePage bind:showProfile />
+    {:else if showNotFound}
+      <div class="w-full text-center mt-8 text-lg relative text-red-500">
+        Doc not found
       </div>
     {:else}
       <Sheet

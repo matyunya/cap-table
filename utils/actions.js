@@ -16,7 +16,8 @@ import {
   RESET_DOCUMENT,
   docId,
   user,
-} from "./store.js";
+  syncUp,
+} from "/store.js";
 
 import {
   firstColClasses,
@@ -34,7 +35,7 @@ import {
   allGroups,
   lastInvestorIdInGroup,
   uid,
-} from "./utils.js";
+} from "./index.js";
 
 import router from "./router.js";
 
@@ -58,13 +59,14 @@ export function groupNames(investors) {
           value: cur,
           classes: groupClasses + " " + firstColClasses,
           onChange: (store, { value }) => {
-            store.commit(UPDATE_GROUP_NAME, { oldName: cur, newName: value });
+            syncUp(store, UPDATE_GROUP_NAME, { oldName: cur, newName: value });
           },
           menuItems: (store, { id }) => [
             {
               text: "グループ追加",
               cb: () => {
-                store.commit(
+                syncUp(
+                  store,
                   ADD_INVESTOR,
                   {
                     newGroup: true,
@@ -75,7 +77,7 @@ export function groupNames(investors) {
             },
             {
               text: "削除",
-              cb: () => store.commit(REMOVE_GROUP, { group: id.split(':')[1] }),
+              cb: () => syncUp(store, REMOVE_GROUP, { group: id.split(':')[1] }),
             },
           ],
         }
@@ -127,24 +129,25 @@ const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(round
 
 const updateShares = type => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
-  store.commit(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+
+  syncUp(store, UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
 };
 
 const updateInvestment = (mutation, fieldName) => (store, { id, value }) => {
   const [, roundId, investorId] = id.split(":");
-  store.commit(mutation, { roundId, investorId, [fieldName]: Number(value) });
+  syncUp(store, mutation, { roundId, investorId, [fieldName]: Number(value) });
 };
 
 const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
 
 const updateRound = (mutation, fieldName) => (store, { id, value }) => {
   const [roundId] = id.split(":");
-  store.commit(mutation, { roundId, [fieldName]: value });
+  syncUp(store, mutation, { roundId, [fieldName]: value });
 };
 
 export const renameRound = (store, { id, value }) => {
   const [,roundId] = id.split(":");
-  store.commit(RENAME_ROUND, { roundId, name: value });
+  syncUp(store, RENAME_ROUND, { roundId, name: value });
 };
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
@@ -266,56 +269,30 @@ export const roundOptions = {
 
 export const roundTypes = Object.keys(roundOptions);
 
-function copyToClipboard(text) {
-  var textArea = document.createElement("textarea");
-  textArea.value = text;
-
-  // Avoid scrolling to bottom
-  textArea.style.top = "0";
-  textArea.style.left = "0";
-  textArea.style.position = "fixed";
-
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-
-  try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Fallback: Copying text command was ' + msg);
-  } catch (err) {
-    console.error('Fallback: Oops, unable to copy', err);
-  }
-
-  document.body.removeChild(textArea);
-}
-
 export const togglePublic = (store) => {
-  store.commit(TOGGLE_PUBLIC);
-
-  copyToClipboard(window.location.hash.slice(1));
+  syncUp(store, TOGGLE_PUBLIC);
 };
 
 export const createDocument = (store, { from } = {}) => {
   const to = uid();
-  store.commit(COPY_DOCUMENT, { from, to });
+  syncUp(store, COPY_DOCUMENT, { from, to });
 
-  const { userId, appId } = get(user);
+  const { userId, appId } = ellx.auth();
 
   router.set(`${userId}/${appId}/${to}`);
 }
 
 export const resetDocument = (store) => {
-  store.commit(RESET_DOCUMENT);
+  syncUp(store, RESET_DOCUMENT);
 }
 
 export const removeDocument = (store, { id }) => {
   const ids = [...store.get('documents').keys()];
   const idx = ids.indexOf(id);
 
-  store.commit(REMOVE_DOCUMENT, { id });
+  syncUp(store, REMOVE_DOCUMENT, { id });
 
-  const { userId, appId } = get(user);
+  const { userId, appId } = ellx.auth();
 
   router.set(`${userId}/${appId}/${ids[idx - 1]}`);
 }

@@ -1,7 +1,8 @@
 import { writable, derived as svDerived } from "svelte/store";
 import bootstrap from "~matyunya/store";
-import { select, derived } from "tinyx";
-import router from "./router.js";
+import { select, derived, produce } from "tinyx";
+import router from "/utils/router.js";
+import { serialize } from "/utils/sync.js";
 
 import {
   lastInvestorIdInGroup,
@@ -11,11 +12,11 @@ import {
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
   getPreviousRounds,
-} from "./utils.js";
+} from "/utils/index.js";
 
-export const docId = svDerived(router, r => {
-  return (r || window.location.hash || "").split("/")[2];
-});
+export const getActiveDocId = (r) => (r || window.location.hash || "").split("/")[2];
+
+export const docId = svDerived(router, getActiveDocId);
 
 export const user = writable({
   userId: null,
@@ -80,18 +81,42 @@ export const defaultDocument = {
 
 const defaultStore = {
   profile: defaultProfile,
-  documents: new Map([[
-    "DOC_0", defaultDocument,
-  ]]),
+  documents: new Map(),
 };
 
 export const store = bootstrap(defaultStore);
+
+export function getActiveDocRef() {
+  const docId = getActiveDocId();
+
+  const { appId, userId } = ellx.auth() || {};
+
+  return firebase.firestore()
+    .collection('apps')
+    .doc(appId)
+    .collection('files')
+    .doc(docId)
+}
+
+
+export function syncUp(st, TRANSACTION, payload) {
+  const reducer = produce(TRANSACTION(payload));
+
+  console.log(serialize(reducer(st.get())));
+
+  getActiveDocRef().set(serialize(reducer(st.get())));
+};
 
 export const isAuthenticated = svDerived(user, ({ userId }) => Boolean(userId));
 
 export const language = select(store, () => ["profile", "language"]);
 
-export const documentIds = derived(store, ({ documents }) => [...documents].map(([id, { title }]) => [id, title]));
+export const userProfile = select(store, () => ["profile"]);
+
+export const documentIds = derived(store, ({ documents }) => [...documents]
+  .filter(([id]) => id !== "profile")
+  .map(([id, { title }]) => [id, title])
+);
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", investorId, ({ commonShares = 0, votingShares = 0, ...params } = {}) => {
@@ -291,7 +316,7 @@ export function SET_LANGUAGE({ language }) {
 
 export function TOGGLE_PUBLIC() {
   return (({ update }) => update("access", (access = {}) => ({
-    read: { public: true }
+    read: { public: !(access.read || {}).public },
   })));
 }
 
@@ -306,7 +331,10 @@ export function COPY_DOCUMENT({ from, to }) {
       title: get("documents", from).title + (language.get() === "ja" ? "コピー" : " copy")
     } : defaultDocument;
 
-    set("documents", to, newDoc)
+    set("documents", to, {
+      ...newDoc,
+      owner: ellx.auth().userId,
+    });
   };
 }
 
@@ -315,7 +343,10 @@ export function UPDATE_DOCUMENT_TITLE({ value }) {
 }
 
 export function RESET_DOCUMENT() {
-  return ({ set }) => set(defaultDocument);
+  return ({ set }) => set({
+    ...defaultDocument,
+    owner: ellx.auth().userId,
+  });
 }
 
 export function REMOVE_DOCUMENT({ id }) {

@@ -40,7 +40,7 @@
 </script>
 
 <script>
-  import { uid } from '/utils.js';
+  import { uid } from '/utils/index.js';
 
   export let open = false;
 

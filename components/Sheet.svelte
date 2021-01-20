@@ -2,7 +2,7 @@
   import headlong from "~matyunya/headlong";
   import { tick, onMount } from "svelte";
   import ContextMenu, { openContextMenu } from "./ContextMenu.svelte";
-  import _ from "./intl.js";
+  import _ from "/utils/intl.js";
   export let blocks = new Map();
   export let nRows = 10;
   export let nCols = 5;

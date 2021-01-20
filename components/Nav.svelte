@@ -1,10 +1,11 @@
 <script>
-  import route from "./router.js";
+  import route from "/utils/router.js";
   import Select from "./Select.svelte";
-  import { SET_LANGUAGE, isAuthenticated, language, store, documentIds, docId, user } from "./store.js";
+  import { isAuthenticated, language, documentIds, docId, user, SET_LANGUAGE, store } from "/store.js";
   export let showProfile;
-  import _ from "./intl.js";
-  import { format } from "./utils.js";
+  import _ from "/utils/intl.js";
+  import { updateProfile } from "/models/profile.js";
+  import { format } from "/utils/index.js";
 
   export let logout = () => {};
   export let dark;
@@ -13,8 +14,12 @@
 
   const languages = [["en", "🇬🇧"], ["ja", "🇯🇵"]];
 
-  function setLanguage({ target }) {
-    store.commit(SET_LANGUAGE, { language: target.value });
+  function setLanguage({ target: { value: language } }) {
+    if ($isAuthenticated) {
+      updateProfile({ language }, { merge: true });
+    } else {
+      store.commit(SET_LANGUAGE, { language });
+    }
   }
 </script>
 
