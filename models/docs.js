@@ -12,7 +12,7 @@ function getDocsRef() {
     .where("owner", "==", userId);
 }
 
-export function connect(onFirstSnapshot = () => {}) {
+export function connect() {
   let initial = true;
   const { appId, userId } = ellx.auth() || {};
 
@@ -22,11 +22,6 @@ export function connect(onFirstSnapshot = () => {}) {
         querySnapshot.empty
           ? updateDoc(serialize({ ...defaultDocument, owner: userId }), uid())
           : store.commit(SYNC_DOCS, querySnapshot)
-
-        if (initial) {
-          onFirstSnapshot();
-          initial = false;
-        }
       }
   );
 }

@@ -11,6 +11,7 @@
   export let dark;
   export let togglePublic = () => {};
   export let founderShare = 0;
+  export let hideSelect = true;
 
   const languages = [["en", "🇬🇧"], ["ja", "🇯🇵"]];
 
@@ -34,7 +35,7 @@
 <div
   class="fixed w-full h-8 top-0 z-20 blurred-bg flex"
 >
-  {#if $isAuthenticated}
+  {#if !hideSelect && $isAuthenticated}
     <div class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8">
       <Select
         classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"

@@ -12,7 +12,7 @@
   import Logo from "/components/Logo.svelte";
   import Nav from "/components/Nav.svelte";
   import { deserialize } from "/utils/sync.js";
-  import { docId, user, store } from "./store.js";
+  import { docId, user, store, documentIds } from "./store.js";
   import { togglePublic } from "/utils/actions.js";
   import route from "/utils/router.js";
   import { calcFounderShare } from "/utils/index.js";
@@ -171,12 +171,25 @@
   bind:dark
   bind:showProfile
   togglePublic={() => togglePublic(activeSheet)}
+  hideSelect={!$route && $documentIds.length > 0}
   {logout}
   {founderShare}
 />
 
 {#if !$route}
-  <HomePage bind:loading on:success={onAuthenticated} />
+  {#if $documentIds.length > 0}
+   <section class="relative block py-24 lg:pt-0">
+    <div class="max-w-sm mx-auto px-4">
+       <ul class="p-4 max-w-sm mx-auto relative flex flex-col space-y-2">
+        {#each $documentIds as [id, title]}
+          <button class="cursor-pointer p-4 font-mono my-2 rounded hover:ring-1 ring-0 transition duration-150 text-light-blue-500 ring-light-blue-500" on:click={() => $route = `#${$user.userId}/${$user.appId}/${id}`}><li>{title}</li></button>
+        {/each}
+      </ul>
+    </div>
+  </section>
+  {:else}
+    <HomePage bind:loading on:success={onAuthenticated} />
+  {/if}
 {:else}
   {#if loading}
     <div class="h-full w-full absolute flex items-center justify-center">
