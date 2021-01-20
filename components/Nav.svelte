@@ -21,6 +21,8 @@
       store.commit(SET_LANGUAGE, { language });
     }
   }
+
+  $: options = $documentIds.find(([id]) => $docId === id) ? $documentIds : [[$docId, "--"], ...$documentIds];
 </script>
 
 <style>
@@ -39,7 +41,7 @@
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) => route.set(`${$user.userId}/${$user.appId}/${target.value}`)}
-        options={$documentIds.find(([id]) => $docId) ? $documentIds : [[$docId, "--"], ...$documentIds]}
+        options={options}
       />
     </div>
   {/if}

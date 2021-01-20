@@ -23,7 +23,7 @@ import {
   totalCommonShares,
   totalShares,
   getPreviousRounds,
-  convertJkissToCommonShares,
+  convertReactiveRounds,
   jkissRoundResults,
   roundResultsWithPosition
 } from "./index.js";
@@ -107,6 +107,33 @@ export const investorNames = investors => id => [
   }
 ];
 
+function canAddJkiss(roundId, rounds) {
+  if (rounds.get(roundId).type === "j-kiss") return false;
+
+  const roundIds = [...rounds.keys()];
+  const nextId = roundIds[roundIds.indexOf(roundId) + 1];
+
+  if (!nextId) return true;
+
+  return rounds.get(nextId).type !== "j-kiss";
+}
+
+function canAddSplit(roundId, rounds) {
+  return rounds.get(roundId).type !== "j-kiss";
+}
+
+function canRemoveRound(roundId, rounds) {
+  if (rounds.get(roundId).type === "founded") return false;
+
+  const roundIds = [...rounds.keys()];
+  const nextId = roundIds[roundIds.indexOf(roundId) + 1];
+  const prevId = roundIds[roundIds.indexOf(roundId) - 1];
+
+  if (!nextId) return true;
+
+  return !(rounds.get(prevId).type === "j-kiss" && ["j-kiss", "split"].includes(rounds.get(nextId).type));
+}
+
 const roundTitle = (id, x, colSpan, rounds) => [
   'round:' + id,
   {
@@ -118,17 +145,23 @@ const roundTitle = (id, x, colSpan, rounds) => [
     menuItems: (s, { id }) => [
       {
         text: "新ラウンド作成（普通株式）",
-        cb: () => syncUp(s, ADD_ROUND, { type: "common", afterId: id.split(':')[1] }),
+        cb: () => syncUp(
+          s,
+          ADD_ROUND,
+          {
+            type: "common",
+            afterId: id.split(':')[1],
+          }),
       },
-      rounds.get(id.split(':')[1]).type !== "j-kiss" ? {
+      canAddJkiss(id.split(':')[1], rounds) ? {
         text: "J-kissラウンド作成",
         cb: () => syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
       } : false,
-      {
+      canAddSplit(id.split(':')[1], rounds) ? {
         text: "Splitラウンド作成",
         cb: () => syncUp(s, ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
-      },
-      rounds.get(id.split(':')[1]).type !== "founded" ? {
+      } : false,
+      canRemoveRound(id.split(':')[1], rounds) ? {
         text: "ラウンド削除",
         cb: () => syncUp(s, REMOVE_ROUND, { id: id.split(':')[1] }),
       } : false,
@@ -148,7 +181,7 @@ function jkissCells(round, roundId, x, y) {
     }],
     [`discount-label:${roundId}`, {
       position: [y + 7, x, y + 7, x + 1],
-      value: "割引",
+      value: "割引率",
       classes: "dark:bg-gray-800 bg-white",
       isLabel: true,
     }],
@@ -191,7 +224,7 @@ function splitCells(round, roundId, x, y) {
 
 export function roundValues(r, investors) {
   return ([acc, prevCol], id) => {
-    const rounds = convertJkissToCommonShares(r, investors);
+    const rounds = convertReactiveRounds(r, investors);
 
     const round = rounds.get(id);
 
@@ -204,9 +237,7 @@ export function roundValues(r, investors) {
         totalInvestorRows(investors) + 4,
         colSpan,
         calcRoundResults(rounds, id),
-        updateSharePrice,
-        // Do we need to disable editing for split rounds?
-        // round.type !== "split" ? updateSharePrice : false
+        round.type !== "split" ? updateSharePrice : false,
       );
 
     const futureRounds = getFutureRounds(rounds, id);

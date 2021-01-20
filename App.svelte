@@ -187,7 +187,7 @@
   {:else}
     {#if showProfile}
       <EditProfilePage bind:showProfile />
-    {:else if showNotFound}
+    {:else if blocks.size === 0}
       <div class="w-full text-center mt-16 text-lg relative text-red-400">
         {$_("このページは見つかりませんでした。")}
       </div>

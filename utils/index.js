@@ -266,8 +266,33 @@ const convertSingleRoundToJkiss = rounds => ([id, round]) => {
   }];
 }
 
-export function convertJkissToCommonShares(rounds) {
-  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds)));
+function calcSplitByInvestments(rounds, investors, splitBy) {
+  return new Map([...investors.keys()].map(id => {
+    const commonShares = totalCommonSharesForInvestor(rounds, id);
+    const votingShares = totalVotingSharesForInvestor(rounds, id);
+
+    return [id, {
+      commonShares: commonShares ? commonShares + commonShares * (splitBy - 2) : 0,
+      votingShares: votingShares ? votingShares + votingShares * (splitBy - 2) : 0,
+    }];
+  }));
+}
+
+const convertSingleRoundToSplit = (rounds, investors) => ([id, round]) => {
+  if (round.type !== "split") return [id, round];
+
+  const roundIds = [...rounds.keys()];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
+
+  return [id, {
+    ...round,
+    investments: calcSplitByInvestments(getPreviousRounds(rounds, prevId), investors, round.splitBy),
+  }];
+}
+
+
+export function convertReactiveRounds(rounds, investors) {
+  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds)).map(convertSingleRoundToSplit(rounds, investors)));
 }
 
 export function roundResultsWithPosition(id, x, y, colSpan, roundResults, onChange = false) {
@@ -292,7 +317,7 @@ export function roundResultsWithPosition(id, x, y, colSpan, roundResults, onChan
 export function calcFounderShare({ investors, rounds } = {}) {
   if (!investors || !investors.size || !rounds || !rounds.size) return 0;
 
-  const roundsConverted = convertJkissToCommonShares(rounds, investors);
+  const roundsConverted = convertReactiveRounds(rounds, investors);
   const groupInvestors = getGroupInvestors(investors, ([...investors.values()][0] || {}).group);
 
   return [...groupInvestors.keys()].reduce((acc, id) => {
