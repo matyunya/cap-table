@@ -50,8 +50,6 @@
     founderShare = calcFounderShare($activeSheet);
   }
 
-  let showProfile = false;
-
   $: activeSheet = select(store, () => {
     const [routeUserId] = ($route || "").split("/");
 
@@ -169,7 +167,6 @@
 
 <Nav
   bind:dark
-  bind:showProfile
   togglePublic={() => togglePublic(activeSheet)}
   hideSelect={!$route && $documentIds.length > 0}
   {logout}
@@ -190,6 +187,8 @@
   {:else}
     <HomePage bind:loading on:success={onAuthenticated} />
   {/if}
+{:else if $route === "profile"}
+  <EditProfilePage />
 {:else}
   {#if loading}
     <div class="h-full w-full absolute flex items-center justify-center">
@@ -198,9 +197,7 @@
       </div>
     </div>
   {:else}
-    {#if showProfile}
-      <EditProfilePage bind:showProfile />
-    {:else if blocks.size === 0}
+    {#if blocks.size === 0}
       <div class="w-full text-center mt-16 text-lg relative text-red-400">
         {$_("このページは見つかりませんでした。")}
       </div>

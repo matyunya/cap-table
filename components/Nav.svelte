@@ -1,11 +1,10 @@
 <script>
-  import route from "/utils/router.js";
   import Select from "./Select.svelte";
   import { isAuthenticated, language, documentIds, docId, user, SET_LANGUAGE, store } from "/store.js";
-  export let showProfile;
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
   import { format } from "/utils/index.js";
+  import route from "/utils/router.js";
 
   export let logout = () => {};
   export let dark;
@@ -68,7 +67,7 @@
       options={languages}
     />
     {#if $isAuthenticated}
-      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1" on:click={() => showProfile = !showProfile}>{$_("プロフィール")}</button>
+      <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1" on:click={() => $route = "profile"}>{$_("プロフィール")}</button>
       <button class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1" on:click={logout}>{$_("ログアウト")}</button>
     {/if}
   </div>

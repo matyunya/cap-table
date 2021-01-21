@@ -10,14 +10,14 @@
   export let showProfile;
 
   function onCancelProfileEdit() {
-    showProfile = false;
+    history.back();
     window.scrollTo(0, 0);
   }
 
   function update(data) {
     updateProfile(data);
 
-    showProfile = false;
+    history.back();
   }
 
 </script>
