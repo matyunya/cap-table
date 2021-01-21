@@ -4,8 +4,6 @@ const reduceSumOfShares = (acc, { investments }) => acc + sum([...investments.va
 
 const reduceSumOfCommonShares = (acc, { investments }) => acc + sum([...investments.values()].map(({ commonShares = 0 }) => commonShares));
 
-const reduceSumOfJkissInvested = (acc, { investments }) => acc + sum([...investments.values()].map(({ jkissInvested = 0 }) => jkissInvested));
-
 export const uid = (length = 32) => [...Array(length)].map(() => (Math.random() * 16 | 0).toString(16)).join('');
 
 export const calcShare = (myShare, total) => (myShare * 100 / total).toFixed(1);
@@ -55,9 +53,7 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
   const { sharePrice, preMoneyDiluted } = nextRoundResults;
   const { totalShares } = prevRoundResults;
 
-  const jkissPrice = valuationCap < (preMoneyDiluted - jkissInvested)
-    ? valuationCap / totalShares
-    : sharePrice * (1 - (discount * 0.01));
+  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalShares);
 
   return Math.ceil(jkissInvested / jkissPrice);
 }
@@ -103,10 +99,10 @@ export function getPosition(investors, id, x, colSpan = 0) {
 
 export const totalInvestorRows = investors => investors.size + (new Set(allGroups(investors))).size;
 
-export function calcRoundResults(r, id) {
-  if (r.get(id).type === "j-kiss") return {};
+export function calcRoundResults(rounds, id) {
+  if (rounds.get(id).type === "j-kiss") return {};
 
-  const rounds = new Map([...r].filter(([, { type }]) => type !== "j-kiss"));
+  // const rounds = new Map([...r].filter(([, { type }]) => type !== "j-kiss"));
 
   const roundIds = [...rounds.keys()];
   let prevId = roundIds[roundIds.indexOf(id) - 1];
