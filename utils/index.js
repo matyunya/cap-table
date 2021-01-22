@@ -55,7 +55,7 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
 
   const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalShares);
 
-  return Math.ceil(jkissInvested / jkissPrice);
+  return Math.floor(jkissInvested / jkissPrice);
 }
 
 export const format = {
