@@ -25,7 +25,8 @@ import {
   getPreviousRounds,
   convertReactiveRounds,
   jkissRoundResults,
-  roundResultsWithPosition
+  roundResultsWithPosition,
+  uid,
 } from "./index.js";
 import {
   labelClasses,
@@ -155,7 +156,17 @@ const roundTitle = (id, x, colSpan, rounds) => [
       },
       canAddJkiss(id.split(':')[1], rounds) ? {
         text: "J-kissラウンド作成",
-        cb: () => syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
+        cb: () => {
+          const newId = uid();
+          syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1], newId }),
+          setTimeout(() => {
+            const el = document.getElementById(`valuation:${newId}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+              el.click();
+            }
+          }, 200);
+        },
       } : false,
       canAddSplit(id.split(':')[1], rounds) ? {
         text: "株式分割ラウンド作成",

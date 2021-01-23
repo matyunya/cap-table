@@ -60,7 +60,7 @@
       {dark ? "☀️" : "🌙"}
     </button>
     <Select
-      classes="focus:ring-2 transition duration-200 bg-transparent text-lg shadow focus:outline-none rounded mr-3 text-light-blue-500"
+      classes="focus:ring-2 transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
       hasEmpty={false}
       value={$language}
       on:change={setLanguage}

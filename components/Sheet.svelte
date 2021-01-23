@@ -2,6 +2,7 @@
   import headlong from "~matyunya/headlong";
   import { tick, onMount } from "svelte";
   import ContextMenu, { openContextMenu } from "./ContextMenu.svelte";
+  import CellEditor from "./CellEditor.svelte";
   import _ from "/utils/intl.js";
   export let blocks = new Map();
   export let nRows = 10;
@@ -12,6 +13,7 @@
 
   let editing = false;
   let onSave = false;
+  let editingValue;
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
@@ -35,37 +37,32 @@
     }
   });
 
-  function setEditing(onChange, id) {
+  function setEditing(onChange, id, value) {
+    console.log({ editing, onChange, id, value });
     if (editing) save();
 
     if (!onChange) return;
 
     editing = id;
+    editingValue = value;
     onSave = onChange;
 
-    tick().then(() => {
-      const el = document.getElementById(editing);
-      if (el) {
-        el.focus();
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    })
+//     tick().then(() => {
+//       const el = document.getElementById(editing);
+//       if (el) {
+//         el.focus();
+//         const range = document.createRange();
+//         range.selectNodeContents(el);
+//         const sel = window.getSelection();
+//         sel.removeAllRanges();
+//         sel.addRange(range);
+//       }
+//     })
   }
 
-  const getValue = el => [].reduce.call(el.childNodes, (a, b) => a + (b.nodeType === 3 ? b.textContent : ''), '').trim();
-
   function save() {
-    const el = document.getElementById(editing);
-    if (!el) return;
-
-    const value = getValue(el);
-
     onSave(store, {
-      value,
+      value: editingValue,
       id: editing,
     });
 
@@ -75,26 +72,21 @@
   function onKeydown(e) {
     if (!editing) return;
 
-    if (['Enter', 'Escape'].includes(e.code)) {
+    if (['Escape'].includes(e.code)) {
       e.preventDefault();
     } else {
       return;
     }
 
-    if (e.code === 'Enter') {
-      save();
-    }
     if (e.code === 'Escape') {
       editing = false;
       blocks = blocks;
     }
   }
 
-  function checkClickedOutside(e) {
-    if (!editing) return;
-
-    const node = document.getElementById(editing);
-    if (node && !node.parentNode.contains(e.target)) {
+  function onInput(e) {
+    if (e.target.value.endsWith("\n")) {
+      editingValue = e.target.value.slice(0, e.target.value.length - 1);
       save();
     }
   }
@@ -133,8 +125,6 @@
   }
 </style>
 
-<svelte:window on:click={checkClickedOutside} />
-
 <ContextMenu />
 
 <div class="md:m-12 md:mr-24 dark:text-white text-black m-6 mt-12 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
@@ -144,7 +134,7 @@
       class:text-light-blue-700={onChange}
       class:dark:text-light-blue-300={onChange}
       on:keydown|stopPropagation={onKeydown}
-      on:click={() => setEditing(onChange, id)}
+      on:click={() => setEditing(onChange, id, value)}
       class:menuItems
       class:w-block={editing !== id}
       class:bg-light-blue-100={editing === id}
@@ -162,18 +152,21 @@
           class:opacity-0={!pinMenuToggle}
           class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 transition duration-150 right-0 rounded-full p-1 text-light-blue-500 border-light-blue-300 hover:bg-light-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
       {/if}
-      <span
-        class="truncate"
-        contenteditable={editing === id}
-        title={$_(value)}
-        {id}
-      >
-        {#if isLabel}
-          {$_(value)}
-        {:else}
-          {editing === id ? value : format(value)}
-        {/if}
-      </span>
+      {#if editing === id}
+        <CellEditor {id} {save} bind:value={editingValue} on:keydown={onKeydown} on:input={onInput} />
+      {:else}
+        <span
+          class="truncate"
+          title={$_(value)}
+          {id}
+        >
+          {#if isLabel}
+            {$_(value)}
+          {:else}
+            {format(value)}
+          {/if}
+        </span>
+      {/if}
     </div>
   {/each}
 </div>

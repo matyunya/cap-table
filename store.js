@@ -244,7 +244,7 @@ export function UPDATE_GROUP_NAME({ oldName, newName }) {
   });
 }
 
-export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map(), ...params }) {
+export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = new Map(), newId, ...params }) {
   return (({ update, apply, get }) => {
     let roundName;
 
@@ -261,7 +261,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
         newRound.valuationCap = calcRoundResults(get("rounds"), afterId).postMoney * 2;
       }
 
-      const newId = uid();
+      newId = newId || uid();
       const newIds = [...ids.slice(0, idx), newId, ...ids.slice(idx)];
 
       return new Map(newIds.map(id => [id, i.get(id) || newRound]));
