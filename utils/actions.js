@@ -228,7 +228,12 @@ const {
   jkissInvested,
 } = colTypes;
 
-const foundCols = [sharesInitial, sharesPercent];
+const rightAligned = r => ({
+  ...r,
+  classes: (r.classes || "") + " text-right",
+});
+
+const foundCols = [sharesInitial, sharesPercent].map(rightAligned);
 
 const genericCols = [
   shareDiff,
@@ -238,12 +243,12 @@ const genericCols = [
   votingSharesAmount,
   totalSharesAmount,
   totalSharesPercent
-];
+].map(rightAligned);
 
 const jkissCols = [
   jkissInvested,
   jkissShares,
-];
+].map(rightAligned);
 
 export const roundOptions = {
   founded: {

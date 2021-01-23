@@ -12,7 +12,7 @@
   export let founderShare = 0;
   export let hideSelect = true;
 
-  const languages = [["en", "🇬🇧"], ["ja", "🇯🇵"]];
+  const languages = [["en", "en 🇺🇸"], ["ja", "ja 🇯🇵"]];
 
   function setLanguage({ target: { value: language } }) {
     if ($isAuthenticated) {

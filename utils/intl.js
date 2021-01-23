@@ -104,8 +104,11 @@ const translations = {
   "J-kissラウンド作成": {
     en: "Add J-kiss round",
   },
-  "Splitラウンド作成": {
+  "株式分割ラウンド作成": {
     en: "Add split round",
+  },
+  "分割数": {
+    en: "Split by",
   },
   "ラウンド削除": {
     en: "Remove this round",

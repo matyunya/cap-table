@@ -158,7 +158,7 @@ const roundTitle = (id, x, colSpan, rounds) => [
         cb: () => syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1] }),
       } : false,
       canAddSplit(id.split(':')[1], rounds) ? {
-        text: "Splitラウンド作成",
+        text: "株式分割ラウンド作成",
         cb: () => syncUp(s, ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
       } : false,
       canRemoveRound(id.split(':')[1], rounds) ? {
@@ -208,7 +208,7 @@ function splitCells(round, roundId, x, y) {
   return [
     [`split-by-label:${roundId}`, {
       position: [y + 6, x, y + 6, x + 1],
-      value: "Split by",
+      value: "分割数",
       classes: "dark:bg-gray-800 bg-white",
       isLabel: true,
     }],
