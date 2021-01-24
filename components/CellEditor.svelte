@@ -3,6 +3,7 @@
   export let value;
   export let id;
   export let save;
+  export let type;
 
   let node;
 
@@ -11,14 +12,22 @@
     node.select();
   });
 
-  function checkClickedOutside(e) {
-    if (node && !node.parentNode.contains(e.target)) {
-//       save();
-    }
-  }
-</script>
+  function clickedOutside(node, cb) {
+    const onclick = e => !node.contains(e.target) && cb();
 
-<svelte:window on:click={checkClickedOutside} />
+    window.addEventListener('mousedown', onclick, true);
+
+    return {
+      update(newCb) {
+        cb = newCb;
+      },
+      destroy() {
+        window.removeEventListener('mousedown', onclick, true);
+      }
+    };
+  }
+
+</script>
 
 <style>
   .grid__editor {
@@ -35,8 +44,8 @@
   }
 </style>
 
-
 <textarea
+  use:clickedOutside={save}
   {id}
   tabindex="-1"
   class="grid__editor"

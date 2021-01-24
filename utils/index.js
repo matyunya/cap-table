@@ -30,6 +30,8 @@ export const totalSharesForInvestor = (rounds, investorId) => {
   return totalCommonSharesForInvestor(rounds, investorId) + totalVotingSharesForInvestor(rounds, investorId);
 }
 
+export const formatRoundDate = d => new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
+
 export const getPreviousRounds = (rounds, id) => {
   if (!id) return new Map([]);
 

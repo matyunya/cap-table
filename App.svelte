@@ -171,6 +171,7 @@
   hideSelect={!$route && $documentIds.length > 0}
   {logout}
   {founderShare}
+  {activeSheet}
 />
 
 {#if !$route}

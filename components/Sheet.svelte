@@ -17,12 +17,12 @@
 
   $: tiles = [...blocks].reduce((acc, [id, {
     position: [firstRow, firstCol, lastRow, lastCol],
-    value, classes, onChange, menuItems, format = i => i, pinMenuToggle, isLabel, disabled
+    value, classes, onChange, menuItems, format = i => i, pinMenuToggle, isLabel, disabled, type
   }]) => {
     return [
       ...acc,
       { id, pos: [firstRow, firstCol, lastRow - firstRow + 1, lastCol - firstCol + 1],
-       value, classes, onChange: disabled ? false : onChange, format, menuItems, pinMenuToggle, isLabel
+       value, classes, onChange: disabled ? false : onChange, format, menuItems, pinMenuToggle, isLabel, type
       }
     ]
   }, []);
@@ -46,18 +46,6 @@
     editing = id;
     editingValue = value;
     onSave = onChange;
-
-//     tick().then(() => {
-//       const el = document.getElementById(editing);
-//       if (el) {
-//         el.focus();
-//         const range = document.createRange();
-//         range.selectNodeContents(el);
-//         const sel = window.getSelection();
-//         sel.removeAllRanges();
-//         sel.addRange(range);
-//       }
-//     })
   }
 
   function save() {
@@ -128,7 +116,7 @@
 <ContextMenu />
 
 <div class="md:m-12 md:mr-24 dark:text-white text-black m-6 mt-12 gridlayout__container gridlines shadow rounded bg-white dark:bg-gray-800" style={`width: ${(nCols + 1) * columnWidth}px; height: ${nRows * rowHeight}px;`}>
-  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle, isLabel, disabled } (id)}
+  {#each tiles as {id, pos: [row, col, rowSpan, colSpan], value, classes, onChange, format, menuItems, pinMenuToggle, isLabel, disabled, type } (id)}
     <div
       class:editable={onChange}
       class:text-light-blue-700={onChange}
@@ -153,7 +141,7 @@
           class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 transition duration-150 right-0 rounded-full p-1 text-light-blue-500 border-light-blue-300 hover:bg-light-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
       {/if}
       {#if editing === id}
-        <CellEditor {id} {save} bind:value={editingValue} on:keydown={onKeydown} on:input={onInput} />
+        <CellEditor {id} {save} {type} bind:value={editingValue} on:keydown={onKeydown} on:input={onInput} />
       {:else}
         <span
           class="truncate"

@@ -13,6 +13,7 @@ import {
   totalVotingSharesForInvestor,
   getPreviousRounds,
   calcRoundResults,
+  formatRoundDate,
 } from "/utils/index.js";
 
 export const getActiveDocId = (r) => {
@@ -71,6 +72,7 @@ export const defaultDocument = {
     {
       name: defaultName("founded"),
       type: "founded",
+      date: formatRoundDate(),
       sharePrice: 1000,
       investments: new Map([[founderId, { commonShares: 1000, votingShares: 0 }]]),
     },
@@ -175,6 +177,10 @@ export function UPDATE_INVESTOR_NAME({ investorId, name }) {
   return (({ update }) => update("investors", investorId, 'name', i => name || i));
 }
 
+export function UPDATE_INVESTOR_TITLE({ investorId, title }) {
+  return (({ update }) => update("investors", investorId, 'title', i => title || i));
+}
+
 export function ADD_INVESTOR({ afterId, newGroup = false, group }) {
   return (({ update }) => update("investors", i => {
     if (newGroup && group && [...i.values()].find(g => g.group === group)) {
@@ -254,7 +260,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
 
       roundName = name || (language.get() === "ja" ? "新しいラウンド" : "New round");
 
-      let newRound = { name: roundName, type, sharePrice, investments, ...params };
+      let newRound = { name: roundName, type, date: formatRoundDate(), sharePrice, investments, ...params };
 
       if (type === "j-kiss") {
         newRound.discount = 20;
@@ -301,6 +307,10 @@ export function REMOVE_ROUND({ id }) {
 
 export function RENAME_ROUND({ roundId, name }) {
    return (({ set }) => set('rounds', roundId, 'name', name));
+}
+
+export function UPDATE_ROUND_DATE({ roundId, date }) {
+   return (({ set }) => set('rounds', roundId, 'date', date));
 }
 
 export function UPDATE_PROFILE({ profile }) {

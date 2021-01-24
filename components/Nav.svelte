@@ -3,14 +3,17 @@
   import { isAuthenticated, language, documentIds, docId, user, SET_LANGUAGE, store } from "/store.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
+  import { openContextMenu } from "./ContextMenu.svelte";
   import { format } from "/utils/index.js";
   import route from "/utils/router.js";
+  import { getDocMenuItems } from "/utils/selectors.js";
 
   export let logout = () => {};
   export let dark;
   export let togglePublic = () => {};
   export let founderShare = 0;
   export let hideSelect = true;
+  export let activeSheet;
 
   const languages = [["en", "en 🇺🇸"], ["ja", "ja 🇯🇵"]];
 
@@ -36,6 +39,11 @@
 >
   {#if !hideSelect && $isAuthenticated}
     <div class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8">
+      <button
+        class="rounded-full outline-none ring-gray-100 mr-3 text-base h-6 w-6 hover:ring-4 transition duration-500"
+        on:click={e => openContextMenu(getDocMenuItems(activeSheet), e)}>
+        ☰
+      </button>
       <Select
         classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}

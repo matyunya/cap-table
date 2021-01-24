@@ -9,6 +9,7 @@ import {
   removeDocument,
   resetDocument,
   updateSharePrice,
+  updateRoundDate,
 } from "./actions.js";
 import _ from "./intl.js";
 import {
@@ -27,6 +28,7 @@ import {
   jkissRoundResults,
   roundResultsWithPosition,
   uid,
+  formatRoundDate,
 } from "./index.js";
 import {
   labelClasses,
@@ -35,6 +37,7 @@ import {
 
 import {
   UPDATE_INVESTOR_NAME,
+  UPDATE_INVESTOR_TITLE,
   ADD_INVESTOR,
   REMOVE_INVESTOR,
   ADD_ROUND,
@@ -47,10 +50,7 @@ import {
   docId,
   store,
   syncUp,
-} from "/store.js"
-
-const formatRoundTitle = ({ name, date }) => `${name}`
-  + (date ? ` (${(new Date(date)).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })})` : '');
+} from "/store.js";
 
 const columnHeaders = (cols, xStart) => cols.map((c, i, idx) => [
   `round-label:${xStart}:${i}`,
@@ -85,15 +85,29 @@ export const footerLabels = offset => [
 ];
 
 export const investorNames = investors => id => [
-  'investor:' + id,
+  'investor-name:' + id,
   {
-    position: getPosition(investors, id, 0, 1),
+    position: getPosition(investors, id, 0, 0),
     value: investors.get(id).name,
-    classes: firstColClasses + " px-4",
+    classes: firstColClasses + " px-1",
     onChange: (s, { id, value }) => {
       const [,investorId] = id.split(':');
 
       syncUp(s, UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
+    },
+  }
+];
+
+export const investorTitles = investors => id => [
+  'investor-title:' + id,
+  {
+    position: getPosition(investors, id, 1, 0),
+    value: investors.get(id).title || "",
+    classes: firstColClasses + " px-1",
+    onChange: (s, { id, value }) => {
+      const [,investorId] = id.split(':');
+
+      syncUp(s, UPDATE_INVESTOR_TITLE, { investorId: investorId, title: value });
     },
     menuItems: (s, { id }) => [
         {
@@ -136,12 +150,23 @@ function canRemoveRound(roundId, rounds) {
 }
 
 const roundTitle = (id, x, colSpan, rounds) => [
-  'round:' + id,
+  'round-title:' + id,
   {
-    position: [0, x + 1, 0, x + colSpan],
-    value: formatRoundTitle(rounds.get(id)),
+    position: [0, x + 1, 0, x + colSpan - 1],
+    value: rounds.get(id).name,
     classes: "font-bold text-center pr-4",
     onChange: renameRound,
+  }
+];
+
+const roundDate = (id, x, colSpan, rounds) => [
+  'round-date:' + id,
+  {
+    position: [0, x + colSpan, 0, x + colSpan],
+    value: formatRoundDate(rounds.get(id).date),
+    classes: "font-bold text-center pr-4",
+    onChange: updateRoundDate,
+    type: "month",
     pinMenuToggle: true,
     menuItems: (s, { id }) => [
       {
@@ -268,6 +293,7 @@ export function roundValues(r, investors) {
         ],
         ...acc,
         roundTitle(id, prevCol, colSpan, rounds),
+        roundDate(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
         ...jkissCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
         ...splitCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
@@ -304,32 +330,32 @@ function documentNameBlock(s, title) {
       value: title,
       classes: "flex items-center justify-center",
       onChange: (s, value) => syncUp(s, UPDATE_DOCUMENT_TITLE, value),
-      pinMenuToggle: true,
-      menuItems: (s) => [
-        {
-          text: "新しいテーブル",
-          cb: () => createDocument(store),
-        },
-        {
-          text: s.get("access", "read", "public") ? "共有をキャンセル" : "共有する",
-          cb: () => togglePublic(s),
-        },
-        {
-          text: "このテーブルをコピー",
-          cb: () => createDocument(store, { from: get(docId) }),
-        },
-        store.get("documents").size > 1 && {
-          text: "削除",
-          cb: () => removeDocument(store, { id: get(docId) }),
-        },
-        {
-          text: "リセット",
-          cb: () => resetDocument(s),
-        },
-      ].filter(Boolean)
     }
   ];
 }
+
+export const getDocMenuItems = (s) => [
+  {
+    text: "新しいテーブル",
+    cb: () => createDocument(store),
+  },
+  {
+    text: s.get("access", "read", "public") ? "共有をキャンセル" : "共有する",
+    cb: () => togglePublic(s),
+  },
+  {
+    text: "このテーブルをコピー",
+    cb: () => createDocument(store, { from: get(docId) }),
+  },
+  store.get("documents").size > 1 && {
+    text: "削除",
+    cb: () => removeDocument(store, { id: get(docId) }),
+  },
+  {
+    text: "リセット",
+    cb: () => resetDocument(s),
+  },
+].filter(Boolean);
 
 export function toBlocks(s) {
   const { investors, rounds, title, readOnly } = s.get() || {};
@@ -339,6 +365,7 @@ export function toBlocks(s) {
   return new Map([
     documentNameBlock(s, title),
     ...groupNames(investors),
+    ...[...investors.keys()].map(investorTitles(investors)),
     ...[...investors.keys()].map(investorNames(investors)),
     ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
     ...footerLabels(totalInvestorRows(investors) + 4),

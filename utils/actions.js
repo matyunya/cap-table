@@ -7,6 +7,7 @@ import {
   REMOVE_GROUP,
   ADD_INVESTOR,
   RENAME_ROUND,
+  UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
@@ -149,6 +150,10 @@ const updateRound = (mutation, fieldName) => (store, { id, value }) => {
 export const renameRound = (store, { id, value }) => {
   const [,roundId] = id.split(":");
   syncUp(store, RENAME_ROUND, { roundId, name: value });
+};
+export const updateRoundDate = (store, { id, value }) => {
+  const [,roundId] = id.split(":");
+  syncUp(store, UPDATE_ROUND_DATE, { roundId, date: value });
 };
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
