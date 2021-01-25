@@ -29,6 +29,7 @@ import {
   roundResultsWithPosition,
   uid,
   formatRoundDate,
+  isValuationCapApplied,
 } from "./index.js";
 import {
   labelClasses,
@@ -205,8 +206,10 @@ const roundDate = (id, x, colSpan, rounds) => [
   }
 ];
 
-function jkissCells(round, roundId, x, y) {
+function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
   if (round.type !== "j-kiss") return [];
+
+  const isCapApplied = isValuationCapApplied({ nextRoundResults, prevRoundResults, ...round });
 
   return [
     [`valuation-label:${roundId}`, {
@@ -226,14 +229,14 @@ function jkissCells(round, roundId, x, y) {
       value: round.valuationCap || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_VALUATION_CAP, { roundId, value }),
       format: format.currency.format,
-      classes: "dark:bg-gray-800 bg-white",
+      classes: isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
     [`discount:${roundId}`, {
       position: [y + 7, x + 2, y + 7, x + 3],
       value: round.discount || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_DISCOUNT, { roundId, value }),
       format: i => i + '%',
-      classes: "dark:bg-gray-800 bg-white",
+      classes: !isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
   ]
 }
@@ -281,6 +284,10 @@ export function roundValues(r, investors) {
       ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
       : false;
 
+    const roundIds = [...rounds.keys()];
+    const prevId = roundIds[roundIds.indexOf(id) - 1];
+    const prevRoundResults = prevId ? calcRoundResults(rounds, prevId) : false;
+
     return [
       [
         [
@@ -295,7 +302,7 @@ export function roundValues(r, investors) {
         roundTitle(id, prevCol, colSpan, rounds),
         roundDate(id, prevCol, colSpan, rounds),
         ...columnHeaders(cols, prevCol + 1),
-        ...jkissCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
+        ...jkissCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5, nextRoundResults, prevRoundResults),
         ...splitCells(round, id, prevCol + 1, totalInvestorRows(investors) + 5),
         ...votingColumnHeader(cols, prevCol + 1),
         ...roundResults,

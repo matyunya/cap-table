@@ -62,6 +62,8 @@
     } catch (e) {
       error = e;
       throw e;
+    } finally {
+      loading = false;
     }
   }
 

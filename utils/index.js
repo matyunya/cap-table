@@ -30,7 +30,7 @@ export const totalSharesForInvestor = (rounds, investorId) => {
   return totalCommonSharesForInvestor(rounds, investorId) + totalVotingSharesForInvestor(rounds, investorId);
 }
 
-export const formatRoundDate = d => new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
+export const formatRoundDate = d => d || new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
 
 export const getPreviousRounds = (rounds, id) => {
   if (!id) return new Map([]);
@@ -52,12 +52,21 @@ export const getFutureRounds = (rounds, id) => {
 export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
   if (!jkissInvested || !nextRoundResults || !prevRoundResults) return 0;
 
-  const { sharePrice, preMoneyDiluted } = nextRoundResults;
-  const { totalShares } = prevRoundResults;
+  const { sharePrice } = nextRoundResults;
+  const { totalDilutedShares } = prevRoundResults;
 
-  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalShares);
+  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalDilutedShares);
 
   return Math.floor(jkissInvested / jkissPrice);
+}
+
+export const isValuationCapApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
+  if (!nextRoundResults || !prevRoundResults) return false;
+
+  const { sharePrice } = nextRoundResults;
+  const { totalDilutedShares } = prevRoundResults;
+
+  return sharePrice * (1 - (discount * 0.01)) > (valuationCap / totalDilutedShares);
 }
 
 export const format = {
@@ -127,7 +136,8 @@ export function calcRoundResults(rounds, id) {
     postMoney: newEquity + preMoney,
     preMoneyDiluted,
     postMoneyDiluted: preMoneyDiluted + newEquityDiluted,
-    totalShares: totalShares(getPreviousRounds(rounds, id)),
+    totalShares: totalCommonShares(getPreviousRounds(rounds, id)),
+    totalDilutedShares: totalShares(getPreviousRounds(rounds, id)),
   };
 }
 
@@ -226,11 +236,14 @@ export function jkissRoundResults(rounds, id, x, y) {
   }
 
   const nextRoundResults = calcRoundResults(rounds, nextId);
+  const prevRoundResults = calcRoundResults(rounds, prevId);
 
   const jkissResultsBeforeNextRound = {
     ...nextRoundResults,
     newEquity: 0,
+    preMoney: prevRoundResults.totalShares * nextRoundResults.sharePrice,
     postMoney: nextRoundResults.preMoney,
+    preMoneyDiluted: prevRoundResults.totalDilutedShares * nextRoundResults.sharePrice,
     postMoneyDiluted: nextRoundResults.preMoneyDiluted,
   };
 
