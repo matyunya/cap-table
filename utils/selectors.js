@@ -215,7 +215,7 @@ function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
     [`valuation-bg:${roundId}`, {
       position: [y + 6, x, y + 7, x + 3],
       value: "",
-      classes: "dark:bg-gray-800 bg-gray-300",
+      classes: "dark:bg-gray-800 bg-white",
     }],
     [`valuation-label:${roundId}`, {
       position: [y + 6, x, y + 6, x + 1],
@@ -234,14 +234,14 @@ function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
       value: round.valuationCap || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_VALUATION_CAP, { roundId, value }),
       format: format.currency.format,
-      classes: isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
+      classes: isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-200 dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
     [`discount:${roundId}`, {
       position: [y + 7, x + 2, y + 7, x + 3],
       value: round.discount || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_DISCOUNT, { roundId, value }),
       format: i => i + '%',
-      classes: !isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
+      classes: !isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-200 dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
   ]
 }
