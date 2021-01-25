@@ -52,6 +52,7 @@
   bind:value
   on:input
   on:keydown
+  rows="1"
   autocomplete="off"
   autocorrect="off"
   spellcheck="false"

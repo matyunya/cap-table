@@ -55,10 +55,22 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
   const { sharePrice } = nextRoundResults;
   const { totalDilutedShares } = prevRoundResults;
 
-  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalDilutedShares);
+  const jkissPrice = calcJkissPrice({
+    sharePrice,
+    discount,
+    valuationCap,
+    totalDilutedShares,
+  });
 
   return Math.floor(jkissInvested / jkissPrice);
 }
+
+export const calcJkissPrice = ({
+  sharePrice,
+  discount,
+  valuationCap,
+  totalDilutedShares
+}) => Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalDilutedShares);
 
 export const isValuationCapApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
   if (!nextRoundResults || !prevRoundResults) return false;
@@ -215,6 +227,7 @@ export function jkissRoundResults(rounds, id, x, y) {
   const roundIds = [...rounds.keys()];
   const prevId = roundIds[roundIds.indexOf(id) - 1];
   const nextId = roundIds[roundIds.indexOf(id) + 1];
+  const { discount, valuationCap } = rounds.get(id);
 
   const { sharePrice } = rounds.get(prevId);
   const previousRounds = getPreviousRounds(rounds, prevId);
@@ -240,6 +253,12 @@ export function jkissRoundResults(rounds, id, x, y) {
 
   const jkissResultsBeforeNextRound = {
     ...nextRoundResults,
+    sharePrice: calcJkissPrice({
+      sharePrice: nextRoundResults.sharePrice,
+      discount,
+      valuationCap,
+      totalDilutedShares: prevRoundResults.totalDilutedShares,
+    }),
     newEquity: 0,
     preMoney: prevRoundResults.totalShares * nextRoundResults.sharePrice,
     postMoney: nextRoundResults.preMoney,
