@@ -257,7 +257,7 @@ export function jkissRoundResults(rounds, id, x, y) {
       sharePrice: nextRoundResults.sharePrice,
       discount,
       valuationCap,
-      totalDilutedShares: nextRoundResults.totalDilutedShares,
+      totalDilutedShares: prevRoundResults.totalDilutedShares,
     }),
     newEquity: 0,
     preMoney: prevRoundResults.totalShares * nextRoundResults.sharePrice,
