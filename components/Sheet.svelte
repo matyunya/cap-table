@@ -138,7 +138,8 @@
         <div
           on:click|stopPropagation={(e) => openContextMenu(menuItems(store, { id }), e)}
           class:opacity-0={!pinMenuToggle}
-          class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 transition duration-150 right-0 rounded-full p-1 text-light-blue-500 border-light-blue-300 hover:bg-light-blue-500 hover:text-white h-4 w-4 mr-2 cursor-pointer select-none font-normal">+</div>
+          class:opacity-50={pinMenuToggle}
+          class="flex text-center items-center shadow-sm bg-white dark:bg-gray-600 justify-center toggle absolute top-0 transition duration-150 right-0 rounded-full p-1 text-light-blue-500 border-light-blue-300 hover:bg-light-blue-500 hover:text-white h-4 w-4 mr-1 cursor-pointer select-none font-normal">+</div>
       {/if}
       {#if editing === id}
         <CellEditor {id} {save} {type} bind:value={editingValue} on:keydown={onKeydown} on:input={onInput} />

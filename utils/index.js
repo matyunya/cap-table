@@ -30,7 +30,7 @@ export const totalSharesForInvestor = (rounds, investorId) => {
   return totalCommonSharesForInvestor(rounds, investorId) + totalVotingSharesForInvestor(rounds, investorId);
 }
 
-export const formatRoundDate = d => new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
+export const formatRoundDate = d => d || new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
 
 export const getPreviousRounds = (rounds, id) => {
   if (!id) return new Map([]);
@@ -52,12 +52,21 @@ export const getFutureRounds = (rounds, id) => {
 export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationCap = 0, jkissInvested = 0, discount = 100 }) => {
   if (!jkissInvested || !nextRoundResults || !prevRoundResults) return 0;
 
-  const { sharePrice, preMoneyDiluted } = nextRoundResults;
+  const { sharePrice } = nextRoundResults;
   const { totalShares } = prevRoundResults;
 
   const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalShares);
 
   return Math.floor(jkissInvested / jkissPrice);
+}
+
+export const isJkissDiscountApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
+  if (!nextRoundResults || !prevRoundResults) return false;
+
+  const { sharePrice } = nextRoundResults;
+  const { totalShares } = prevRoundResults;
+
+  return sharePrice * (1 - (discount * 0.01)) < valuationCap / totalShares;
 }
 
 export const format = {
@@ -230,8 +239,8 @@ export function jkissRoundResults(rounds, id, x, y) {
   const jkissResultsBeforeNextRound = {
     ...nextRoundResults,
     newEquity: 0,
-    postMoney: nextRoundResults.preMoney,
-    postMoneyDiluted: nextRoundResults.preMoneyDiluted,
+    postMoney: jkissResultsAtInvestment.postMoney,
+    postMoneyDiluted: jkissResultsAtInvestment.postMoneyDiluted,
   };
 
   return [
