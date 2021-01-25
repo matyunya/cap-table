@@ -53,9 +53,9 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
   if (!jkissInvested || !nextRoundResults || !prevRoundResults) return 0;
 
   const { sharePrice } = nextRoundResults;
-  const { totalShares } = prevRoundResults;
+  const { totalDilutedShares } = prevRoundResults;
 
-  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalShares);
+  const jkissPrice = Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalDilutedShares);
 
   return Math.floor(jkissInvested / jkissPrice);
 }
