@@ -136,7 +136,8 @@ export function calcRoundResults(rounds, id) {
     postMoney: newEquity + preMoney,
     preMoneyDiluted,
     postMoneyDiluted: preMoneyDiluted + newEquityDiluted,
-    totalShares: totalShares(getPreviousRounds(rounds, id)),
+    totalShares: totalCommonShares(getPreviousRounds(rounds, id)),
+    totalDilutedShares: totalShares(getPreviousRounds(rounds, id)),
   };
 }
 
@@ -240,9 +241,9 @@ export function jkissRoundResults(rounds, id, x, y) {
   const jkissResultsBeforeNextRound = {
     ...nextRoundResults,
     newEquity: 0,
-    preMoney: prevRoundResults.postMoney,
+    preMoney: prevRoundResults.totalShares * nextRoundResults.sharePrice,
     postMoney: nextRoundResults.preMoney,
-    preMoneyDiluted: prevRoundResults.postMoneyDiluted,
+    preMoneyDiluted: prevRoundResults.totalDilutedShares * nextRoundResults.sharePrice,
     postMoneyDiluted: nextRoundResults.preMoneyDiluted,
   };
 
