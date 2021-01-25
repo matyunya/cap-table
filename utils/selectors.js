@@ -29,7 +29,7 @@ import {
   roundResultsWithPosition,
   uid,
   formatRoundDate,
-  isJkissDiscountApplied,
+  isValuationCapApplied,
 } from "./index.js";
 import {
   labelClasses,
@@ -209,7 +209,7 @@ const roundDate = (id, x, colSpan, rounds) => [
 function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
   if (round.type !== "j-kiss") return [];
 
-  const isDiscountApplied = isJkissDiscountApplied({ nextRoundResults, prevRoundResults, ...round });
+  const isCapApplied = isValuationCapApplied({ nextRoundResults, prevRoundResults, ...round });
 
   return [
     [`valuation-label:${roundId}`, {
@@ -229,14 +229,14 @@ function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
       value: round.valuationCap || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_VALUATION_CAP, { roundId, value }),
       format: format.currency.format,
-      classes: "dark:bg-gray-800 bg-white",
+      classes: isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
     [`discount:${roundId}`, {
       position: [y + 7, x + 2, y + 7, x + 3],
       value: round.discount || 0,
       onChange: (store, { value }) => syncUp(store, UPDATE_DISCOUNT, { roundId, value }),
       format: i => i + '%',
-      classes: isDiscountApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
+      classes: !isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-500 text-white dark:text-white" : "dark:bg-gray-800 bg-white",
     }],
   ]
 }

@@ -60,13 +60,13 @@ export const calcJkissShares = ({ nextRoundResults, prevRoundResults, valuationC
   return Math.floor(jkissInvested / jkissPrice);
 }
 
-export const isJkissDiscountApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
+export const isValuationCapApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
   if (!nextRoundResults || !prevRoundResults) return false;
 
   const { sharePrice } = nextRoundResults;
   const { totalShares } = prevRoundResults;
 
-  return sharePrice * (1 - (discount * 0.01)) < valuationCap / totalShares;
+  return sharePrice * (1 - (discount * 0.01)) > (valuationCap / totalShares);
 }
 
 export const format = {
