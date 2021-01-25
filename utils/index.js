@@ -235,12 +235,15 @@ export function jkissRoundResults(rounds, id, x, y) {
   }
 
   const nextRoundResults = calcRoundResults(rounds, nextId);
+  const prevRoundResults = calcRoundResults(rounds, prevId);
 
   const jkissResultsBeforeNextRound = {
     ...nextRoundResults,
     newEquity: 0,
-    postMoney: jkissResultsAtInvestment.postMoney,
-    postMoneyDiluted: jkissResultsAtInvestment.postMoneyDiluted,
+    preMoney: prevRoundResults.postMoney,
+    postMoney: nextRoundResults.preMoney,
+    preMoneyDiluted: prevRoundResults.postMoneyDiluted,
+    postMoneyDiluted: nextRoundResults.preMoneyDiluted,
   };
 
   return [
