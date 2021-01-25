@@ -212,6 +212,11 @@ function jkissCells(round, roundId, x, y, nextRoundResults, prevRoundResults) {
   const isCapApplied = isValuationCapApplied({ nextRoundResults, prevRoundResults, ...round });
 
   return [
+    [`valuation-bg:${roundId}`, {
+      position: [y + 6, x, y + 7, x + 3],
+      value: "",
+      classes: "dark:bg-gray-800 bg-gray-300",
+    }],
     [`valuation-label:${roundId}`, {
       position: [y + 6, x, y + 6, x + 1],
       value: "バリュエーションキャップ",

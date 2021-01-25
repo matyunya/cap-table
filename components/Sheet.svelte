@@ -73,8 +73,8 @@
   }
 
   function onInput(e) {
-    if (e.target.value.endsWith("\n")) {
-      editingValue = e.target.value.slice(0, e.target.value.length - 1);
+    if (e.target.value.includes("\n")) {
+      editingValue = e.target.value.replace(/\n/, "");
       save();
     }
   }
