@@ -15,7 +15,9 @@
   let errors = { ...defaultProfile };
   let error = "";
   let email = "";
+  let password = "";
   let showEmailNotification = false;
+  let shouldResetPassword = false;
 
   async function register() {
     try {
@@ -44,8 +46,12 @@
   async function signIn(emailAddress, profile) {
     try {
       loading = true;
-      showEmailNotification = true;
-      const authInfo = await window.ellx.login(emailAddress, { language: $language });
+      showEmailNotification = !(!shouldResetPassword && password);
+      const authInfo = await window.ellx.login({
+        email: emailAddress,
+        password: !shouldResetPassword && password,
+        language: $language,
+      });
 
       if (profile) {
         connect();
@@ -111,11 +117,28 @@
                   type="email"
                   classes=""
                 />
+                {#if !shouldResetPassword}
+                  <Input
+                    on:change={e => password = e.target.value}
+                    placeholder={$_("パスワード")}
+                    label={$_("パスワード")}
+                    id="password-signin"
+                    type="password"
+                    classes=""
+                  />
+                {/if}
+                <label class="flex items-center my-2">
+                <input
+                  type="checkbox"
+                  bind:checked={shouldResetPassword}
+                  class="text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 focus:ring-offset-0">
+                  <span class="ml-2 text-sm">{$_("パスワードを忘れた方はこちらチェックしてください。")}</span>
+                </label>
 
                 <div class="text-center">
                   <button
                     on:click={() => signIn(email)}
-                    class="bg-gray-600 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                    class="bg-gray-600 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6"
                     type="button"
                   >
                     {$_("ログイン")}

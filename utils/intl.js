@@ -20,6 +20,9 @@ const translations = {
   ログアウト: {
     en: "Sign out",
   },
+  パスワード: {
+    en: "Password",
+  },
   "会社名": {
     en: "Company name",
   },
@@ -54,7 +57,7 @@ const translations = {
     en: "Start using the app",
   },
   "すでに登録済みの方": {
-    en: "Already signed up? Enter your email to log in."
+    en: "Already signed up?"
   },
   "ログイン": {
     en: "Log in"
@@ -154,6 +157,9 @@ const translations = {
   },
   "このページは見つかりませんでした。": {
     en: "This page does not exist"
+  },
+  "パスワードを忘れた方はこちらチェックしてください。": {
+    en: "Check to reset password"
   },
 };
 
