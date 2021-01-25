@@ -64,9 +64,9 @@ export const isValuationCapApplied = ({ nextRoundResults, prevRoundResults, valu
   if (!nextRoundResults || !prevRoundResults) return false;
 
   const { sharePrice } = nextRoundResults;
-  const { totalShares } = prevRoundResults;
+  const { totalDilutedShares } = prevRoundResults;
 
-  return sharePrice * (1 - (discount * 0.01)) > (valuationCap / totalShares);
+  return sharePrice * (1 - (discount * 0.01)) > (valuationCap / totalDilutedShares);
 }
 
 export const format = {
