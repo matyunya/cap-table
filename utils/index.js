@@ -125,25 +125,26 @@ export const totalInvestorRows = investors => investors.size + (new Set(allGroup
 export function calcRoundResults(rounds, id) {
   if (rounds.get(id).type === "j-kiss") return {};
 
-  // const rounds = new Map([...r].filter(([, { type }]) => type !== "j-kiss"));
-
   const roundIds = [...rounds.keys()];
-  let prevId = roundIds[roundIds.indexOf(id) - 1];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
+  const previousRounds = getPreviousRounds(rounds, prevId);
+
   const round = rounds.get(id);
+  const prevRound = rounds.get(prevId);
 
   const { sharePrice, type } = round;
 
-  const prevRoundShares = totalCommonShares(getPreviousRounds(rounds, prevId)) || 0;
-  const newEquity = reduceSumOfCommonShares(0, round) * sharePrice;
-  const preMoney = sharePrice * prevRoundShares;
+  const prevRoundShares = totalCommonShares(previousRounds) || 0;
+  const newEquity = type === "split" ? 0 : reduceSumOfCommonShares(0, round) * sharePrice;
+  const preMoney = (type === "split" ? prevRound.sharePrice : sharePrice) * prevRoundShares;
 
-  const prevTotalRoundShares = totalShares(getPreviousRounds(rounds, prevId)) || 0;
-  const newEquityDiluted = reduceSumOfShares(0, round) * sharePrice;
-  const preMoneyDiluted = sharePrice * prevTotalRoundShares;
+  const prevTotalRoundShares = totalShares(previousRounds) || 0;
+  const newEquityDiluted = type === "split" ? 0 : reduceSumOfShares(0, round) * sharePrice;
+  const preMoneyDiluted = (type === "split" ? prevRound.sharePrice : sharePrice) * prevTotalRoundShares;
 
   return {
     sharePrice,
-    newEquity: type === "split" ? 0 : newEquity,
+    newEquity,
     preMoney,
     postMoney: newEquity + preMoney,
     preMoneyDiluted,
