@@ -21,8 +21,6 @@ import {
   calcValues,
   calcOffset,
   format,
-  totalCommonShares,
-  totalShares,
   getPreviousRounds,
   convertReactiveRounds,
   jkissRoundResults,
