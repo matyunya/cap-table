@@ -74,19 +74,19 @@ const votingColumnHeader = (cols, idx) => cols
   .filter(Boolean);
 
 export const footerLabels = offset => [
-  ['total-label', { position: [offset - 1, 0, offset - 1, 1], value: "合計", classes: firstColClasses, isLabel: true, }],
-  ['share-price-label', { position: [offset, 0, offset, 1], value: "株価", classes: firstColClasses, isLabel: true, }],
-  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 1], value: "調達金額", classes: firstColClasses, isLabel: true, }],
-  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 1], value: "時価総額（Pre）", classes: firstColClasses, isLabel: true, }],
-  ['post-money-label', { position: [offset + 3, 0, offset + 3, 1], value: "時価総額（Post）", classes: firstColClasses, isLabel: true, }],
-  ['pre-money-diluted-label', { position: [offset + 4, 0, offset + 4, 1], value: "時価総額（Pre/ 潜在込）", classes: firstColClasses, isLabel: true, }],
-  ['post-money-diluted-label', { position: [offset + 5, 0, offset + 5, 1], value: "時価総額（Pre/潜在込）", classes: firstColClasses, isLabel: true, }],
+  ['total-label', { position: [offset - 1, 0, offset - 1, 2], value: "合計", classes: firstColClasses, isLabel: true, }],
+  ['share-price-label', { position: [offset, 0, offset, 2], value: "株価", classes: firstColClasses, isLabel: true, }],
+  ['new-equity-label', { position: [offset + 1, 0, offset + 1, 2], value: "調達金額", classes: firstColClasses, isLabel: true, }],
+  ['pre-money-label', { position: [offset + 2, 0, offset + 2, 2], value: "時価総額（Pre）", classes: firstColClasses, isLabel: true, }],
+  ['post-money-label', { position: [offset + 3, 0, offset + 3, 2], value: "時価総額（Post）", classes: firstColClasses, isLabel: true, }],
+  ['pre-money-diluted-label', { position: [offset + 4, 0, offset + 4, 2], value: "時価総額（Pre/ 潜在込）", classes: firstColClasses, isLabel: true, }],
+  ['post-money-diluted-label', { position: [offset + 5, 0, offset + 5, 2], value: "時価総額（Pre/潜在込）", classes: firstColClasses, isLabel: true, }],
 ];
 
 export const investorNames = investors => id => [
   'investor-name:' + id,
   {
-    position: getPosition(investors, id, 0, 0),
+    position: getPosition(investors, id, 0, 1),
     value: investors.get(id).name,
     classes: firstColClasses + " px-1",
     onChange: (s, { id, value }) => {
@@ -100,7 +100,7 @@ export const investorNames = investors => id => [
 export const investorTitles = investors => id => [
   'investor-title:' + id,
   {
-    position: getPosition(investors, id, 1, 0),
+    position: getPosition(investors, id, 2, 0),
     value: investors.get(id).title || "",
     classes: firstColClasses + " px-1",
     onChange: (s, { id, value }) => {
@@ -336,7 +336,7 @@ function documentNameBlock(s, title) {
   return [
       "document-name",
     {
-      position: [0,0,2,1],
+      position: [0,0,2,2],
       value: title,
       classes: "flex items-center justify-center",
       onChange: (s, value) => syncUp(s, UPDATE_DOCUMENT_TITLE, value),
@@ -377,7 +377,7 @@ export function toBlocks(s) {
     ...groupNames(investors),
     ...[...investors.keys()].map(investorTitles(investors)),
     ...[...investors.keys()].map(investorNames(investors)),
-    ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 1])[0],
+    ...[...rounds.keys()].reduce(roundValues(rounds, investors), [[], 2])[0],
     ...footerLabels(totalInvestorRows(investors) + 4),
   ].map(([id, cell]) => {
     if (!readOnly) return [id, cell];
