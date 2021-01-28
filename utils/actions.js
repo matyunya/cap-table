@@ -57,7 +57,7 @@ export function groupNames(investors) {
       [
         `group-label:${cur}:${i}`,
         {
-          position: [y, 0, y, 1],
+          position: [y, 0, y, 2],
           value: cur,
           classes: groupClasses + " " + firstColClasses,
           onChange: (store, { value }) => {
