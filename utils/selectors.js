@@ -328,7 +328,7 @@ export function roundValues(r, investors) {
   };
 }
 
-export const colsCount = (rounds) => 1 + [...rounds.values()].reduce((acc, r) => acc + roundOptions[r.type].colSpan, 0);
+export const colsCount = (rounds) => 2 + [...rounds.values()].reduce((acc, r) => acc + roundOptions[r.type].colSpan, 0);
 
 export const rowsCount = (investors) => totalInvestorRows(investors) + 10;
 
