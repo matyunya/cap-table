@@ -1,5 +1,4 @@
 <script>
-  import { tx } from "tinyx";
   import { scale } from "svelte/transition";
   import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
@@ -58,8 +57,6 @@
       : ["anonymous"];
   });
 
-  let ids = new Set();
-
   $: if ($route) {
     console.log("NEW ROUTE", $route);
     showNotFound = false;
@@ -77,9 +74,9 @@
 
   async function getDocAnon({ userId, appId, id }) {
     try {
-      const doc = await getDoc(id, { appId });
+      const doc = getDoc(id, { appId });
 
-      console.log('Anonymous user fetching', { userId, appId, id, $user, userId });
+      console.log('Anonymous user fetching', { userId, appId, id, $user });
 
       await doc.get().then(d => {
         store.commit(() => ({ set }) => set("anonymous", {
