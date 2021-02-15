@@ -1,4 +1,4 @@
-import { defaultDocument, store, docId, getActiveDocRef } from "/store.js";
+import { defaultDocument, store, getActiveDocRef } from "/store.js";
 import { SYNC_DOCS, serialize } from "/utils/sync.js";
 import { uid } from "/utils/index.js";
 
@@ -13,8 +13,7 @@ function getDocsRef() {
 }
 
 export function connect() {
-  let initial = true;
-  const { appId, userId } = ellx.auth() || {};
+  const { userId } = ellx.auth() || {};
 
   return getDocsRef()
     .onSnapshot(
