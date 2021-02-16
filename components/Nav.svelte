@@ -10,7 +10,6 @@
 
   export let logout = () => {};
   export let dark;
-  export let togglePublic = () => {};
   export let founderShare = 0;
   export let hideSelect = true;
   export let activeSheet;

@@ -9,9 +9,6 @@ import {
   uniqueGroupName,
   uid,
   convertReactiveRounds,
-  totalCommonSharesForInvestor,
-  totalVotingSharesForInvestor,
-  getPreviousRounds,
   calcRoundResults,
   formatRoundDate,
 } from "/utils/index.js";
@@ -92,7 +89,7 @@ const defaultStore = {
 export const store = bootstrap(defaultStore);
 
 export function getActiveDocRef(id) {
-  const { appId, userId } = ellx.auth() || {};
+  const { appId } = ellx.auth() || {};
 
   return firebase.firestore()
     .collection('apps')

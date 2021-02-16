@@ -1,5 +1,4 @@
 <script>
-  import { tx } from "tinyx";
   import { scale } from "svelte/transition";
   import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
@@ -13,7 +12,6 @@
   import Nav from "/components/Nav.svelte";
   import { deserialize } from "/utils/sync.js";
   import { docId, user, store, documentIds } from "./store.js";
-  import { togglePublic } from "/utils/actions.js";
   import route from "/utils/router.js";
   import { calcFounderShare } from "/utils/index.js";
   import { getDoc } from "/utils/firebase.js";
@@ -33,7 +31,6 @@
   let loading = true;
   let disconnect = i => i;
   let disconnectProfile = i => i;
-  let showNotFound = false;
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -58,28 +55,20 @@
       : ["anonymous"];
   });
 
-  let ids = new Set();
-
-  $: if ($route) {
+  $: if ($route && $route !== '404') {
     console.log("NEW ROUTE", $route);
-    showNotFound = false;
     selectDoc(...$route.split('/'));
   }
 
-  $: console.log({ $activeSheet });
-
-// TODO: set showNotFound after store is set
-//   $: if ($docId && !loading) {
-//     tick().then(() => {
-//       showNotFound = !$activeSheet || $activeSheet.size === 0;
-//     });
-//   }
+  $: if ($documentIds.length > 0 && $docId && !$documentIds.find(([id]) => id === $docId)) {
+    $route = '404';
+  }
 
   async function getDocAnon({ userId, appId, id }) {
     try {
-      const doc = await getDoc(id, { appId });
+      const doc = getDoc(id, { appId });
 
-      console.log('Anonymous user fetching', { userId, appId, id, $user, userId });
+      console.log('Anonymous user fetching', { userId, appId, id, $user });
 
       await doc.get().then(d => {
         store.commit(() => ({ set }) => set("anonymous", {
@@ -89,7 +78,7 @@
       });
     } catch (e) {
       console.log('Error fetching doc', e);
-      showNotFound = true;
+      $route = '404';
     }
   }
 
@@ -167,7 +156,6 @@
 
 <Nav
   bind:dark
-  togglePublic={() => togglePublic(activeSheet)}
   hideSelect={!$route && $documentIds.length > 0}
   {logout}
   {founderShare}
@@ -190,26 +178,24 @@
   {/if}
 {:else if $route === "profile"}
   <EditProfilePage />
+{:else if $route === '404'}
+  <div class="w-full text-center mt-16 text-lg relative text-red-400">
+    {$_("このページは見つかりませんでした。")}
+  </div>
 {:else}
-  {#if loading}
+  {#if loading || blocks.size === 0}
     <div class="h-full w-full absolute flex items-center justify-center">
       <div transition:scale={{ delay: 200 }}>
         <Logo animated size={64} />
       </div>
     </div>
   {:else}
-    {#if blocks.size === 0}
-      <div class="w-full text-center mt-16 text-lg relative text-red-400">
-        {$_("このページは見つかりませんでした。")}
-      </div>
-    {:else}
-      <Sheet
-        bind:dark
-        {blocks}
-        {nRows}
-        {nCols}
-        store={activeSheet}
-      />
-    {/if}
+    <Sheet
+      bind:dark
+      {blocks}
+      {nRows}
+      {nCols}
+      store={activeSheet}
+    />
   {/if}
 {/if}

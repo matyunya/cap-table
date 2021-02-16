@@ -1,10 +1,10 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import Input from "/components/Input.svelte";
   import Scrim from "/components/Scrim.svelte";
   import ProfileForm from "/components/ProfileForm.svelte";
   import _ from "/utils/intl.js";
-  import { language, defaultProfile, store } from "/store.js";
+  import { language, defaultProfile } from "/store.js";
   import { connect, updateProfile } from "/models/profile.js";
 
   export let loading = true;
@@ -67,7 +67,6 @@
     }
   }
 
-  const update = field => e => data[field] = e.target.value;
 </script>
 
 {#if showEmailNotification}
