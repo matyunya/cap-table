@@ -1,5 +1,3 @@
-import equal from "fast-deep-equal/es6";
-
 const asKV = ([key, value]) => ({ key, value });
 const fromKV = ({ key, value }) => [key, value];
 
