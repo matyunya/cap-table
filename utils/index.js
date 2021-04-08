@@ -261,16 +261,18 @@ export function jkissRoundResults(rounds, id, x, y) {
   return roundResultsWithPosition(id, x, y, 4, jkissResultsBeforeNextRound, false);
 }
 
-const convertSingleRoundToJkiss = rounds => ([id, round]) => {
+const convertSingleRoundToJkiss = (rounds, investors) => ([id, round]) => {
   if (round.type !== "j-kiss") return [id, round];
+
+  const roundsWithSplit = new Map([...rounds].map(convertSingleRoundToSplit(rounds, investors)));
 
   const roundIds = [...rounds.keys()];
   const nextId = roundIds[roundIds.indexOf(id) + 1];
   if (!nextId) return [id, round];
   const prevId = roundIds[roundIds.indexOf(id) - 1];
 
-  const nextRoundResults = calcRoundResults(rounds, nextId);
-  const prevRoundResults = calcRoundResults(rounds, prevId);
+  const nextRoundResults = calcRoundResults(roundsWithSplit, nextId);
+  const prevRoundResults = calcRoundResults(roundsWithSplit, prevId);
 
   return [id, {
     ...round,
@@ -311,7 +313,7 @@ const convertSingleRoundToSplit = (rounds, investors) => ([id, round]) => {
 
 
 export function convertReactiveRounds(rounds, investors) {
-  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds)).map(convertSingleRoundToSplit(rounds, investors)));
+  return new Map([...rounds].map(convertSingleRoundToJkiss(rounds, investors)).map(convertSingleRoundToSplit(rounds, investors)));
 }
 
 export function roundResultsWithPosition(id, x, y, colSpan, roundResults, onChange = false) {
