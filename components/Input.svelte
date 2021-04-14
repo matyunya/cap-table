@@ -24,7 +24,7 @@
     {id}
     {required}
     {type}
-    class:ring-blue-200={!error}
+    class:ring-light-blue-200={!error}
     class:ring-red-200={error}
     class:ring-0={!error}
     class:ring-1={error}

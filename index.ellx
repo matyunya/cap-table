@@ -1,0 +1,204 @@
+version: 1.1
+nodes:
+  $1 = store
+  docs = store.documents
+  auth = ellx.auth()
+  routeUserId = router.split('/')[0]
+  docId = router.split('/')[2]
+  activeSheet = (routeUserId === auth.userId ? store.documents.get(docId) : store.documents.get("anonymous") || {})
+  title = activeSheet.title
+  founderShare = calcFounderShare(activeSheet)
+  groups = uniqueGroups(investors)
+  investorGroups = groupInvestors(groups, investors)
+  investors = activeSheet.investors
+  rounds = activeSheet.rounds
+  calculated = calculate(rounds, investors)
+layout:
+[,
+  [,,
+    {
+      "value": "Store:"
+    }
+  ],
+  [,,
+    {
+      "node": "$1",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": false,
+        "labelsTop": false,
+        "height": 2,
+        "width": 1
+      }
+    }
+  ],,,
+  [,,
+    {
+      "value": "Documents:"
+    }
+  ],
+  [,,
+    {
+      "node": "docs",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "height": 6,
+        "width": 5
+      }
+    },,,,,,
+    {
+      "value": "Current user:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "auth",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 4,
+        "width": 1
+      }
+    }
+  ],,,,,,,
+  [,,
+    {
+      "value": "Route user ID:"
+    }
+  ],
+  [,,
+    {
+      "node": "routeUserId"
+    }
+  ],
+  [,,
+    {
+      "value": "Route doc ID:"
+    }
+  ],
+  [,,
+    {
+      "node": "docId"
+    }
+  ],,
+  [,,
+    {
+      "value": "Active sheet:"
+    }
+  ],
+  [,,
+    {
+      "node": "activeSheet",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 4,
+        "width": 1
+      }
+    }
+  ],,,,,
+  [,,
+    {
+      "value": "Title:"
+    }
+  ],
+  [,,
+    {
+      "node": "title"
+    }
+  ],,
+  [,,
+    {
+      "value": "Founder share:"
+    }
+  ],
+  [,,
+    {
+      "node": "founderShare"
+    }
+  ],,,
+  [,,
+    {
+      "value": "Active sheet investors:"
+    },,,
+    {
+      "value": "Investor groups:"
+    },,
+    {
+      "value": "Groups and investors:"
+    },,
+    {
+      "value": "// First column values"
+    }
+  ],
+  [,,,,,
+    {
+      "node": "groups",
+      "expansion": {
+        "vertical": true,
+        "height": 7,
+        "width": 1
+      }
+    },,
+    {
+      "node": "investorGroups",
+      "expansion": {
+        "vertical": true,
+        "height": 10,
+        "width": 1
+      }
+    }
+  ],
+  [,,
+    {
+      "node": "investors",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 8,
+        "width": 3
+      }
+    }
+  ],,,,,,,,,,
+  [,,
+    {
+      "value": "Active sheet rounds:"
+    }
+  ],,
+  [,,
+    {
+      "node": "rounds",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 6,
+        "width": 5
+      }
+    }
+  ],,,,,,,
+  [,,
+    {
+      "value": "Calculated results:"
+    }
+  ],,
+  [,,
+    {
+      "node": "calculated",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 4,
+        "width": 4
+      }
+    }
+  ]
+]

@@ -77,10 +77,10 @@ const translations = {
   "時価総額（Post）": {
     en: "Post money (¥)",
   },
-  "時価総額（Pre/ 潜在込）": {
+  "時価総額（Pre/潜在込）": {
     en: "Pre money diluted (¥)",
   },
-  "時価総額（Pre/潜在込）": {
+  "時価総額（Post/潜在込）": {
     en: "Post money diluted (¥)",
   },
   "株式数": {

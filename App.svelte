@@ -7,102 +7,84 @@
   import HomePage from "./HomePage.svelte";
   import EditProfilePage from "./EditProfilePage.svelte";
 
-  import Sheet from "/components/Sheet.svelte";
+  import Sheet from "/components/sheet/Sheet.svelte";
   import Logo from "/components/Logo.svelte";
   import Nav from "/components/Nav.svelte";
   import { deserialize } from "/utils/sync.js";
   import { docId, user, store, documentIds } from "./store.js";
   import route from "/utils/router.js";
-  import { calcFounderShare } from "/utils/index.js";
   import { getDoc } from "/utils/firebase.js";
   import { connect } from "/models/docs.js";
   import { connect as connectProfile } from "/models/profile.js";
-  import {
-    colsCount,
-    rowsCount,
-    toBlocks,
-  } from "/utils/selectors.js";
   import _ from "/utils/intl.js";
 
-  let blocks = new Map();
-  let nRows = 10;
-  let nCols = 5;
-  let founderShare = 1;
-  let loading = true;
-  let disconnect = i => i;
-  let disconnectProfile = i => i;
+  const { founderShare } = require("/index.ellx");
+
+  let disconnect = (i) => i;
+  let disconnectProfile = (i) => i;
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   $: if (dark) {
-    document.querySelector('body').classList.add('mode-dark');
+    document.querySelector("body").classList.add("mode-dark");
   } else {
-    document.querySelector('body').classList.remove('mode-dark');
-  }
-
-  $: {
-    blocks = toBlocks(activeSheet, $docId);
-    nRows = $activeSheet ? rowsCount($activeSheet.investors) : 0;
-    nCols = $activeSheet ? colsCount($activeSheet.rounds) : 0;
-    founderShare = calcFounderShare($activeSheet);
+    document.querySelector("body").classList.remove("mode-dark");
   }
 
   $: activeSheet = select(store, () => {
     const [routeUserId] = ($route || "").split("/");
 
-    return routeUserId === $user.userId
-      ? ["documents", $docId]
-      : ["anonymous"];
+    return routeUserId === $user.userId ? ["documents", $docId] : ["anonymous"];
   });
 
-  $: if ($route && $route !== '404') {
+  $: if ($route && $route !== "404") {
     console.log("NEW ROUTE", $route);
-    selectDoc(...$route.split('/'));
+    selectDoc(...$route.split("/"));
   }
 
-  $: if ($documentIds.length > 0 && $docId && !$documentIds.find(([id]) => id === $docId)) {
-    $route = '404';
+  $: if (
+    $documentIds.length > 0 &&
+    $docId &&
+    !$documentIds.find(([id]) => id === $docId)
+  ) {
+    $route = "404";
   }
 
   async function getDocAnon({ userId, appId, id }) {
     try {
       const doc = getDoc(id, { appId });
 
-      console.log('Anonymous user fetching', { userId, appId, id, $user });
+      console.log("Anonymous user fetching", { userId, appId, id });
 
-      await doc.get().then(d => {
-        store.commit(() => ({ set }) => set("anonymous", {
-          ...deserialize(d.data()),
-          readOnly: true,
-        }));
+      await doc.get().then((d) => {
+        store.commit(() => ({ set }) =>
+          set("anonymous", {
+            ...deserialize(d.data()),
+            readOnly: true,
+          })
+        );
       });
     } catch (e) {
-      console.log('Error fetching doc', e);
-      $route = '404';
+      console.log("Error fetching doc", e);
+      $route = "404";
     }
   }
 
   async function selectDoc(userId, appId, id) {
-    loading = true;
     console.log("selecting", { userId, appId, id });
 
     if (!$user.userId) {
       try {
         $user = await window.ellx.login();
       } catch (e) {
-        console.log('is anonymous user');
+        console.log("is anonymous user");
         // anonymous user
       }
     }
 
-    try {
-      if (!$user.userId || ($user.userId && $user.userId !== userId)) {
-        await getDocAnon({ userId, appId, id });
-        return;
-      }
-
-    } finally {
-      loading = false;
+    if (!$user.userId || ($user.userId && $user.userId !== userId)) {
+      await getDocAnon({ userId, appId, id });
+      return;
     }
   }
 
@@ -120,13 +102,13 @@
     setTimeout(async () => {
       headlong();
 
-      const el = document.getElementById('app');
+      const el = document.getElementById("app");
       if (!el) return;
 
-      el.classList.remove('hidden');
+      el.classList.remove("hidden");
       await tick();
-      setTimeout(() => el.classList.remove('opacity-0'), 50);
-      el.classList.add('opacity-100');
+      setTimeout(() => el.classList.remove("opacity-0"), 50);
+      el.classList.add("opacity-100");
     }, 50);
 
     try {
@@ -136,8 +118,6 @@
       }
     } catch (e) {
       console.log(e);
-    } finally {
-      loading = false;
     }
   });
 
@@ -148,54 +128,52 @@
     disconnect();
     disconnectProfile();
     store.resetStore();
-    loading = false;
   }
 </script>
 
-<div class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800" />
+<div
+  class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800"
+/>
 
 <Nav
   bind:dark
   hideSelect={!$route && $documentIds.length > 0}
   {logout}
-  {founderShare}
+  founderShare={$founderShare}
   {activeSheet}
 />
 
 {#if !$route}
   {#if $documentIds.length > 0}
-   <section class="relative block py-24 lg:pt-0 md:mt-24">
-    <div class="max-w-sm mx-auto px-4">
-       <ul class="p-4 max-w-sm mx-auto relative flex flex-col space-y-2">
-        {#each $documentIds as [id, title]}
-          <button class="cursor-pointer p-4 font-mono my-2 rounded hover:ring-1 ring-0 transition duration-150 text-light-blue-500 ring-light-blue-500" on:click={() => $route = `#${$user.userId}/${$user.appId}/${id}`}><li>{title}</li></button>
-        {/each}
-      </ul>
-    </div>
-  </section>
+    <section class="relative block py-24 lg:pt-0 md:mt-24">
+      <div class="max-w-sm mx-auto px-4">
+        <ul class="p-4 max-w-sm mx-auto relative flex flex-col space-y-2">
+          {#each $documentIds as [id, title]}
+            <button
+              class="cursor-pointer p-4 font-mono my-2 rounded hover:ring-1 ring-0 transition duration-150 text-light-blue-500 ring-light-blue-500"
+              on:click={() =>
+                ($route = `#${$user.userId}/${$user.appId}/${id}`)}
+              ><li>{title}</li></button
+            >
+          {/each}
+        </ul>
+      </div>
+    </section>
   {:else}
-    <HomePage bind:loading on:success={onAuthenticated} />
+    <HomePage on:success={onAuthenticated} />
   {/if}
 {:else if $route === "profile"}
   <EditProfilePage />
-{:else if $route === '404'}
+{:else if $route === "404"}
   <div class="w-full text-center mt-16 text-lg relative text-red-400">
     {$_("このページは見つかりませんでした。")}
   </div>
-{:else}
-  {#if loading || blocks.size === 0}
-    <div class="h-full w-full absolute flex items-center justify-center">
-      <div transition:scale={{ delay: 200 }}>
-        <Logo animated size={64} />
-      </div>
+{:else if false}
+  <div class="h-full w-full absolute flex items-center justify-center">
+    <div transition:scale={{ delay: 200 }}>
+      <Logo animated size={64} />
     </div>
-  {:else}
-    <Sheet
-      bind:dark
-      {blocks}
-      {nRows}
-      {nCols}
-      store={activeSheet}
-    />
-  {/if}
+  </div>
+{:else}
+  <Sheet />
 {/if}

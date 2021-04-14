@@ -1,5 +1,3 @@
-import { get } from "svelte/store";
-
 import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
@@ -9,22 +7,13 @@ import {
   RENAME_ROUND,
   UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
-  UPDATE_VALUATION_CAP,
-  UPDATE_DISCOUNT,
   TOGGLE_PUBLIC,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
   RESET_DOCUMENT,
-  docId,
-  user,
   syncUp,
   syncDocumentUp,
 } from "/store.js";
-
-import {
-  firstColClasses,
-  groupClasses,
-} from "./classes.js";
 
 import {
   totalShares,
@@ -33,7 +22,6 @@ import {
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
   format,
-  getPosition,
   allGroups,
   lastInvestorIdInGroup,
   uid,
@@ -49,17 +37,13 @@ export function groupNames(investors) {
       return acc;
     }
 
-    const y = i + 3 + acc.length;
-
     return [
       ...acc,
       // Three label rows
       [
         `group-label:${cur}:${i}`,
         {
-          position: [y, 0, y, 2],
           value: cur,
-          classes: groupClasses + " " + firstColClasses,
           onChange: (store, { value }) => {
             syncUp(store, UPDATE_GROUP_NAME, { oldName: cur, newName: value });
           },
@@ -90,24 +74,23 @@ export function groupNames(investors) {
 
 const calcCell = calcFn =>
   prefix =>
-  (investors, rounds, col, id, colSpan, ...options) =>
-  ([investorId, { commonShares, votingShares, ...investment }]) => {
-  return [
-    `${prefix}:${id}:${investorId}`,
-    {
-      position: getPosition(investors, investorId, col, colSpan ? (colSpan - 1) : 0),
-      value: calcFn({
-        commonShares,
-        votingShares,
-        rounds,
-        investors,
-        investorId,
-        ...investment
-      }),
-      ...options[0],
-    }
-  ];
-};
+    (investors, rounds, col, id, colSpan, ...options) =>
+      ([investorId, { commonShares, votingShares, ...investment }]) => {
+        return [
+          `${prefix}:${id}:${investorId}`,
+          {
+            value: calcFn({
+              commonShares,
+              votingShares,
+              rounds,
+              investors,
+              investorId,
+              ...investment
+            }),
+            ...options[0],
+          }
+        ];
+      };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
@@ -148,13 +131,15 @@ const updateRound = (mutation, fieldName) => (store, { id, value }) => {
 };
 
 export const renameRound = (store, { id, value }) => {
-  const [,roundId] = id.split(":");
+  const [, roundId] = id.split(":");
   syncUp(store, RENAME_ROUND, { roundId, name: value });
 };
+
 export const updateRoundDate = (store, { id, value }) => {
-  const [,roundId] = id.split(":");
+  const [, roundId] = id.split(":");
   syncUp(store, UPDATE_ROUND_DATE, { roundId, date: value });
 };
+
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
 const colTypes = {
@@ -183,7 +168,6 @@ const colTypes = {
   votingShareDiff: {
     label: "株式増減",
     hasRowspan: true,
-    classes: "dark:border-blue-800 border-blue-300 border-l",
     voting: true,
     fn: calcCell(({ votingShares }) => votingShares || 0)("voting-diff"),
     onChange: updateShares("voting"),
@@ -192,19 +176,16 @@ const colTypes = {
   jkissShares: {
     label: "株式数",
     fn: calcCell(({ commonShares }) => commonShares || 0)("jkiss"),
-    colSpan: 2,
     format: format.number.format,
   },
   jkissInvested: {
     label: "投資額",
     fn: calcCell(({ jkissInvested }) => jkissInvested || 0)("jkiss-invested"),
-    colSpan: 2,
     format: format.currency.format,
     onChange: updateJkissInvested,
   },
   votingSharesAmount: {
     label: "株式数",
-    hasRowspan: true,
     fn: calcCell(calcCommonVotingShares)("voting-total"),
     format: format.number.format,
   },
@@ -233,12 +214,7 @@ const {
   jkissInvested,
 } = colTypes;
 
-const rightAligned = r => ({
-  ...r,
-  classes: (r.classes || "") + " text-right",
-});
-
-const foundCols = [sharesInitial, sharesPercent].map(rightAligned);
+const foundCols = [sharesInitial, sharesPercent];
 
 const genericCols = [
   shareDiff,
@@ -248,12 +224,12 @@ const genericCols = [
   votingSharesAmount,
   totalSharesAmount,
   totalSharesPercent
-].map(rightAligned);
+];
 
 const jkissCols = [
   jkissInvested,
   jkissShares,
-].map(rightAligned);
+];
 
 export const roundOptions = {
   founded: {
@@ -265,14 +241,10 @@ export const roundOptions = {
     cols: genericCols,
   },
   "j-kiss": {
-    colSpan: jkissCols.reduce((acc, cur) => acc + cur.colSpan, 0),
+    colSpan: jkissCols.length,
     cols: jkissCols,
   },
   split: {
-    colSpan: genericCols.length,
-    cols: genericCols,
-  },
-  preferred: {
     colSpan: genericCols.length,
     cols: genericCols,
   },

@@ -7,7 +7,7 @@
   import { language, defaultProfile } from "/store.js";
   import { connect, updateProfile } from "/models/profile.js";
 
-  export let loading = true;
+  export let loading = false;
 
   const dispatch = createEventDispatcher();
 
@@ -132,7 +132,7 @@
                 <input
                   type="checkbox"
                   bind:checked={shouldResetPassword}
-                  class="text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 focus:ring-offset-0">
+                  class="text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-light-blue-500 focus:ring-opacity-50 focus:ring-offset-0">
                   <span class="ml-2 text-sm">{$_("パスワードを忘れた方はこちらチェックしてください。")}</span>
                 </label>
 

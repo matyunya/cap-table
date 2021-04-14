@@ -3,7 +3,6 @@
   export let value;
   export let id;
   export let save;
-  export let type;
 
   let node;
 
@@ -45,6 +44,7 @@
 </style>
 
 <textarea
+  data-id={id}
   use:clickedOutside={save}
   {id}
   tabindex="-1"
@@ -52,6 +52,7 @@
   bind:value
   on:input
   on:keydown
+  on:click|preventDefault
   rows="1"
   autocomplete="off"
   autocorrect="off"

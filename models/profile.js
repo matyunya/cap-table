@@ -13,7 +13,7 @@ function getProfileRef() {
 
 export function connect(onFirstSnapshot = () => {}) {
   let initial = true;
-  const { appId, userId } = ellx.auth() || {};
+  const { userId } = ellx.auth() || {};
 
   return getProfileRef()
     .onSnapshot(

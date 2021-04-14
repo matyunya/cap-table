@@ -38,7 +38,6 @@
   });
 
   function setEditing(onChange, id, value) {
-    console.log({ editing, onChange, id, value });
     if (editing) save();
 
     if (!onChange) return;
