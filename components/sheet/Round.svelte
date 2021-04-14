@@ -15,17 +15,10 @@
   }
 
   export const ROUND_WIDTHS = {
-    founded: 150,
-    common: 600,
-    split: 600,
-    "j-kiss": 150,
-  };
-
-  export const ROUND_COLS = {
-    founded: 2,
-    common: 7,
-    split: 7,
-    "j-kiss": 2,
+    founded: 200,
+    common: 500,
+    split: 500,
+    "j-kiss": 200,
   };
 
   export const INVESTORS_COL_WIDTH = 200;
@@ -69,7 +62,7 @@
   <div
     class="flex flex-row justify-evenly text-center text-xs items-center font-medium"
   >
-    {#each options.cols as { label, hasRowspan }}
+    {#each Object.keys(options.cols) as colType}
       <!-- {#if hasRowspan}
         <div class="flex flex-col">
           <div class="flex-1 h-full p-1 flex items-center justify-end">
@@ -81,7 +74,7 @@
         </div>
       {:else} -->
       <div class="flex-1 h-full p-1 flex items-center justify-end truncate">
-        {$_(label)}
+        {$_(options.cols[colType].label)}
       </div>
       <!-- {/if} -->
     {/each}
@@ -89,11 +82,13 @@
 </div>
 <div
   style="width: {width}px; min-width: 0; min-height: 0;"
-  class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded-sm gap-0 grid grid-cols-{ROUND_COLS[
-    type
-  ]}"
+  class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm gap-0 grid grid-cols-{Object.keys(options.cols).length}"
 >
-  <TableData size={ROUND_COLS[type]} values={result.values} />
+  <TableData
+    readOnly={type === "split"}
+    cols={options.cols}
+    values={result.values}
+  />
 </div>
 
 <div style="height: 4rem">controls</div>

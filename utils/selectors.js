@@ -10,7 +10,6 @@ import {
 } from "./actions.js";
 import _ from "./intl.js";
 import {
-  getPreviousRounds,
   getFutureRounds,
   calcRoundResults,
   calcSingleColumn,
@@ -31,7 +30,6 @@ import {
   ADD_ROUND,
   ADD_SPLIT_ROUND,
   REMOVE_ROUND,
-  UPDATE_DOCUMENT_TITLE,
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
   UPDATE_SPLIT_BY,
@@ -215,31 +213,19 @@ export function roundValues(rounds, investors) {
         jkissControls: jkissControls(round, id, nextRoundResults, prevRoundResults),
         splitControls: splitControls(round, id),
         roundResults,
-        values: cols.reduce(
-          calcSingleColumn({
+        values: Object.keys(cols).reduce((acc, colType) => ({
+          ...acc,
+          [colType]: calcSingleColumn({
             round,
             investors,
-            id,
             previousRounds: getPreviousRounds(rounds, id),
-            futureRounds,
-            nextRoundResults,
-            cols,
+            fn: cols[colType].fn,
           }),
-          []
+        }), {}
         ),
       }
     }
   };
-}
-
-function documentNameBlock(s, title) {
-  return [
-    "document-name",
-    {
-      value: title,
-      onChange: (s, value) => syncUp(s, UPDATE_DOCUMENT_TITLE, value),
-    }
-  ];
 }
 
 export const getDocMenuItems = (s) => [

@@ -1,3 +1,4 @@
+import { select } from "tinyx";
 import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
@@ -13,6 +14,8 @@ import {
   RESET_DOCUMENT,
   syncUp,
   syncDocumentUp,
+  store,
+  UPDATE_DOCUMENT_TITLE,
 } from "/store.js";
 
 import {
@@ -28,6 +31,8 @@ import {
 } from "./index.js";
 
 import router from "./router.js";
+
+const { docId } = require("/index.ellx");
 
 export function groupNames(investors) {
   const investorGroups = allGroups(investors);
@@ -73,24 +78,18 @@ export function groupNames(investors) {
 }
 
 const calcCell = calcFn =>
-  prefix =>
-    (investors, rounds, col, id, colSpan, ...options) =>
-      ([investorId, { commonShares, votingShares, ...investment }]) => {
-        return [
-          `${prefix}:${id}:${investorId}`,
-          {
-            value: calcFn({
-              commonShares,
-              votingShares,
-              rounds,
-              investors,
-              investorId,
-              ...investment
-            }),
-            ...options[0],
-          }
-        ];
-      };
+  (investors, rounds) =>
+    ([investorId, investment]) => {
+      return [
+        investorId,
+        calcFn({
+          rounds,
+          investors,
+          investorId,
+          ...investment
+        })
+      ];
+    };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
@@ -146,57 +145,57 @@ const colTypes = {
   sharesInitial: {
     label: "株式数",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares || 0)("initial"),
+    fn: calcCell(({ commonShares }) => commonShares || 0),
     format: format.number.format,
   },
   shareDiff: {
     label: "株式増減",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares || 0)("diff"),
+    fn: calcCell(({ commonShares }) => commonShares || 0),
     format: format.number.format,
   },
   sharesAmount: {
     label: "株式数",
-    fn: calcCell(calcCommonShares)("amount"),
+    fn: calcCell(calcCommonShares),
     format: format.number.format,
   },
   sharesPercent: {
     label: "%",
-    fn: calcCell(calcSharesPerRound)("percent"),
+    fn: calcCell(calcSharesPerRound),
     format: format.percent.format,
   },
   votingShareDiff: {
     label: "株式増減",
     hasRowspan: true,
     voting: true,
-    fn: calcCell(({ votingShares }) => votingShares || 0)("voting-diff"),
+    fn: calcCell(({ votingShares }) => votingShares || 0),
     onChange: updateShares("voting"),
     format: format.number.format,
   },
   jkissShares: {
     label: "株式数",
-    fn: calcCell(({ commonShares }) => commonShares || 0)("jkiss"),
+    fn: calcCell(({ commonShares }) => commonShares || 0),
     format: format.number.format,
   },
   jkissInvested: {
     label: "投資額",
-    fn: calcCell(({ jkissInvested }) => jkissInvested || 0)("jkiss-invested"),
+    fn: calcCell(({ jkissInvested }) => jkissInvested || 0),
     format: format.currency.format,
     onChange: updateJkissInvested,
   },
   votingSharesAmount: {
     label: "株式数",
-    fn: calcCell(calcCommonVotingShares)("voting-total"),
+    fn: calcCell(calcCommonVotingShares),
     format: format.number.format,
   },
   totalSharesAmount: {
     label: "発行済株式数",
-    fn: calcCell(calcTotalShares)("total-amount"),
+    fn: calcCell(calcTotalShares),
     format: format.number.format,
   },
   totalSharesPercent: {
     label: "%",
-    fn: calcCell(calcTotalSharesPerRound)("total-percent"),
+    fn: calcCell(calcTotalSharesPerRound),
     format: format.percent.format,
   },
 };
@@ -214,9 +213,9 @@ const {
   jkissInvested,
 } = colTypes;
 
-const foundCols = [sharesInitial, sharesPercent];
+const foundCols = { sharesInitial, sharesPercent };
 
-const genericCols = [
+const genericCols = {
   shareDiff,
   sharesAmount,
   sharesPercent,
@@ -224,12 +223,12 @@ const genericCols = [
   votingSharesAmount,
   totalSharesAmount,
   totalSharesPercent
-];
+}
 
-const jkissCols = [
+const jkissCols = {
   jkissInvested,
   jkissShares,
-];
+};
 
 export const roundOptions = {
   founded: {
@@ -302,4 +301,8 @@ export const removeDocument = (store, { id }) => {
   const { userId, appId } = ellx.auth();
 
   router.set(`${userId}/${appId}/${ids[idx - 1]}`);
+}
+
+export function renameDocument({ detail }) {
+  return syncUp(select(store, () => ['documents', docId.get()]), UPDATE_DOCUMENT_TITLE, detail);
 }

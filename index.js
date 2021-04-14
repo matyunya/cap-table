@@ -20,7 +20,7 @@ export { store } from "/store.js";
 export function groupInvestors(groups, investors) {
   return [...groups].reduce((acc, group) => [
     ...acc,
-    { isGroup: true, label: group },
+    { isGroup: true, label: group, id: group },
     ...[...investors.keys()].filter(id => investors.get(id).group === group).map(id => ({
       id,
       label: investors.get(id).name,

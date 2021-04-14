@@ -122,7 +122,7 @@ function getAggregateValue(individualValues) {
 
   if (!idx) return false;
 
-  return individualValues.reduce((acc, [_, { value }]) => acc + value, 0);
+  return individualValues.reduce((acc, [_, value]) => acc + value, 0);
 }
 
 const getGroupInvestors = (investors, group) => new Map([...investors].filter(([, i]) => i.group === group));
@@ -138,34 +138,33 @@ export function fillEmptyInvestments(round, investors) {
 export const calcSingleColumn = ({
   round,
   investors,
-  id,
   previousRounds,
-}) => (acc, { onChange, fn, format }) => {
+  fn,
+}) => {
   if (!fn) return acc;
 
   const investments = fillEmptyInvestments(round, investors);
   const individualValues = investments
-    .map(fn(investors, previousRounds, 0, id, 0));
+    .map(fn(investors, previousRounds));
 
   const groups = [...uniqueGroups(investors)];
 
   const groupValues = groups.map(group => {
     const groupInvestors = getGroupInvestors(investors, group);
     const groupInvestorsValues = (investments.filter(([id]) => groupInvestors.has(id)) || [])
-      .map(fn(groupInvestors, previousRounds, 0, id, 0, { onChange, format }));
+      .map(fn(groupInvestors, previousRounds));
 
     if (!groupInvestorsValues.length) return false;
 
     return [group, getAggregateValue(groupInvestorsValues)];
   }).filter(Boolean);
 
-  return [
-    ...acc,
+  return new Map([
     ...individualValues,
     ...groupValues,
 
     ["total", getAggregateValue(individualValues)],
-  ].filter(Boolean);
+  ].filter(Boolean));
 }
 
 const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

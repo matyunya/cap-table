@@ -346,7 +346,7 @@ export function COPY_DOCUMENT({ from, to }) {
   };
 }
 
-export function UPDATE_DOCUMENT_TITLE({ value }) {
+export function UPDATE_DOCUMENT_TITLE(value) {
   return ({ set }) => set("title", value);
 }
 

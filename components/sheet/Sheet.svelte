@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import Round, { calculateWidth } from "./Round.svelte";
   import _ from "/utils/intl.js";
+  import { renameDocument } from "/utils/actions.js";
 
   let loading = true;
 
@@ -31,10 +32,11 @@
       style="top: 0; left: 0;"
       class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm shadow"
       value={$title}
+      on:change={renameDocument}
     />
     <div
       style="left: 0;"
-      class="col-start-1 row-start-2 sticky border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow"
+      class="col-start-1 row-start-2 sticky border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow p-1"
     >
       {#each $investorGroups as { id, label, isGroup }, i}
         <Cell
@@ -46,6 +48,11 @@
           {id}>{label}</Cell
         >
       {/each}
+      <div
+        class="p-1 pt-3 items-center text-left font-bold tracking-widest font-mono border-t dark:border-gray-600 mt-4"
+      >
+        {$_("合計")}
+      </div>
     </div>
 
     <!-- reserved for controls -->
@@ -55,7 +62,6 @@
       style="left: 0;"
       class="col-start-1 row-start-4 sticky p-1 border dark:border-gray-700 flex flex-col bg-white dark:bg-gray-800 shadow"
     >
-      <!-- <div class="p-1 h-6 items-center">{$_("合計")}</div> goes up -->
       <div class="p-1 h-6 items-center">{$_("株価")}</div>
       <div class="p-1 h-6 items-center">{$_("調達金額")}</div>
       <div class="p-1 h-6 items-center">{$_("時価総額（Pre）")}</div>
