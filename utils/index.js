@@ -66,7 +66,18 @@ export const calcJkissPrice = ({
   totalDilutedShares
 }) => Math.min(sharePrice * (1 - (discount * 0.01)), valuationCap / totalDilutedShares);
 
-export const isValuationCapApplied = ({ nextRoundResults, prevRoundResults, valuationCap = 0, discount = 100 }) => {
+export const isValuationCapApplied = ({ rounds, id, valuationCap = 0, discount = 100, type }) => {
+  if (type !== "j-kiss") return false;
+
+  const futureRounds = getFutureRounds(rounds, id);
+  const nextRoundResults = futureRounds.size
+    ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
+    : false;
+
+  const roundIds = [...rounds.keys()];
+  const prevId = roundIds[roundIds.indexOf(id) - 1];
+  const prevRoundResults = prevId ? calcRoundResults(rounds, prevId) : false;
+
   if (!nextRoundResults || !prevRoundResults) return false;
 
   const { sharePrice } = nextRoundResults;

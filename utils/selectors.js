@@ -10,10 +10,8 @@ import {
 } from "./actions.js";
 import _ from "./intl.js";
 import {
-  getFutureRounds,
   calcRoundResults,
   calcSingleColumn,
-  format,
   getPreviousRounds,
   convertReactiveRounds,
   jkissRoundResults,
@@ -30,9 +28,6 @@ import {
   ADD_ROUND,
   ADD_SPLIT_ROUND,
   REMOVE_ROUND,
-  UPDATE_VALUATION_CAP,
-  UPDATE_DISCOUNT,
-  UPDATE_SPLIT_BY,
   docId,
   store,
   syncUp,
@@ -142,53 +137,6 @@ const roundDate = (id, rounds) => [
   }
 ];
 
-function jkissControls(round, roundId, nextRoundResults, prevRoundResults) {
-  if (round.type !== "j-kiss") return [];
-
-  const isCapApplied = isValuationCapApplied({ nextRoundResults, prevRoundResults, ...round });
-
-  return [
-    [`valuation-label:${roundId}`, {
-      value: "バリュエーションキャップ",
-      classes: "dark:bg-gray-800 bg-white",
-    }],
-    [`discount-label:${roundId}`, {
-      value: "割引率",
-      classes: "dark:bg-gray-800 bg-white",
-    }],
-    [`valuation:${roundId}`, {
-      value: round.valuationCap || 0,
-      onChange: (store, { value }) => syncUp(store, UPDATE_VALUATION_CAP, { roundId, value }),
-      format: format.currency.format,
-      classes: isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-200 dark:text-white" : "dark:bg-gray-800 bg-white",
-    }],
-    [`discount:${roundId}`, {
-      value: round.discount || 0,
-      onChange: (store, { value }) => syncUp(store, UPDATE_DISCOUNT, { roundId, value }),
-      format: i => i + '%',
-      classes: !isCapApplied ? "dark:bg-light-blue-800 bg-light-blue-200 dark:text-white" : "dark:bg-gray-800 bg-white",
-    }],
-  ]
-}
-
-function splitControls(round, roundId, x, y) {
-  if (round.type !== "split") return [];
-
-  return [
-    [`split-by-label:${roundId}`, {
-      value: "分割数",
-      classes: "dark:bg-gray-800 bg-white",
-      isLabel: true,
-    }],
-    [`split-by:${roundId}`, {
-      value: round.splitBy || 0,
-      onChange: (store, { value }) => syncUp(store, UPDATE_SPLIT_BY, { roundId, value }),
-      format: format.number.format,
-      classes: "dark:bg-gray-800 bg-white",
-    }],
-  ]
-}
-
 export function roundValues(rounds, investors) {
   return (acc, id) => {
     const round = rounds.get(id);
@@ -198,20 +146,10 @@ export function roundValues(rounds, investors) {
       ? jkissRoundResults(rounds, id)
       : calcRoundResults(rounds, id);
 
-    const futureRounds = getFutureRounds(rounds, id);
-    const nextRoundResults = futureRounds.size
-      ? calcRoundResults(new Map([...rounds, ...futureRounds]), [...futureRounds.keys()][0])
-      : false;
-
-    const roundIds = [...rounds.keys()];
-    const prevId = roundIds[roundIds.indexOf(id) - 1];
-    const prevRoundResults = prevId ? calcRoundResults(rounds, prevId) : false;
-
     return {
       ...acc,
       [id]: {
-        jkissControls: jkissControls(round, id, nextRoundResults, prevRoundResults),
-        splitControls: splitControls(round, id),
+        isCapApplied: isValuationCapApplied({ rounds, id, ...round }),
         roundResults,
         values: Object.keys(cols).reduce((acc, colType) => ({
           ...acc,

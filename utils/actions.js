@@ -16,6 +16,9 @@ import {
   syncDocumentUp,
   store,
   UPDATE_DOCUMENT_TITLE,
+  UPDATE_SPLIT_BY,
+  UPDATE_VALUATION_CAP,
+  UPDATE_DISCOUNT,
 } from "/store.js";
 
 import {
@@ -34,6 +37,32 @@ import router from "./router.js";
 
 const { docId } = require("/index.ellx");
 
+const getStore = () => select(store, () => ['documents', docId.get()]);
+
+const syncTable = (...args) => syncUp(getStore(), ...args);
+
+export const renameDocument = ({ detail }) => syncTable(UPDATE_DOCUMENT_TITLE, detail);
+
+export const updateSplitBy = ({ roundId, value }) => syncTable(UPDATE_SPLIT_BY, { roundId, value });
+
+export const renameRound = ({ roundId, value }) => syncTable(RENAME_ROUND, { roundId, name: value });
+
+const updateShares = type => ({ roundId, investorId, value }) => syncTable(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+
+const updateInvestment = (mutation, fieldName) => ({ roundId, investorId, value }) => syncTable(mutation, { roundId, investorId, [fieldName]: Number(value) });
+
+const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
+
+const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncTable(mutation, { roundId, [fieldName]: value });
+
+export const updateRoundDate = ({ roundId, value }) => syncTable(UPDATE_ROUND_DATE, { roundId, date: value });
+
+export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
+
+export const updateValuationCap = ({ roundId, value }) => syncTable(UPDATE_VALUATION_CAP, { roundId, value });
+
+export const updateDiscount = ({ roundId, value }) => syncTable(UPDATE_DISCOUNT, { roundId, value });
+
 export function groupNames(investors) {
   const investorGroups = allGroups(investors);
 
@@ -44,7 +73,6 @@ export function groupNames(investors) {
 
     return [
       ...acc,
-      // Three label rows
       [
         `group-label:${cur}:${i}`,
         {
@@ -111,36 +139,6 @@ const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForI
 
 const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
 
-const updateShares = type => (store, { id, value }) => {
-  const [, roundId, investorId] = id.split(":");
-
-  syncUp(store, UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
-};
-
-const updateInvestment = (mutation, fieldName) => (store, { id, value }) => {
-  const [, roundId, investorId] = id.split(":");
-  syncUp(store, mutation, { roundId, investorId, [fieldName]: Number(value) });
-};
-
-const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
-
-const updateRound = (mutation, fieldName) => (store, { id, value }) => {
-  const [roundId] = id.split(":");
-  syncUp(store, mutation, { roundId, [fieldName]: value });
-};
-
-export const renameRound = (store, { id, value }) => {
-  const [, roundId] = id.split(":");
-  syncUp(store, RENAME_ROUND, { roundId, name: value });
-};
-
-export const updateRoundDate = (store, { id, value }) => {
-  const [, roundId] = id.split(":");
-  syncUp(store, UPDATE_ROUND_DATE, { roundId, date: value });
-};
-
-export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
-
 const colTypes = {
   sharesInitial: {
     label: "株式数",
@@ -167,7 +165,6 @@ const colTypes = {
   votingShareDiff: {
     label: "株式増減",
     hasRowspan: true,
-    voting: true,
     fn: calcCell(({ votingShares }) => votingShares || 0),
     onChange: updateShares("voting"),
     format: format.number.format,
@@ -301,8 +298,4 @@ export const removeDocument = (store, { id }) => {
   const { userId, appId } = ellx.auth();
 
   router.set(`${userId}/${appId}/${ids[idx - 1]}`);
-}
-
-export function renameDocument({ detail }) {
-  return syncUp(select(store, () => ['documents', docId.get()]), UPDATE_DOCUMENT_TITLE, detail);
 }

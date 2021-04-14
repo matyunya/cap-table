@@ -56,7 +56,7 @@
     </div>
 
     <!-- reserved for controls -->
-    <div style="height: 4rem" class="col-start-1 row-start-3" />
+    <div class="col-start-1 row-start-3 h-8" />
 
     <div
       style="left: 0;"
@@ -72,7 +72,7 @@
 
     {#if $rounds && $rounds.values}
       {#each [...$rounds.keys()] as roundId (roundId)}
-        <Round {...$rounds.get(roundId)} result={$calculated[roundId]} />
+        <Round id={roundId} {...$rounds.get(roundId)} result={$calculated[roundId]} />
       {/each}
     {/if}
   </div>

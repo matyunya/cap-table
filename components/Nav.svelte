@@ -40,7 +40,7 @@
     : [[$docId, "--"], ...$documentIds];
 </script>
 
-<div class="fixed w-full h-10 top-0 z-20 blurred-bg flex mb-8">
+<div class="fixed w-full h-10 top-0 z-20 flex mb-8">
   {#if !hideSelect && $isAuthenticated}
     <div
       class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"

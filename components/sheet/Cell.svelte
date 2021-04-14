@@ -15,11 +15,12 @@
   import { uid } from "/utils/index.js";
   import { createEventDispatcher } from "svelte";
 
-  let editingValue;
 
   export let id = uid();
   export let value;
   export let editable = true;
+
+  let editingValue = value;
 
   const dispatch = createEventDispatcher();
 
@@ -40,6 +41,7 @@
 
     if (e.code === "Escape") {
       $editing = false;
+      editingValue = value;
     }
   }
 

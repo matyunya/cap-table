@@ -2,9 +2,9 @@
   import Cell from "./Cell.svelte";
   import { format as formatDate, parseISO } from "date-fns";
 
-  function dateInputFormat(d) {
-    return formatDate(d, "yyyy-MM-dd");
-  }
+  // function dateInputFormat(d) {
+  //   return formatDate(d, "yyyy-MM-dd");
+  // }
 
   function displayFormat(d) {
     try {
@@ -16,9 +16,9 @@
 
   export const ROUND_WIDTHS = {
     founded: 200,
-    common: 500,
-    split: 500,
-    "j-kiss": 200,
+    common: 600,
+    split: 600,
+    "j-kiss": 250,
   };
 
   export const INVESTORS_COL_WIDTH = 200;
@@ -34,13 +34,24 @@
 
 <script>
   import TableData from "./TableData.svelte";
-  import { roundOptions } from "/utils/actions.js";
+  import {
+    roundOptions,
+    updateSplitBy,
+    renameRound,
+    updateSharePrice,
+    updateValuationCap,
+    updateDiscount,
+  } from "/utils/actions.js";
   import _ from "/utils/intl.js";
   import { format } from "/utils/index.js";
 
   export let type;
   export let name;
   export let date;
+  export let splitBy;
+  export let valuationCap;
+  export let discount;
+  export let id;
   export let result;
 
   $: width = ROUND_WIDTHS[type];
@@ -54,9 +65,11 @@
   <div
     class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900"
   >
-    <Cell class="text-left text-gray-100 text-sm font-medium truncate"
-      >{name}</Cell
-    >
+    <Cell
+      class="text-left text-gray-100 text-sm font-medium"
+      on:change={({ detail }) => renameRound({ roundId: id, value: detail })}
+      value={name}
+    />
     <div class="text-sm text-gray-200">{displayFormat(date)}</div>
   </div>
   <div
@@ -82,16 +95,54 @@
 </div>
 <div
   style="width: {width}px; min-width: 0; min-height: 0;"
-  class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm gap-0 grid grid-cols-{Object.keys(options.cols).length}"
+  class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm gap-0 grid grid-cols-{Object.keys(
+    options.cols
+  ).length}"
 >
   <TableData
+    roundId={id}
     readOnly={type === "split"}
     cols={options.cols}
     values={result.values}
   />
 </div>
 
-<div style="height: 4rem">controls</div>
+<div class="py-4 flex items-center flex-row flex-wrap" style="height: 6rem">
+  {#if type === "split"}
+    <div class="w-1/2 flex items-center justify-end px-4">{$_("分割数")}</div>
+    <Cell
+      class="flex-1 h-8 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm"
+      value={splitBy}
+      on:change={({ detail }) => updateSplitBy({ roundId: id, value: detail })}
+    />
+  {:else if type === "j-kiss"}
+    <div
+      class="w-1/2 flex items-center justify-end px-4"
+      style="font-size: 0.8rem"
+    >
+      {$_("ﾊﾞﾘｭｴｰｼｮﾝｷｬｯﾌﾟ")}
+    </div>
+    <Cell
+      class="w-1/2 flex-1 h-6 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono"
+      value={valuationCap}
+      on:change={({ detail }) =>
+        updateValuationCap({ roundId: id, value: detail })}
+      >{format.currency.format(valuationCap)}</Cell
+    >
+    <div
+      class="w-1/2 flex items-center justify-end px-4"
+      style="font-size: 0.8rem"
+    >
+      {$_("割引率")}
+    </div>
+    <Cell
+      class="w-1/2 flex-1 h-6 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono"
+      value={discount}
+      on:change={({ detail }) => updateDiscount({ roundId: id, value: detail })}
+      >{discount}%</Cell
+    >
+  {/if}
+</div>
 
 <div
   style="width: {width}px; min-width: 0; min-height: 0;"
@@ -101,6 +152,9 @@
     <Cell
       editable={type !== "j-kiss" && type !== "split"}
       class="p-1 h-6 items-center"
+      value={result.roundResults.sharePrice}
+      on:change={({ detail }) =>
+        updateSharePrice({ roundId: id, value: detail })}
     >
       {format.currency.format(result.roundResults.sharePrice)}
     </Cell>

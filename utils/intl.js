@@ -128,7 +128,7 @@ const translations = {
   "投資額": {
     en: "Sum"
   },
-  "バリュエーションキャップ": {
+  "ﾊﾞﾘｭｴｰｼｮﾝｷｬｯﾌﾟ": {
     en: "Valuation cap"
   },
   "割引率": {
