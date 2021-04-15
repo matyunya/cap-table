@@ -3,7 +3,7 @@ nodes:
   $1 = store
   docs = store.documents
   auth = ellx.auth
-  userId = auth.userId
+  userId = auth ? auth.userId : null
   routeUserId = router.split('/')[0]
   docId = router.split('/')[2]
   activeSheet = routeUserId === userId ? store.documents.get(docId) : store.documents.get("anonymous")
