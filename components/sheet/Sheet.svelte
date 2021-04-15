@@ -2,8 +2,20 @@
   import Cell, { setEditing } from "./Cell.svelte";
   import { onMount } from "svelte";
   import Round, { calculateWidth } from "./Round.svelte";
+  import ContextMenu, { openContextMenu } from "/components/ContextMenu.svelte";
+  import Icon from "./Icon.svelte";
   import _ from "/utils/intl.js";
-  import { renameDocument } from "/utils/actions.js";
+  import {
+    renameDocument,
+    renameInvestorGroup,
+    renameInvestor,
+    updateInvestorTitle,
+  } from "/utils/actions.js";
+  import cn from "/utils/cn.js";
+  import {
+    investorGroupMenuItems,
+    investorMenuItems,
+  } from "/utils/selectors.js";
 
   let loading = true;
 
@@ -15,12 +27,20 @@
     }
   });
 
-  const { investorGroups, title, rounds, calculated } = require("/index.ellx");
+  const {
+    investorGroups,
+    title,
+    rounds,
+    calculated,
+    investors,
+  } = require("/index.ellx");
 </script>
 
 <div
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800"
 />
+
+<ContextMenu />
 
 {#if loading === false}
   <div
@@ -38,15 +58,47 @@
       style="left: 0;"
       class="col-start-1 row-start-2 sticky border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow p-1"
     >
-      {#each $investorGroups as { id, label, isGroup }, i}
-        <Cell
-          class="p-1 h-6 items-center text-left {isGroup
-            ? 'font-bold'
-            : ''} {isGroup && i !== 0
-            ? 'tracking-wide text-xs border-t dark:border-gray-600 mt-4'
-            : ''}"
-          {id}>{label}</Cell
-        >
+      {#each $investorGroups as { id, label, isGroup, title, group }, i}
+        {#if isGroup}
+          <Cell
+            class={cn({
+              "cell p-1 h-6 items-center text-left font-bold relative": true,
+              "tracking-wide text-xs border-t dark:border-gray-600 mt-4":
+                i !== 0,
+            })}
+            value={label}
+            on:change={({ detail }) =>
+              renameInvestorGroup({ oldName: label, newName: detail })}
+          >
+            {label}
+            <Icon
+              on:click={(e) =>
+                openContextMenu(investorGroupMenuItems(label, $investors, i === 0), e)}
+              rotate="90"
+            />
+          </Cell>
+        {:else}
+          <div class="flex cell relative">
+            <Cell
+              class="p-1 h-6 items-center text-left w-1/2"
+              value={label}
+              on:change={({ detail }) =>
+                renameInvestor({ investorId: id, value: detail })}
+            />
+            <Cell
+              class="p-1 h-6 items-center text-right text-xs font-mono font-thin w-1/3 opacity-75"
+              editorClasses="w-full h-full"
+              value={title}
+              on:change={({ detail }) =>
+                updateInvestorTitle({ investorId: id, value: detail })}
+            />
+            <div class="w-8" />
+            <Icon
+              on:click={(e) => openContextMenu(investorMenuItems(id, group), e)}
+              rotate="90"
+            />
+          </div>
+        {/if}
       {/each}
       <div
         class="p-1 pt-3 items-center text-left font-bold tracking-widest font-mono border-t dark:border-gray-600 mt-4"
@@ -72,7 +124,11 @@
 
     {#if $rounds && $rounds.values}
       {#each [...$rounds.keys()] as roundId (roundId)}
-        <Round id={roundId} {...$rounds.get(roundId)} result={$calculated[roundId]} />
+        <Round
+          id={roundId}
+          {...$rounds.get(roundId)}
+          result={$calculated[roundId]}
+        />
       {/each}
     {/if}
   </div>
@@ -89,5 +145,13 @@
 
   .auto {
     grid-auto-flow: column;
+  }
+
+  :global(.cell:hover .icon) {
+    opacity: 1;
+  }
+
+  :global(.cell .icon) {
+    opacity: 0;
   }
 </style>

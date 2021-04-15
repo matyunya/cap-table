@@ -30,8 +30,6 @@
 
 <style>
   .grid__editor {
-    width: 100%;
-    height: 100%;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -48,7 +46,7 @@
   use:clickedOutside={save}
   {id}
   tabindex="-1"
-  class="grid__editor"
+  class="grid__editor {$$props.class || "flex items-center justify-center"}"
   bind:value
   on:input
   on:keydown

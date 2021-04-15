@@ -24,6 +24,7 @@ export function groupInvestors(groups, investors) {
     ...[...investors.keys()].filter(id => investors.get(id).group === group).map(id => ({
       id,
       label: investors.get(id).name,
+      title: investors.get(id).title || "",
       group,
     }))
   ], []);

@@ -100,19 +100,14 @@ export function getActiveDocRef(id) {
 
 export function syncUp(st, TRANSACTION, payload) {
   const reducer = produce(TRANSACTION(payload));
-
   const val = serialize(reducer(st.get()));
-
-  console.log("SYNCING UP", val);
 
   getActiveDocRef().set(val);
 };
 
 export function syncDocumentUp(st, TRANSACTION, payload, id) {
   const reducer = produce(TRANSACTION(payload));
-
   const newDoc = serialize(reducer(st)).documents[id];
-  console.log("SYNCING UP DOC", newDoc);
 
   getActiveDocRef(id).set(newDoc);
 };
@@ -276,7 +271,7 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
   });
 }
 
-export function ADD_SPLIT_ROUND({ afterId, name, sharePrice = 0, splitBy }) {
+export function ADD_SPLIT_ROUND({ afterId, splitBy }) {
   return (({ apply, get }) => {
     const rounds = convertReactiveRounds(get("rounds"), get("investors"));
     const prevSharePrice = rounds.get(afterId).sharePrice;
@@ -303,19 +298,19 @@ export function REMOVE_ROUND({ id }) {
 }
 
 export function RENAME_ROUND({ roundId, name }) {
-   return (({ set }) => set('rounds', roundId, 'name', name));
+  return (({ set }) => set('rounds', roundId, 'name', name));
 }
 
 export function UPDATE_ROUND_DATE({ roundId, date }) {
-   return (({ set }) => set('rounds', roundId, 'date', date));
+  return (({ set }) => set('rounds', roundId, 'date', date));
 }
 
 export function UPDATE_PROFILE({ profile }) {
-   return (({ update }) => update('profile', p => ({
-     ...profile,
-     language: p.language,
-     email: p.email,
-   })));
+  return (({ update }) => update('profile', p => ({
+    ...profile,
+    language: p.language,
+    email: p.email,
+  })));
 }
 
 export function SET_LANGUAGE({ language }) {

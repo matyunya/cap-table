@@ -1,12 +1,10 @@
-import { get } from "svelte/store";
-
 import {
   roundOptions,
   togglePublic,
   createDocument,
   removeDocument,
   resetDocument,
-  updateRoundDate,
+  syncTable,
 } from "./actions.js";
 import _ from "./intl.js";
 import {
@@ -16,61 +14,87 @@ import {
   convertReactiveRounds,
   jkissRoundResults,
   uid,
-  formatRoundDate,
   isValuationCapApplied,
+  lastInvestorIdInGroup,
 } from "./index.js";
 
 import {
-  UPDATE_INVESTOR_NAME,
-  UPDATE_INVESTOR_TITLE,
   ADD_INVESTOR,
   REMOVE_INVESTOR,
   ADD_ROUND,
   ADD_SPLIT_ROUND,
   REMOVE_ROUND,
-  docId,
+  REMOVE_GROUP,
   store,
-  syncUp,
 } from "/store.js";
 
-export const investorNames = investors => id => [
-  'investor-name:' + id,
+const { docId, rounds } = require("/index.ellx");
+
+export const investorGroupMenuItems = (group, investors, isFounderGroup) => [
   {
-    value: investors.get(id).name,
-    onChange: (s, { id, value }) => {
-      const [, investorId] = id.split(':');
+    text: "グループ追加",
+    cb: () => syncTable(
+      ADD_INVESTOR,
+      {
+        test: console.log({ investors }, 'UASD'),
+        newGroup: true,
+        afterId: [...investors].reduce(lastInvestorIdInGroup(group), "")
+      }
+    )
+  },
+  !isFounderGroup && {
+    text: "削除",
+    cb: () => syncTable(REMOVE_GROUP, { group }),
+  },
+].filter(Boolean);
 
-      syncUp(s, UPDATE_INVESTOR_NAME, { investorId: investorId, name: value });
-    },
-  }
-];
+export const investorMenuItems = (id, group) => [{
+  text: "投資家追加",
+  cb: () => syncTable(ADD_INVESTOR, { afterId: id }),
+},
+group !== "Founder" && {
+  text: "削除",
+  cb: () => syncTable(REMOVE_INVESTOR, { id }),
+}].filter(Boolean);
 
-export const investorTitles = investors => id => [
-  'investor-title:' + id,
+export const roundMenuItems = (id) => [
   {
-    value: investors.get(id).title || "",
-    onChange: (s, { id, value }) => {
-      const [, investorId] = id.split(':');
-
-      syncUp(s, UPDATE_INVESTOR_TITLE, { investorId: investorId, title: value });
+    text: "新ラウンド作成（普通株式）",
+    cb: () => syncTable(
+      ADD_ROUND,
+      {
+        type: "common",
+        afterId: id,
+      }),
+  },
+  canAddJkiss(id) ? {
+    text: "J-kissラウンド作成",
+    cb: () => {
+      const newId = uid();
+      syncTable(ADD_ROUND, { type: "j-kiss", afterId: id, newId }),
+        setTimeout(() => {
+          const el = document.querySelector(`[data-id="valuation:${newId}"]`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+            el.click();
+          }
+        }, 200);
     },
-    menuItems: (s, { id }) => [
-      {
-        text: "投資家追加",
-        cb: () => syncUp(s, ADD_INVESTOR, { afterId: id.split(':')[1] }),
-      },
-      {
-        text: "削除",
-        cb: () => syncUp(s, REMOVE_INVESTOR, { id: id.split(':')[1] }),
-      },
-    ].filter(i => investors.get(id.split(':')[1]).group !== 'Founder' || i.text === 'Add investor'),
-  }
-];
+  } : false,
+  canAddSplit(id) ? {
+    text: "株式分割ラウンド作成",
+    cb: () => syncTable(ADD_SPLIT_ROUND, { type: "split", afterId: id, splitBy: 100 }),
+  } : false,
+  canRemoveRound(id) ? {
+    text: "ラウンド削除",
+    cb: () => syncTable(REMOVE_ROUND, { id: id }),
+  } : false,
+].filter(Boolean);
 
-function canAddJkiss(roundId, rounds) {
-  if (rounds.get(roundId).type === "j-kiss") return false;
+function canAddJkiss(roundId) {
+  if (rounds.get().get(roundId).type === "j-kiss") return false;
 
-  const roundIds = [...rounds.keys()];
+  const roundIds = [...rounds.get().keys()];
   const nextId = roundIds[roundIds.indexOf(roundId) + 1];
 
   if (!nextId) return true;
@@ -78,14 +102,14 @@ function canAddJkiss(roundId, rounds) {
   return rounds.get(nextId).type !== "j-kiss";
 }
 
-function canAddSplit(roundId, rounds) {
-  return rounds.get(roundId).type !== "j-kiss";
+function canAddSplit(roundId) {
+  return rounds.get().get(roundId).type !== "j-kiss";
 }
 
-function canRemoveRound(roundId, rounds) {
-  if (rounds.get(roundId).type === "founded") return false;
+function canRemoveRound(roundId) {
+  if (rounds.get().get(roundId).type === "founded") return false;
 
-  const roundIds = [...rounds.keys()];
+  const roundIds = [...rounds.get().keys()];
   const nextId = roundIds[roundIds.indexOf(roundId) + 1];
   const prevId = roundIds[roundIds.indexOf(roundId) - 1];
 
@@ -93,49 +117,6 @@ function canRemoveRound(roundId, rounds) {
 
   return !(rounds.get(prevId).type === "j-kiss" && ["j-kiss", "split"].includes(rounds.get(nextId).type));
 }
-
-const roundDate = (id, rounds) => [
-  'round-date:' + id,
-  {
-    value: formatRoundDate(rounds.get(id).date),
-    onChange: updateRoundDate,
-    pinMenuToggle: true,
-    menuItems: (s, { id }) => [
-      {
-        text: "新ラウンド作成（普通株式）",
-        cb: () => syncUp(
-          s,
-          ADD_ROUND,
-          {
-            type: "common",
-            afterId: id.split(':')[1],
-          }),
-      },
-      canAddJkiss(id.split(':')[1], rounds) ? {
-        text: "J-kissラウンド作成",
-        cb: () => {
-          const newId = uid();
-          syncUp(s, ADD_ROUND, { type: "j-kiss", afterId: id.split(':')[1], newId }),
-            setTimeout(() => {
-              const el = document.getElementById(`valuation:${newId}`);
-              if (el) {
-                el.scrollIntoView({ behavior: "smooth" });
-                el.click();
-              }
-            }, 200);
-        },
-      } : false,
-      canAddSplit(id.split(':')[1], rounds) ? {
-        text: "株式分割ラウンド作成",
-        cb: () => syncUp(s, ADD_SPLIT_ROUND, { type: "split", afterId: id.split(':')[1], splitBy: 100, }),
-      } : false,
-      canRemoveRound(id.split(':')[1], rounds) ? {
-        text: "ラウンド削除",
-        cb: () => syncUp(s, REMOVE_ROUND, { id: id.split(':')[1] }),
-      } : false,
-    ].filter(Boolean),
-  }
-];
 
 export function roundValues(rounds, investors) {
   return (acc, id) => {
@@ -177,11 +158,11 @@ export const getDocMenuItems = (s) => [
   },
   {
     text: "このテーブルをコピー",
-    cb: () => createDocument(store, { from: get(docId) }),
+    cb: () => createDocument(store, { from: docId.get() }),
   },
   store.get("documents").size > 1 && {
     text: "削除",
-    cb: () => removeDocument(store, { id: get(docId) }),
+    cb: () => removeDocument(store, { id: docId.get() }),
   },
   {
     text: "リセット",

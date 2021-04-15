@@ -76,7 +76,7 @@
     bind:this={node}
     on:click={() => open = false}
     class:hidden={$activeId !== id}
-    class="shadow text-xs fixed w-auto bg-white dark:bg-gray-800 z-50"
+    class="shadow text-xs fixed w-auto bg-gray-100 dark:bg-gray-700 z-50"
   >
     <slot />
   </div>

@@ -1,6 +1,8 @@
 <script context="module">
   import Cell from "./Cell.svelte";
   import { format as formatDate, parseISO } from "date-fns";
+  import { openContextMenu } from "/components/ContextMenu.svelte";
+  import Icon from "./Icon.svelte";
 
   // function dateInputFormat(d) {
   //   return formatDate(d, "yyyy-MM-dd");
@@ -42,6 +44,7 @@
     updateValuationCap,
     updateDiscount,
   } from "/utils/actions.js";
+  import { roundMenuItems } from "/utils/selectors.js";
   import _ from "/utils/intl.js";
   import { format } from "/utils/index.js";
 
@@ -59,33 +62,24 @@
 </script>
 
 <div
-  style="top: 0; width: {width}px; min-width: 0; min-height: 0;"
-  class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2"
+  style="top: 0; width: {width}px; min-width: 0; min-height: 0"
+  class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20"
 >
   <div
-    class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900"
+    class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900 relative"
   >
     <Cell
       class="text-left text-gray-100 text-sm font-medium"
       on:change={({ detail }) => renameRound({ roundId: id, value: detail })}
       value={name}
     />
-    <div class="text-sm text-gray-200">{displayFormat(date)}</div>
+    <div class="text-sm text-gray-200 mr-6">{displayFormat(date)}</div>
+    <Icon on:click={(e) => openContextMenu(roundMenuItems(id), e)} size="20" />
   </div>
   <div
-    class="flex flex-row justify-evenly text-center text-xs items-center font-medium"
+    class="flex flex-row justify-evenly text-center text-xs items-center font-medium px-1"
   >
     {#each Object.keys(options.cols) as colType}
-      <!-- {#if hasRowspan}
-        <div class="flex flex-col">
-          <div class="flex-1 h-full p-1 flex items-center justify-end">
-            {$_("潜在株式")}
-          </div>
-          <div class="flex-1 h-full p-1 flex items-center justify-end">
-            {$_(label)}
-          </div>
-        </div>
-      {:else} -->
       <div class="flex-1 h-full p-1 flex items-center justify-end truncate">
         {$_(options.cols[colType].label)}
       </div>
@@ -111,6 +105,7 @@
   {#if type === "split"}
     <div class="w-1/2 flex items-center justify-end px-4">{$_("分割数")}</div>
     <Cell
+      id="split-by:{id}"
       class="flex-1 h-8 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm"
       value={splitBy}
       on:change={({ detail }) => updateSplitBy({ roundId: id, value: detail })}
@@ -123,6 +118,7 @@
       {$_("ﾊﾞﾘｭｴｰｼｮﾝｷｬｯﾌﾟ")}
     </div>
     <Cell
+      id="valuation:{id}"
       class="w-1/2 flex-1 h-6 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono"
       value={valuationCap}
       on:change={({ detail }) =>
@@ -139,8 +135,9 @@
       class="w-1/2 flex-1 h-6 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono"
       value={discount}
       on:change={({ detail }) => updateDiscount({ roundId: id, value: detail })}
-      >{discount}%</Cell
     >
+      {discount}%
+    </Cell>
   {/if}
 </div>
 

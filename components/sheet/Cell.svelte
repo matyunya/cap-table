@@ -19,6 +19,7 @@
   export let id = uid();
   export let value;
   export let editable = true;
+  export let editorClasses = "";
 
   let editingValue = value;
 
@@ -28,6 +29,7 @@
     dispatch("change", editingValue);
 
     editing.set(false);
+    value = "...";
   }
 
   function onKeydown(e) {
@@ -69,6 +71,7 @@
     <slot>{value}</slot>
   {:else}
     <CellEditor
+      class={editorClasses}
       {id}
       {save}
       bind:value={editingValue}

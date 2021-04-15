@@ -3,8 +3,6 @@ import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
   UPDATE_GROUP_NAME,
-  REMOVE_GROUP,
-  ADD_INVESTOR,
   RENAME_ROUND,
   UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
@@ -12,13 +10,16 @@ import {
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
   RESET_DOCUMENT,
-  syncUp,
-  syncDocumentUp,
-  store,
   UPDATE_DOCUMENT_TITLE,
   UPDATE_SPLIT_BY,
   UPDATE_VALUATION_CAP,
   UPDATE_DISCOUNT,
+  UPDATE_INVESTOR_NAME,
+  UPDATE_INVESTOR_TITLE,
+
+  syncUp,
+  syncDocumentUp,
+  store,
 } from "/store.js";
 
 import {
@@ -28,8 +29,6 @@ import {
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
   format,
-  allGroups,
-  lastInvestorIdInGroup,
   uid,
 } from "./index.js";
 
@@ -39,7 +38,7 @@ const { docId } = require("/index.ellx");
 
 const getStore = () => select(store, () => ['documents', docId.get()]);
 
-const syncTable = (...args) => syncUp(getStore(), ...args);
+export const syncTable = (...args) => syncUp(getStore(), ...args);
 
 export const renameDocument = ({ detail }) => syncTable(UPDATE_DOCUMENT_TITLE, detail);
 
@@ -63,47 +62,11 @@ export const updateValuationCap = ({ roundId, value }) => syncTable(UPDATE_VALUA
 
 export const updateDiscount = ({ roundId, value }) => syncTable(UPDATE_DISCOUNT, { roundId, value });
 
-export function groupNames(investors) {
-  const investorGroups = allGroups(investors);
+export const renameInvestorGroup = ({ oldName, newName }) => syncTable(UPDATE_GROUP_NAME, { oldName, newName });
 
-  return investorGroups.reduce((acc, cur, i) => {
-    if (investorGroups[i - 1] === cur) {
-      return acc;
-    }
+export const renameInvestor = ({ investorId, value }) => syncTable(UPDATE_INVESTOR_NAME, { investorId, name: value });
 
-    return [
-      ...acc,
-      [
-        `group-label:${cur}:${i}`,
-        {
-          value: cur,
-          onChange: (store, { value }) => {
-            syncUp(store, UPDATE_GROUP_NAME, { oldName: cur, newName: value });
-          },
-          menuItems: (store, { id }) => [
-            {
-              text: "グループ追加",
-              cb: () => {
-                syncUp(
-                  store,
-                  ADD_INVESTOR,
-                  {
-                    newGroup: true,
-                    afterId: [...store.get('investors')].reduce(lastInvestorIdInGroup(id.split(':')[1]), "")
-                  }
-                )
-              },
-            },
-            {
-              text: "削除",
-              cb: () => syncUp(store, REMOVE_GROUP, { group: id.split(':')[1] }),
-            },
-          ],
-        }
-      ],
-    ];
-  }, []);
-}
+export const updateInvestorTitle = ({ investorId, value }) => syncTable(UPDATE_INVESTOR_TITLE, { investorId, title: value });
 
 const calcCell = calcFn =>
   (investors, rounds) =>
@@ -163,10 +126,14 @@ const colTypes = {
     format: format.percent.format,
   },
   votingShareDiff: {
-    label: "株式増減",
-    hasRowspan: true,
+    label: "潜在株式増減",
     fn: calcCell(({ votingShares }) => votingShares || 0),
     onChange: updateShares("voting"),
+    format: format.number.format,
+  },
+  votingSharesAmount: {
+    label: "潜在株式数",
+    fn: calcCell(calcCommonVotingShares),
     format: format.number.format,
   },
   jkissShares: {
@@ -179,11 +146,6 @@ const colTypes = {
     fn: calcCell(({ jkissInvested }) => jkissInvested || 0),
     format: format.currency.format,
     onChange: updateJkissInvested,
-  },
-  votingSharesAmount: {
-    label: "株式数",
-    fn: calcCell(calcCommonVotingShares),
-    format: format.number.format,
   },
   totalSharesAmount: {
     label: "発行済株式数",
@@ -285,9 +247,7 @@ export const createDocument = (store, { from } = {}) => {
   router.set(`${userId}/${appId}/${to}`);
 }
 
-export const resetDocument = (store) => {
-  syncUp(store, RESET_DOCUMENT);
-}
+export const resetDocument = () => syncTable(RESET_DOCUMENT);
 
 export const removeDocument = (store, { id }) => {
   const ids = [...store.get('documents').keys()];

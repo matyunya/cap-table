@@ -86,6 +86,9 @@ const translations = {
   "株式数": {
     en: "#shares",
   },
+  "潜在株式数": {
+    en: "#voting shares",
+  },
   "share±": {
     en: "share±",
   },
@@ -95,11 +98,12 @@ const translations = {
   "株式増減": {
     en: "share±",
   },
+
+  "潜在株式増減": {
+    en: "voting share±",
+  },
   "発行済株式数": {
     en: "Total #shares",
-  },
-  "潜在株式": {
-    en: "Potentially voting",
   },
   "新ラウンド作成（普通株式）": {
     en: "Add new round (Ordinary share)",
