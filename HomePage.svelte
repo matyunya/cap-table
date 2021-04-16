@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import Input from "/components/ui/Input.svelte";
   import Scrim from "/components/ui/Scrim.svelte";
   import ProfileForm from "/components/ProfileForm.svelte";
@@ -8,8 +7,6 @@
   import { connect, updateProfile } from "/models/profile.js";
 
   export let loading = false;
-
-  const dispatch = createEventDispatcher();
 
   let data = { ...defaultProfile };
   let errors = { ...defaultProfile };

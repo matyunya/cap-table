@@ -35,6 +35,7 @@
   import { roundMenuItems } from "/utils/menus.js";
   import _ from "/utils/intl.js";
   import { format } from "/utils/index.js";
+  const { isAnon } = require("/index.ellx");
 
   export let type;
   export let name;
@@ -67,7 +68,13 @@
       on:change={({ detail }) =>
         updateRoundDate({ roundId: id, value: detail })}
     />
-    <Icon class="text-white" on:click={(e) => openContextMenu(roundMenuItems(id), e)} size="20" />
+    {#if !$isAnon}
+      <Icon
+        class="text-white"
+        on:click={(e) => openContextMenu(roundMenuItems(id), e)}
+        size="20"
+      />
+    {/if}
   </div>
   <div
     class="flex flex-row justify-evenly text-center text-xs items-center font-medium px-1"

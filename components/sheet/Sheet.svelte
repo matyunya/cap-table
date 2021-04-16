@@ -1,7 +1,9 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import Round, { calculateWidth } from "/components/sheet/Round.svelte";
-  import ContextMenu, { openContextMenu } from "/components/ui/ContextMenu.svelte";
+  import ContextMenu, {
+    openContextMenu,
+  } from "/components/ui/ContextMenu.svelte";
   import Icon from "/components/ui/Icon.svelte";
   import _ from "/utils/intl.js";
   import {
@@ -11,10 +13,7 @@
     updateInvestorTitle,
   } from "/utils/actions.js";
   import cn from "/utils/cn.js";
-  import {
-    investorGroupMenuItems,
-    investorMenuItems,
-  } from "/utils/menus.js";
+  import { investorGroupMenuItems, investorMenuItems } from "/utils/menus.js";
 
   const {
     investorGroups,
@@ -22,7 +21,8 @@
     rounds,
     calculated,
     investors,
-    activeSheet
+    activeSheet,
+    isAnon,
   } = require("/index.ellx");
 </script>
 
@@ -61,11 +61,16 @@
               renameInvestorGroup({ oldName: label, newName: detail })}
           >
             {label}
-            <Icon
-              on:click={(e) =>
-                openContextMenu(investorGroupMenuItems(label, $investors, i === 0), e)}
-              rotate="90"
-            />
+            {#if !$isAnon}
+              <Icon
+                on:click={(e) =>
+                  openContextMenu(
+                    investorGroupMenuItems(label, $investors, i === 0),
+                    e
+                  )}
+                rotate="90"
+              />
+            {/if}
           </Cell>
         {:else}
           <div class="flex cell relative">
@@ -83,10 +88,13 @@
                 updateInvestorTitle({ investorId: id, value: detail })}
             />
             <div class="w-8" />
-            <Icon
-              on:click={(e) => openContextMenu(investorMenuItems(id, group), e)}
-              rotate="90"
-            />
+            {#if !$isAnon}
+              <Icon
+                on:click={(e) =>
+                  openContextMenu(investorMenuItems(id, group), e)}
+                rotate="90"
+              />
+            {/if}
           </div>
         {/if}
       {/each}

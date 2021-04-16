@@ -49,6 +49,10 @@
   <div class="w-full text-center mt-16 text-lg relative text-red-400">
     {$_("このページは見つかりませんでした。")}
   </div>
+{:else if $route === "login"}
+  login page
+{:else if $route === "registration"}
+  registration page
 {:else if false}
   <div class="h-full w-full absolute flex items-center justify-center">
     <div transition:scale={{ delay: 200 }}>
