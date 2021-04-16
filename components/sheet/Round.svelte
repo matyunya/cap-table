@@ -64,7 +64,7 @@
     />
     <Cell
       class="text-right text-gray-100 text-xs mr-6"
-      value={date}
+      value={date || ""}
       on:change={({ detail }) =>
         updateRoundDate({ roundId: id, value: detail })}
     />

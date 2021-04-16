@@ -36,15 +36,9 @@ export async function getDoc(docId) {
     .collection('files')
     .doc(docId);
 
-  await doc
-    .get()
-    .then(d => {
-      store.commit(() => ({ set }) =>
-        set('documents', docId, deserialize(d.data()))
-      )
-    });
+  const d = await doc.get();
 
-  return store.get('documents', docId);
+  return store.commit(() => ({ set }) => set('documents', docId, deserialize(d.data())))
 }
 
 
