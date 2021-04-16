@@ -1,16 +1,18 @@
 version: 1.1
 nodes:
   $1 = store
+  $3 = ellx.login()
   docs = store.documents
   auth = ellx.auth
   userId = (auth && auth.userId) ? auth.userId : null
   appId = auth ? auth.appId : null
   routeUserId = router.split('/')[0]
   docId = router.split('/')[2]
-  isAuthenticated = (auth && auth.userId) ? true : false
+  isAuthenticated = Boolean(userId)
+  isAnon = docId && (!userId || userId !== routeUserId)
+  $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
   $2 = connect(auth)
-  $3 = connectProfile(auth)
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -37,7 +39,17 @@ layout:
         "width": 1
       }
     }
-  ],,,
+  ],
+  [,,,,,,,,
+    {
+      "value": "Call login:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "$3"
+    }
+  ],
   [,,
     {
       "value": "Documents:"
@@ -107,12 +119,31 @@ layout:
   ],,
   [,,,,,,,,
     {
+      "value": "Is authenticated:"
+    },,
+    {
+      "value": "Is viewing someone's doc:"
+    }
+  ],
+  [,,,,,,,,
+    {
       "node": "isAuthenticated"
+    },,
+    {
+      "node": "isAnon"
     }
   ],
   [,,
     {
       "value": "Active sheet:"
+    },,,,,,,,
+    {
+      "node": "$4"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "Connect to Firebase:"
     }
   ],
   [,,
@@ -131,7 +162,8 @@ layout:
   ],
   [,,,,,,,,
     {
-      "node": "$3"
+      "value": "@@@error",
+      "formula": "$3 = connectProfile(auth)"
     }
   ],,,,
   [,,

@@ -9,16 +9,16 @@
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
-  import { format } from "/utils/index.js";
   import route from "/utils/router.js";
   import { getDocMenuItems } from "/utils/menus.js";
   import Icon from "/components/ui/Icon.svelte";
+  import FounderShare from "/components/FounderShare.svelte";
 
   export let logout = () => {};
   export let dark;
   export let hideSelect = true;
 
-  const { founderShare, isAuthenticated, docId, userId, appId } = require("/index.ellx");
+  const { isAuthenticated, docId, userId, appId } = require("/index.ellx");
 
   const languages = [
     ["en", "en 🇺🇸"],
@@ -58,17 +58,7 @@
   <div
     class="select-none flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8"
   >
-    {#if $founderShare > 0 && $founderShare !== 1}
-      <div
-        class="text-xs mr-3 font-mono"
-        class:text-green-500={$founderShare > 0.5}
-        class:text-yellow-500={$founderShare < 0.5 && $founderShare > 0.34}
-        class:text-red-300={$founderShare < 0.34}
-      >
-        {$_("創業メンバー%")}
-        {format.percent.format($founderShare)}
-      </div>
-    {/if}
+    <FounderShare />
     <button
       title="Dark mode toggle"
       class="rounded-full outline-none ring-gray-100 mr-3 text-base h-6 w-6 hover:ring-4 transition duration-500"

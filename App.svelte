@@ -9,13 +9,10 @@
   import Sheet from "/components/sheet/Sheet.svelte";
   import Logo from "/components/ui/Logo.svelte";
   import Nav from "/components/Nav.svelte";
-  import { deserialize } from "/utils/sync.js";
   import { store, documentIds } from "/store.js";
   import route from "/utils/router.js";
-  import { getDoc } from "/utils/firebase.js";
   import _ from "/utils/intl.js";
-
-  const { userId, appId } = require("/index.ellx");
+  import CapTableListPage from "/CapTableListPage.svelte";
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -25,46 +22,9 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  $: if ($route && $route !== "404") selectDoc(...$route.split("/"));
+  onMount(headlong);
 
-  // $: if (
-  //   $documentIds.length > 0 &&
-  //   $docId &&
-  //   !$documentIds.find(([id]) => id === $docId)
-  // ) {
-  //   $route = "404";
-  // }
-
-  async function getDocAnon({ appId, id }) {
-    try {
-      const doc = getDoc(id, { appId });
-
-      await doc.get().then((d) => {
-        store.commit(() => ({ set }) =>
-          set(id, {
-            ...deserialize(d.data()),
-            readOnly: true,
-          })
-        );
-      });
-    } catch (e) {
-      console.log("Error fetching doc", e);
-      $route = "404";
-    }
-  }
-
-  async function selectDoc(docUserId, appId, id) {
-    console.log("selecting", { userId, appId, id });
-
-    if (!$userId || ($userId && $userId !== docUserId)) {
-      await getDocAnon({ appId, id });
-      return;
-    }
-  }
-
-  onMount(async () => headlong());
-
-  async function logout() {
+  function logout() {
     window.ellx.logout();
     $route = "";
     store.resetStore();
@@ -79,20 +39,7 @@
 
 {#if !$route}
   {#if $documentIds.length > 0}
-    <section class="relative block py-24 lg:pt-0 md:mt-24">
-      <div class="max-w-sm mx-auto px-4">
-        <ul class="p-4 max-w-sm mx-auto relative flex flex-col space-y-2">
-          {#each $documentIds as [id, title]}
-            <button
-              class="cursor-pointer p-4 font-mono my-2 rounded hover:ring-1 ring-0 transition duration-150 text-light-blue-500 ring-light-blue-500"
-              on:click={() =>
-                ($route = `#${$userId}/${$appId}/${id}`)}
-              ><li>{title}</li>
-            </button>
-          {/each}
-        </ul>
-      </div>
-    </section>
+    <CapTableListPage />
   {:else}
     <HomePage />
   {/if}
