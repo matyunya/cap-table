@@ -67,7 +67,7 @@
       on:change={({ detail }) =>
         updateRoundDate({ roundId: id, value: detail })}
     />
-    <Icon on:click={(e) => openContextMenu(roundMenuItems(id), e)} size="20" />
+    <Icon class="text-white" on:click={(e) => openContextMenu(roundMenuItems(id), e)} size="20" />
   </div>
   <div
     class="flex flex-row justify-evenly text-center text-xs items-center font-medium px-1"

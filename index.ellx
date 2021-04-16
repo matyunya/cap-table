@@ -13,6 +13,7 @@ nodes:
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
   $2 = connect(auth)
+  $5 = connectProfile(auth)
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -162,8 +163,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "value": "@@@error",
-      "formula": "$3 = connectProfile(auth)"
+      "node": "$5"
     }
   ],,,,
   [,,
@@ -262,7 +262,7 @@ layout:
         "labelsLeft": true,
         "secondary": true,
         "labelsTop": true,
-        "height": 4,
+        "height": 6,
         "width": 4
       }
     }

@@ -4,7 +4,12 @@
   export let absolute = true;
 </script>
 
-<div style={$$props.style || ""} on:click class:absolute class={$$props.class || "top-0 right-0 h-full flex items-center pr-1"}>
+<div
+  style={$$props.style || ""}
+  on:click
+  class:absolute
+  class="{$$props.class || ''} top-0 right-0 h-full flex items-center pr-1"
+>
   <svg
     class="rounded-full hover:bg-light-blue-100 hover:text-gray-800 transition duration-150 cursor-pointer icon"
     xmlns="http://www.w3.org/2000/svg"
