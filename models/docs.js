@@ -1,5 +1,5 @@
 import { defaultDocument, store, getActiveDocRef } from "/store.js";
-import { SYNC_DOCS, serialize } from "/utils/sync.js";
+import { SYNC_DOCS, serialize, deserialize } from "/utils/sync.js";
 import { uid } from "/utils/index.js";
 import { store } from "/store.js";
 
@@ -14,7 +14,7 @@ function getDocsRef() {
 }
 
 export function connect() {
-  if (!userId.get() || userId.get() instanceof Error) return;
+  if (!userId.get()) return;
 
   return getDocsRef()
     .onSnapshot(
@@ -26,18 +26,25 @@ export function connect() {
     );
 }
 
-export function getDoc(docId) {
-  return firebase.firestore()
+
+export async function getDoc(docId) {
+  if (!docId) return;
+
+  const doc = firebase.firestore()
     .collection('apps')
     .doc(appId.get())
     .collection('files')
-    .doc(docId)
-    .then(d => store.commit(() => ({ set }) =>
-      set(docId, {
-        ...deserialize(d.data()),
-        readOnly: true,
-      })
-    ));
+    .doc(docId);
+
+  await doc
+    .get()
+    .then(d => {
+      store.commit(() => ({ set }) =>
+        set('documents', docId, deserialize(d.data()))
+      )
+    });
+
+  return store.get('documents', docId);
 }
 
 

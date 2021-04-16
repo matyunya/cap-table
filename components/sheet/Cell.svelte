@@ -1,6 +1,7 @@
 <script context="module">
   import { writable } from "svelte/store";
   import CellEditor from "/components/sheet/CellEditor.svelte";
+  const { isAnon } = require("/index.ellx");
 
   const editing = writable(false);
 
@@ -22,6 +23,8 @@
   export let editorClasses = "";
 
   let editingValue = value;
+
+  $: editable = editable && !$isAnon;
 
   const dispatch = createEventDispatcher();
 

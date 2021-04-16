@@ -4,16 +4,16 @@ nodes:
   $3 = ellx.login()
   docs = store.documents
   auth = ellx.auth
-  userId = (auth && auth.userId) ? auth.userId : null
-  appId = auth ? auth.appId : null
+  userId = !authError ? auth.userId : null
+  appId = !authError ? auth.appId : router.split('/')[1]
   routeUserId = router.split('/')[0]
   docId = router.split('/')[2]
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
-  $2 = connect(auth)
-  $5 = connectProfile(auth)
+  $2 = connect(userId)
+  $5 = connectProfile(userId)
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -134,15 +134,15 @@ layout:
       "node": "isAnon"
     }
   ],
-  [,,
-    {
-      "value": "Active sheet:"
-    },,,,,,,,
+  [,,,,,,,,,,
     {
       "node": "$4"
     }
   ],
-  [,,,,,,,,
+  [,,
+    {
+      "value": "Active sheet:"
+    },,,,,,
     {
       "value": "Connect to Firebase:"
     }

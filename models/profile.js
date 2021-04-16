@@ -11,7 +11,7 @@ function getProfileRef() {
 }
 
 export function connect() {
-  if (!userId.get() || userId.get() instanceof Error) return;
+  if (!userId.get()) return;
 
   return getProfileRef()
     .onSnapshot(

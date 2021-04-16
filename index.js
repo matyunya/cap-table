@@ -1,5 +1,6 @@
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
 import App from "./App.svelte";
+import { writable } from "tinyx";
 
 export { roundTypes } from "/utils/actions.js";
 export {
@@ -17,3 +18,9 @@ export { connect as connectProfile } from "/models/profile.js";
 export { store } from "/store.js";
 
 export const app = ellxify(App);
+
+const { auth } = require("/index.ellx");
+
+export const authError = writable(false);
+
+auth.subscribe(v => authError.set(v instanceof Error));
