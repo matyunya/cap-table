@@ -1,26 +1,24 @@
 <script>
-  import Select from "./Select.svelte";
+  import Select from "/components/ui/Select.svelte";
   import {
-    isAuthenticated,
     language,
     documentIds,
-    docId,
-    user,
     SET_LANGUAGE,
     store,
   } from "/store.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
-  import { openContextMenu } from "./ContextMenu.svelte";
+  import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import { format } from "/utils/index.js";
   import route from "/utils/router.js";
-  import { getDocMenuItems } from "/utils/selectors.js";
+  import { getDocMenuItems } from "/utils/menus.js";
+  import Icon from "/components/ui/Icon.svelte";
 
   export let logout = () => {};
   export let dark;
-  export let founderShare = 0;
   export let hideSelect = true;
-  export let activeSheet;
+
+  const { founderShare, isAuthenticated, docId, userId, appId } = require("/index.ellx");
 
   const languages = [
     ["en", "en 🇺🇸"],
@@ -45,18 +43,13 @@
     <div
       class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
     >
-      <button
-        class="rounded-full outline-none ring-gray-100 mr-3 text-base h-6 w-6 hover:ring-4 transition duration-500"
-        on:click={(e) => openContextMenu(getDocMenuItems(activeSheet), e)}
-      >
-        ☰
-      </button>
+      <Icon on:click={(e) => openContextMenu(getDocMenuItems(), e)} size=24 absolute={false} />
       <Select
         classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
-          route.set(`${$user.userId}/${$user.appId}/${target.value}`)}
+          route.set(`${$userId}/${$appId}/${target.value}`)}
         {options}
       />
     </div>
@@ -65,15 +58,15 @@
   <div
     class="select-none flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8"
   >
-    {#if founderShare > 0 && founderShare !== 1}
+    {#if $founderShare > 0 && $founderShare !== 1}
       <div
         class="text-xs mr-3 font-mono"
-        class:text-green-500={founderShare > 0.5}
-        class:text-yellow-500={founderShare < 0.5 && founderShare > 0.34}
-        class:text-red-300={founderShare < 0.34}
+        class:text-green-500={$founderShare > 0.5}
+        class:text-yellow-500={$founderShare < 0.5 && $founderShare > 0.34}
+        class:text-red-300={$founderShare < 0.34}
       >
         {$_("創業メンバー%")}
-        {format.percent.format(founderShare)}
+        {format.percent.format($founderShare)}
       </div>
     {/if}
     <button

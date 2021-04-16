@@ -1,27 +1,21 @@
 <script>
   import { scale } from "svelte/transition";
-  import { select } from "tinyx";
   import headlong from "~matyunya/headlong";
-  import { onMount, onDestroy, tick } from "svelte";
+  import { onMount } from "svelte";
 
-  import HomePage from "./HomePage.svelte";
-  import EditProfilePage from "./EditProfilePage.svelte";
+  import HomePage from "/HomePage.svelte";
+  import EditProfilePage from "/EditProfilePage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
-  import Logo from "/components/Logo.svelte";
+  import Logo from "/components/ui/Logo.svelte";
   import Nav from "/components/Nav.svelte";
   import { deserialize } from "/utils/sync.js";
-  import { docId, user, store, documentIds } from "./store.js";
+  import { store, documentIds } from "/store.js";
   import route from "/utils/router.js";
   import { getDoc } from "/utils/firebase.js";
-  import { connect } from "/models/docs.js";
-  import { connect as connectProfile } from "/models/profile.js";
   import _ from "/utils/intl.js";
 
-  const { founderShare } = require("/index.ellx");
-
-  let disconnect = (i) => i;
-  let disconnectProfile = (i) => i;
+  const { userId, appId } = require("/index.ellx");
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -31,34 +25,23 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  $: activeSheet = select(store, () => {
-    const [routeUserId] = ($route || "").split("/");
+  $: if ($route && $route !== "404") selectDoc(...$route.split("/"));
 
-    return routeUserId === $user.userId ? ["documents", $docId] : ["anonymous"];
-  });
+  // $: if (
+  //   $documentIds.length > 0 &&
+  //   $docId &&
+  //   !$documentIds.find(([id]) => id === $docId)
+  // ) {
+  //   $route = "404";
+  // }
 
-  $: if ($route && $route !== "404") {
-    console.log("NEW ROUTE", $route);
-    selectDoc(...$route.split("/"));
-  }
-
-  $: if (
-    $documentIds.length > 0 &&
-    $docId &&
-    !$documentIds.find(([id]) => id === $docId)
-  ) {
-    $route = "404";
-  }
-
-  async function getDocAnon({ userId, appId, id }) {
+  async function getDocAnon({ appId, id }) {
     try {
       const doc = getDoc(id, { appId });
 
-      console.log("Anonymous user fetching", { userId, appId, id });
-
       await doc.get().then((d) => {
         store.commit(() => ({ set }) =>
-          set("anonymous", {
+          set(id, {
             ...deserialize(d.data()),
             readOnly: true,
           })
@@ -70,63 +53,20 @@
     }
   }
 
-  async function selectDoc(userId, appId, id) {
+  async function selectDoc(docUserId, appId, id) {
     console.log("selecting", { userId, appId, id });
 
-    if (!$user.userId) {
-      try {
-        $user = await window.ellx.login();
-      } catch (e) {
-        console.log("is anonymous user");
-        // anonymous user
-      }
-    }
-
-    if (!$user.userId || ($user.userId && $user.userId !== userId)) {
-      await getDocAnon({ userId, appId, id });
+    if (!$userId || ($userId && $userId !== docUserId)) {
+      await getDocAnon({ appId, id });
       return;
     }
   }
 
-  function onAuthenticated() {
-    $user = ellx.auth();
-    disconnectProfile = connectProfile();
-    // TODO:
-    // always redirect if no doc id
-    disconnect = connect();
-  }
-
-  onDestroy(disconnect);
-
-  onMount(async () => {
-    setTimeout(async () => {
-      headlong();
-
-      const el = document.getElementById("app");
-      if (!el) return;
-
-      el.classList.remove("hidden");
-      await tick();
-      setTimeout(() => el.classList.remove("opacity-0"), 50);
-      el.classList.add("opacity-100");
-    }, 50);
-
-    try {
-      const authInfo = await window.ellx.login();
-      if (authInfo && authInfo.userId) {
-        await onAuthenticated();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  });
+  onMount(async () => headlong());
 
   async function logout() {
-    await window.ellx.logout();
+    window.ellx.logout();
     $route = "";
-    $user = { userId: null, appId: null };
-    disconnect();
-    disconnectProfile();
     store.resetStore();
   }
 </script>
@@ -135,13 +75,7 @@
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800"
 />
 
-<Nav
-  bind:dark
-  hideSelect={!$route && $documentIds.length > 0}
-  {logout}
-  founderShare={$founderShare}
-  {activeSheet}
-/>
+<Nav bind:dark hideSelect={!$route && $documentIds.length > 0} {logout} />
 
 {#if !$route}
   {#if $documentIds.length > 0}
@@ -152,15 +86,15 @@
             <button
               class="cursor-pointer p-4 font-mono my-2 rounded hover:ring-1 ring-0 transition duration-150 text-light-blue-500 ring-light-blue-500"
               on:click={() =>
-                ($route = `#${$user.userId}/${$user.appId}/${id}`)}
-              ><li>{title}</li></button
-            >
+                ($route = `#${$userId}/${$appId}/${id}`)}
+              ><li>{title}</li>
+            </button>
           {/each}
         </ul>
       </div>
     </section>
   {:else}
-    <HomePage on:success={onAuthenticated} />
+    <HomePage />
   {/if}
 {:else if $route === "profile"}
   <EditProfilePage />

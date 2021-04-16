@@ -1,25 +1,22 @@
 import { defaultDocument, store, getActiveDocRef } from "/store.js";
 import { SYNC_DOCS, serialize } from "/utils/sync.js";
 import { uid } from "/utils/index.js";
+const { appId, userId } = require("/index.ellx");
 
 function getDocsRef() {
-  const { appId, userId } = ellx.auth() || {};
-
   return firebase.firestore()
     .collection('apps')
-    .doc(appId)
+    .doc(appId.get())
     .collection('files')
-    .where("owner", "==", userId);
+    .where("owner", "==", userId.get());
 }
 
 export function connect() {
-  const { userId } = ellx.auth() || {};
-
   return getDocsRef()
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? updateDoc(serialize({ ...defaultDocument, owner: userId }), uid())
+          ? updateDoc(serialize({ ...defaultDocument, owner: userId.get() }), uid())
           : store.commit(SYNC_DOCS, querySnapshot)
       }
   );

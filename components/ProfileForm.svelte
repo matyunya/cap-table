@@ -1,6 +1,6 @@
 <script>
-  import Input from "./Input.svelte";
-  import Select from "./Select.svelte";
+  import Input from "/components/ui/Input.svelte";
+  import Select from "/components/ui/Select.svelte";
   import { language } from "/store.js";
   import _ from "/utils/intl.js";
   export let onSave = () => {};

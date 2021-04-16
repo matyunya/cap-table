@@ -1,7 +1,5 @@
-import { writable, derived as svDerived } from "svelte/store";
 import bootstrap from "~matyunya/store";
 import { select, derived, produce } from "tinyx";
-import router from "/utils/router.js";
 import { serialize } from "/utils/sync.js";
 
 import {
@@ -13,16 +11,7 @@ import {
   formatRoundDate,
 } from "/utils/index.js";
 
-export const getActiveDocId = (r) => {
-  return (r || window.location.hash || "").split("/")[2]
-};
-
-export const docId = derived(router, getActiveDocId);
-
-export const user = writable({
-  userId: null,
-  appId: null
-});
+const { docId, userId, appId } = require("/index.ellx");
 
 const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
 
@@ -89,11 +78,9 @@ const defaultStore = {
 export const store = bootstrap(defaultStore);
 
 export function getActiveDocRef(id) {
-  const { appId } = ellx.auth() || {};
-
   return firebase.firestore()
     .collection('apps')
-    .doc(appId)
+    .doc(appId.get())
     .collection('files')
     .doc(id || docId.get())
 }
@@ -111,9 +98,6 @@ export function syncDocumentUp(st, TRANSACTION, payload, id) {
 
   getActiveDocRef(id).set(newDoc);
 };
-
-
-export const isAuthenticated = svDerived(user, ({ userId }) => Boolean(userId));
 
 export const language = select(store, () => ["profile", "language"]);
 
@@ -336,7 +320,7 @@ export function COPY_DOCUMENT({ from, to }) {
 
     set("documents", to, {
       ...newDoc,
-      owner: ellx.auth().userId,
+      owner: userId.get(),
     });
   };
 }
@@ -348,7 +332,7 @@ export function UPDATE_DOCUMENT_TITLE(value) {
 export function RESET_DOCUMENT() {
   return ({ set }) => set({
     ...defaultDocument,
-    owner: ellx.auth().userId,
+    owner: userId.get(),
   });
 }
 

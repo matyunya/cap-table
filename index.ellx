@@ -3,10 +3,14 @@ nodes:
   $1 = store
   docs = store.documents
   auth = ellx.auth
-  userId = auth ? auth.userId : null
+  userId = (auth && auth.userId) ? auth.userId : null
+  appId = auth ? auth.appId : null
   routeUserId = router.split('/')[0]
   docId = router.split('/')[2]
-  activeSheet = routeUserId === userId ? store.documents.get(docId) : store.documents.get("anonymous")
+  isAuthenticated = (auth && auth.userId) ? true : false
+  activeSheet = store.documents.get(docId)
+  $2 = connect(auth)
+  $3 = connectProfile(auth)
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -68,11 +72,17 @@ layout:
   [,,,,,,,,
     {
       "value": "Current user ID:"
+    },,
+    {
+      "value": "App ID:"
     }
   ],
   [,,,,,,,,
     {
       "node": "userId"
+    },,
+    {
+      "node": "appId"
     }
   ],,
   [,,,,,,,,
@@ -94,7 +104,12 @@ layout:
     {
       "node": "docId"
     }
-  ],,,
+  ],,
+  [,,,,,,,,
+    {
+      "node": "isAuthenticated"
+    }
+  ],
   [,,
     {
       "value": "Active sheet:"
@@ -109,8 +124,16 @@ layout:
         "height": 4,
         "width": 1
       }
+    },,,,,,
+    {
+      "node": "$2"
     }
-  ],,,,,
+  ],
+  [,,,,,,,,
+    {
+      "node": "$3"
+    }
+  ],,,,
   [,,
     {
       "value": "Title:"

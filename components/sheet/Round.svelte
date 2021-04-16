@@ -1,20 +1,7 @@
 <script context="module">
   import Cell from "./Cell.svelte";
-  import { format as formatDate, parseISO } from "date-fns";
-  import { openContextMenu } from "/components/ContextMenu.svelte";
-  import Icon from "./Icon.svelte";
-
-  // function dateInputFormat(d) {
-  //   return formatDate(d, "yyyy-MM-dd");
-  // }
-
-  function displayFormat(d) {
-    try {
-      return formatDate(parseISO(d), "yyyy/MM");
-    } catch (e) {
-      return formatDate(new Date(), "yyyy/MM");
-    }
-  }
+  import { openContextMenu } from "/components/ui/ContextMenu.svelte";
+  import Icon from "/components/ui/Icon.svelte";
 
   export const ROUND_WIDTHS = {
     founded: 200,
@@ -43,8 +30,9 @@
     updateSharePrice,
     updateValuationCap,
     updateDiscount,
+    updateRoundDate,
   } from "/utils/actions.js";
-  import { roundMenuItems } from "/utils/selectors.js";
+  import { roundMenuItems } from "/utils/menus.js";
   import _ from "/utils/intl.js";
   import { format } from "/utils/index.js";
 
@@ -73,7 +61,12 @@
       on:change={({ detail }) => renameRound({ roundId: id, value: detail })}
       value={name}
     />
-    <div class="text-sm text-gray-200 mr-6">{displayFormat(date)}</div>
+    <Cell
+      class="text-right text-gray-100 text-xs mr-6"
+      value={date}
+      on:change={({ detail }) =>
+        updateRoundDate({ roundId: id, value: detail })}
+    />
     <Icon on:click={(e) => openContextMenu(roundMenuItems(id), e)} size="20" />
   </div>
   <div
@@ -155,19 +148,19 @@
     >
       {format.currency.format(result.roundResults.sharePrice)}
     </Cell>
-    <div class="p-1 h-6 items-center">
+    <div class="p-1 h-6 items-center truncate">
       {format.currency.format(result.roundResults.newEquity)}
     </div>
-    <div class="p-1 h-6 items-center">
+    <div class="p-1 h-6 items-center truncate">
       {format.currency.format(result.roundResults.preMoney)}
     </div>
-    <div class="p-1 h-6 items-center">
+    <div class="p-1 h-6 items-center truncate">
       {format.currency.format(result.roundResults.postMoney)}
     </div>
-    <div class="p-1 h-6 items-center">
+    <div class="p-1 h-6 items-center truncate">
       {format.currency.format(result.roundResults.preMoneyDiluted)}
     </div>
-    <div class="p-1 h-6 items-center">
+    <div class="p-1 h-6 items-center truncate">
       {format.currency.format(result.roundResults.postMoneyDiluted)}
     </div>
   {/if}

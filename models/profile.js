@@ -1,42 +1,31 @@
 import { defaultProfile, store } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
+const { appId, userId } = require("/index.ellx");
 
 function getProfileRef() {
-  const { appId, userId } = ellx.auth() || {};
-
   return firebase.firestore()
     .collection('apps')
-    .doc(appId)
+    .doc(appId.get())
     .collection('profiles')
-    .where("owner", "==", userId);
+    .where("owner", "==", userId.get());
 }
 
-export function connect(onFirstSnapshot = () => {}) {
-  let initial = true;
-  const { userId } = ellx.auth() || {};
-
+export function connect() {
   return getProfileRef()
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? updateProfile({ ...defaultProfile, owner: userId })
+          ? updateProfile({ ...defaultProfile, owner: userId.get() })
           : store.commit(SYNC_PROFILE, querySnapshot);
-
-        if (initial) {
-          onFirstSnapshot();
-          initial = false;
-        }
       }
   );
 }
 
 export function updateProfile(data, options = {}) {
-  const { appId, userId } = ellx.auth() || {};
-
   return firebase.firestore()
     .collection('apps')
-    .doc(appId)
+    .doc(appId.get())
     .collection('profiles')
-    .doc(userId)
+    .doc(userId.get())
     .set(data, options);
 }

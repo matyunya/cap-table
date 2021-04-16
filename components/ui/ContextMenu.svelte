@@ -24,7 +24,7 @@
   <div slot="activator">
     <slot></slot>
   </div>
-  <ul class="text-xs py-1 w-auto max-w-sm truncate">
+  <ul class="text-xs py-1 w-auto max-w-sm truncate rounded-sm">
     {#each ($items || []) as i}
       <li
         class="py-1 cursor-pointer select-none px-2 hover:bg-gray-500 hover:text-white"

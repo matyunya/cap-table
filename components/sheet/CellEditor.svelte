@@ -46,7 +46,7 @@
   use:clickedOutside={save}
   {id}
   tabindex="-1"
-  class="grid__editor {$$props.class || "flex items-center justify-center"}"
+  class="grid__editor {$$props.class || "flex items-center justify-center w-full"}"
   bind:value
   on:input
   on:keydown

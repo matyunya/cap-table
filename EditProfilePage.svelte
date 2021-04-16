@@ -1,8 +1,7 @@
 <script>
   import ProfileForm from "/components/ProfileForm.svelte";
-  import { store, userProfile, user, defaultProfile, UPDATE_PROFILE } from "./store.js";
+  import { userProfile,  defaultProfile } from "./store.js";
   import _ from "/utils/intl.js";
-  import { SYNC_PROFILE } from "/utils/sync.js";
   import { updateProfile } from "/models/profile.js";
 
   let errors = { ...defaultProfile };

@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import Input from "/components/Input.svelte";
-  import Scrim from "/components/Scrim.svelte";
+  import Input from "/components/ui/Input.svelte";
+  import Scrim from "/components/ui/Scrim.svelte";
   import ProfileForm from "/components/ProfileForm.svelte";
   import _ from "/utils/intl.js";
   import { language, defaultProfile } from "/store.js";
@@ -43,11 +43,11 @@
     }
   }
 
-  async function signIn(emailAddress, profile) {
+  function signIn(emailAddress, profile) {
     try {
       loading = true;
       showEmailNotification = !(!shouldResetPassword && password);
-      const authInfo = await window.ellx.login({
+      window.ellx.login({
         email: emailAddress,
         password: !shouldResetPassword && password,
         language: $language,
@@ -57,8 +57,6 @@
         connect();
         updateProfile(profile);
       }
-
-      dispatch('success', { authInfo });
     } catch (e) {
       error = e;
       throw e;

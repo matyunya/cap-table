@@ -1,9 +1,8 @@
 <script>
-  import Cell, { setEditing } from "./Cell.svelte";
-  import { onMount } from "svelte";
-  import Round, { calculateWidth } from "./Round.svelte";
-  import ContextMenu, { openContextMenu } from "/components/ContextMenu.svelte";
-  import Icon from "./Icon.svelte";
+  import Cell, { setEditing } from "/components/sheet/Cell.svelte";
+  import Round, { calculateWidth } from "/components/sheet/Round.svelte";
+  import ContextMenu, { openContextMenu } from "/components/ui/ContextMenu.svelte";
+  import Icon from "/components/ui/Icon.svelte";
   import _ from "/utils/intl.js";
   import {
     renameDocument,
@@ -15,17 +14,7 @@
   import {
     investorGroupMenuItems,
     investorMenuItems,
-  } from "/utils/selectors.js";
-
-  let loading = true;
-
-  onMount(async () => {
-    try {
-      await ellx.auth();
-    } finally {
-      loading = false;
-    }
-  });
+  } from "/utils/menus.js";
 
   const {
     investorGroups,
@@ -33,6 +22,7 @@
     rounds,
     calculated,
     investors,
+    activeSheet
   } = require("/index.ellx");
 </script>
 
@@ -42,7 +32,7 @@
 
 <ContextMenu />
 
-{#if loading === false}
+{#if $activeSheet}
   <div
     style="width: {calculateWidth($rounds)}px"
     class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-8 mt-16 text-gray-700 dark:text-gray-200"

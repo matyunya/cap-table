@@ -34,7 +34,7 @@ import {
 
 import router from "./router.js";
 
-const { docId } = require("/index.ellx");
+const { docId, appId, userId } = require("/index.ellx");
 
 const getStore = () => select(store, () => ['documents', docId.get()]);
 
@@ -233,29 +233,25 @@ function copyToClipboard(text) {
   document.body.removeChild(textArea);
 }
 
-export const togglePublic = (store) => {
-  syncUp(store, TOGGLE_PUBLIC);
+export const togglePublic = () => {
+  syncTable(TOGGLE_PUBLIC);
   copyToClipboard(window.location.href);
 };
 
-export const createDocument = (store, { from } = {}) => {
+export const createDocument = ({ from } = {}) => {
   const to = uid();
   syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
 
-  const { userId, appId } = ellx.auth();
-
-  router.set(`${userId}/${appId}/${to}`);
+  router.set(`${userId.get()}/${appId.get()}/${to}`);
 }
 
 export const resetDocument = () => syncTable(RESET_DOCUMENT);
 
-export const removeDocument = (store, { id }) => {
+export const removeDocument = ({ id }) => {
   const ids = [...store.get('documents').keys()];
   const idx = ids.indexOf(id);
 
   syncUp(store, REMOVE_DOCUMENT, { id });
 
-  const { userId, appId } = ellx.auth();
-
-  router.set(`${userId}/${appId}/${ids[idx - 1]}`);
+  router.set(`${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
 }

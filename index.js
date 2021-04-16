@@ -10,22 +10,10 @@ export {
   totalCommonShares,
   fillEmptyInvestments,
 } from "/utils/index.js";
-export { calculate } from "/utils/selectors.js";
+export { calculate, groupInvestors } from "/utils/selectors.js";
 export { default as router } from "/utils/router.js";
-
-export const app = ellxify(App);
-
+export { connect } from "/models/docs.js";
+export { connect as connectProfile } from "/models/profile.js";
 export { store } from "/store.js";
 
-export function groupInvestors(groups, investors) {
-  return [...groups].reduce((acc, group) => [
-    ...acc,
-    { isGroup: true, label: group, id: group },
-    ...[...investors.keys()].filter(id => investors.get(id).group === group).map(id => ({
-      id,
-      label: investors.get(id).name,
-      title: investors.get(id).title || "",
-      group,
-    }))
-  ], []);
-}
+export const app = ellxify(App);
