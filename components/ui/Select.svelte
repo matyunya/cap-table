@@ -13,8 +13,9 @@
 
 {#if label}
   <label
-    class="block uppercase text-xs font-bold mb-2"
+    class="block uppercase text-xs font-bold mb-2 mt-4"
     class:text-gray-700={!error}
+    class:dark:text-gray-200={!error}
     class:text-red-700={error}
     for={id}
     >{label}{error ? " " + error : ""}</label>
@@ -27,6 +28,8 @@
   class:ring-red-200={error}
   class:ring-0={!error}
   class:ring-1={error}
+  class:dark:bg-gray-700={!error}
+  class:dark:text-gray-200={!error}
   class={classes}
   placeholder={placeholder}
 >

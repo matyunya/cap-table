@@ -3,10 +3,10 @@ import { language } from "/store.js";
 
 const translations = {
   "30秒で無料登録、すぐ使えます！": {
-    en: "Cap table service is free, it only requires this simple form.",
+    en: "Capital Dash service is free, it only requires this simple form.",
   },
   "資本政策表を失敗せず、簡単に作れる。": {
-    en: "Dead simple cap table",
+    en: "Dead simple Capital Dash",
   },
   "プロフィール編集画面": {
     en: "Edit profile",
@@ -54,7 +54,7 @@ const translations = {
     en: "Save",
   },
   "登録する": {
-    en: "Start using the app",
+    en: "Sign up",
   },
   "すでに登録済みの方": {
     en: "Already signed up?"
@@ -98,7 +98,9 @@ const translations = {
   "株式増減": {
     en: "share±",
   },
-
+  "新規登録": {
+    en: "Sign up",
+  },
   "潜在株式増減": {
     en: "voting share±",
   },

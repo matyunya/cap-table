@@ -103,7 +103,10 @@
 
 <div class="py-4 flex items-center flex-row flex-wrap" style="height: 6rem">
   {#if type === "split"}
-    <div class="w-1/2 flex items-center justify-end px-4">{$_("分割数")}</div>
+    <div
+      class:font-bold={result && !result.isCapApplied}
+      class:underline={result && !result.isCapApplied}
+      class="w-1/2 flex items-center justify-end px-4">{$_("分割数")}</div>
     <Cell
       id="split-by:{id}"
       class="flex-1 h-8 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm"
@@ -112,6 +115,8 @@
     />
   {:else if type === "j-kiss"}
     <div
+      class:font-bold={result && result.isCapApplied}
+      class:underline={result && result.isCapApplied}
       class="w-1/2 flex items-center justify-end px-4"
       style="font-size: 0.8rem"
     >

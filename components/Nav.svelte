@@ -1,11 +1,6 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import {
-    language,
-    documentIds,
-    SET_LANGUAGE,
-    store,
-  } from "/store.js";
+  import { language, documentIds, SET_LANGUAGE, store } from "/store.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
@@ -43,7 +38,11 @@
     <div
       class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
     >
-      <Icon on:click={(e) => openContextMenu(getDocMenuItems(), e)} size=24 absolute={false} />
+      <Icon
+        on:click={(e) => openContextMenu(getDocMenuItems(), e)}
+        size="24"
+        absolute={false}
+      />
       <Select
         classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
@@ -76,18 +75,23 @@
     {#if $isAuthenticated}
       <button
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        on:click={() => ($route = "profile")}>{$_("プロフィール")}</button
+        on:click={() => ($route = "profile")}
       >
+        {$_("プロフィール")}
+      </button>
       <button
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        on:click={logout}>{$_("ログアウト")}</button
+        on:click={logout}
       >
+        {$_("ログアウト")}
+      </button>
+    {:else}
+      <button
+        class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
+        on:click={() => ($route = "login")}
+      >
+        {$_("ログイン")}
+      </button>
     {/if}
   </div>
 </div>
-
-<style>
-  .blurred-bg {
-    backdrop-filter: blur(2px);
-  }
-</style>

@@ -5,6 +5,9 @@
 
   import HomePage from "/HomePage.svelte";
   import EditProfilePage from "/EditProfilePage.svelte";
+  import SignUpPage from "/SignUpPage.svelte";
+  import LoginPage from "/LoginPage.svelte";
+  import PasswordRecoveryPage from "/PasswordRecoveryPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Logo from "/components/ui/Logo.svelte";
@@ -22,7 +25,10 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  onMount(headlong);
+  onMount(() => {
+    const { apply } = headlong();
+    apply('.button', 'bg-gray-600 tracking-widest transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6');
+  });
 
   function logout() {
     window.ellx.logout();
@@ -49,10 +55,12 @@
   <div class="w-full text-center mt-16 text-lg relative text-red-400">
     {$_("このページは見つかりませんでした。")}
   </div>
+{:else if $route === "forgot"}
+  <PasswordRecoveryPage />
 {:else if $route === "login"}
-  login page
-{:else if $route === "registration"}
-  registration page
+  <LoginPage />
+{:else if $route.includes("signup")}
+  <SignUpPage />
 {:else if false}
   <div class="h-full w-full absolute flex items-center justify-center">
     <div transition:scale={{ delay: 200 }}>

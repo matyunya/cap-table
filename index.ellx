@@ -4,8 +4,9 @@ nodes:
   $3 = ellx.login()
   docs = store.documents
   auth = ellx.auth
-  userId = !authError ? auth.userId : null
+  userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : router.split('/')[1]
+  regStep = router.startsWith("signup") ? +(router.split('/')[1] || 1) : null
   routeUserId = router.split('/')[0]
   docId = router.split('/')[2]
   isAuthenticated = Boolean(userId)
@@ -88,6 +89,9 @@ layout:
     },,
     {
       "value": "App ID:"
+    },,
+    {
+      "value": "Registration step:"
     }
   ],
   [,,,,,,,,
@@ -96,6 +100,9 @@ layout:
     },,
     {
       "node": "appId"
+    },,
+    {
+      "node": "regStep"
     }
   ],,
   [,,,,,,,,
