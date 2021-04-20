@@ -38,19 +38,6 @@ const defaultName = n => defaultNames[n][DEFAULT_LANGUAGE];
 
 const founderId = "FOUNDER_ID";
 
-export const defaultProfile = {
-  companyName: "",
-  title: "",
-  lastName: "",
-  firstName: "",
-  zipCode: "",
-  address: "",
-  url: "",
-  email: "",
-  phone: "",
-  language: DEFAULT_LANGUAGE,
-};
-
 export const defaultDocument = {
   title: defaultName("docTitle"),
   rounds: new Map([[
@@ -71,7 +58,7 @@ export const defaultDocument = {
 };
 
 const defaultStore = {
-  profile: defaultProfile,
+  profile: {},
   documents: new Map(),
 };
 

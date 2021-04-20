@@ -19,7 +19,9 @@
   let data = {};
   let errors = {};
 
-  function login() {}
+  function login() {
+    window.ellx.login(data);
+  }
 </script>
 
 <Wrapper>

@@ -167,12 +167,59 @@ const translations = {
   "パスワードを忘れた方はこちらチェックしてください。": {
     en: "Check to reset password"
   },
+  "従業員数": {
+    en: "Number of employees",
+  },
+  "正社員": {
+    en: "Full-time"
+  },
+  "この項目が必須です。": {
+    en: "This field is required"
+  },
+  "決算を終えたのはいつですか": {
+    en: "Last settlement date"
+  },
+  "決算月": {
+    en: "Settlement month"
+  },
+  "直近決算": {
+    en: "Last settlement",
+  },
+  "終わっていない": {
+    en: "Not finished",
+  },
+  "終わっている": {
+    en: "Finished",
+  },
+  "業務委託": {
+    en: "Subcontractors"
+  },
+  "会社情報": {
+    en: "Company information"
+  },
+  "ユーザー登録": {
+    en: "User registration"
+  },
+  "資金調達計画": {
+    en: "Some capital plan"
+  },
+  "スキップする": {
+    en: "Skip for now"
+  },
+  "人": {
+    en: ""
+  },
+  [`はじめに・・・<br />
+        本ツールでは、簡単３ステップで、資金調達に必要な準備（資本政策表作成、株価算定）ができます。<br />
+        時間とチャンスを無駄にしないように、投資家に会う前にしっかりと理論武装しましょう。`]: {
+    en: "lead text"
+  }
 };
 
 const translate = (key, lang) => {
   if (lang === "ja") return key;
 
-  if (!translations[key] || !translations[key][lang]) {
+  if (!translations[key] || translations[key][lang] === undefined) {
     return key;
   }
 

@@ -1,4 +1,5 @@
 <script>
+  import Label from "/components/ui/Label.svelte";
   export let label;
   export let placeholder;
   export let id;
@@ -10,14 +11,7 @@
 </script>
 
 <div class="relative w-full mb-3 {classes}">
-  <label
-    class="block uppercase text-xs font-bold mb-2"
-    class:dark:text-gray-100={!error}
-    class:text-gray-700={!error}
-    class:text-red-700={error}
-    class:error
-    for={id}>{label}{required ? "*" : ""}{error ? " " + error : ""}</label
-  >
+  <Label {id} {required} {error} {label} />
   <input
     on:change
     {value}
@@ -25,6 +19,7 @@
     {id}
     {required}
     {type}
+    class:error
     class:ring-light-blue-200={!error}
     class:ring-red-200={error}
     class:ring-0={!error}

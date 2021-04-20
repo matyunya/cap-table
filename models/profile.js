@@ -1,4 +1,4 @@
-import { defaultProfile, store } from "/store.js";
+import { store } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
 const { appId, userId } = require("/index.ellx");
 
@@ -17,13 +17,13 @@ export function connect() {
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? updateProfile({ ...defaultProfile, owner: userId.get() })
+          ? updateProfile({ owner: userId.get() })
           : store.commit(SYNC_PROFILE, querySnapshot);
       }
-  );
+    );
 }
 
-export function updateProfile(data, options = {}) {
+export function updateProfile(data, options = { merge: true }) {
   return firebase.firestore()
     .collection('apps')
     .doc(appId.get())

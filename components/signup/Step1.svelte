@@ -3,63 +3,48 @@
   import _ from "/utils/intl.js";
 
   import { language } from "/store.js";
-  let password = "";
+  import { passwordRules, validate, scrollToError} from "/utils/forms.js";
 
-  async function register() {
-    try {
-      error = false;
+  let data = {};
+  let errors = {};
+  let ok = false;
 
-      Object.keys(data).forEach((key) => {
-        errors[key] = !data[key] ? "この項目が必須です。" : false;
-      });
-
-      if (
-        !Object.keys(errors).reduce(
-          (acc, cur) => acc || Boolean(errors[cur]),
-          false
-        )
-      ) {
-        await signIn(data.email, data);
-      } else {
-        const el = document.querySelector(".error");
-        if (el) el.scrollIntoView();
-      }
-    } catch (e) {
-      error = e;
+  function signUp() {
+    [ok, errors] = validate(data, fields);
+    if (ok) {
+      window.ellx.login({ email: data.email, language: $language });
+      // todo: set last name and password
+      submitted = true;
+    } else {
+      scrollToError();
     }
   }
 
-  function signIn(email) {
-    window.ellx.login({
-      email,
-      password,
-      language: $language,
-    });
-  }
-
-  export let onSave = () => {};
   export let label = "登録する";
-  export let data;
-  export let errors;
 
   const fields = {
     lastName: {
       placeholder: "お名前",
       label: "お名前",
+      required: true,
     },
     email: {
       placeholder: "メールアドレス",
       label: "メールアドレス",
+      required: true,
     },
     password: {
       placeholder: "",
       label: "パスワード",
       type: "password",
+      required: true,
+      validate: passwordRules,
     },
-    passwordConfirm: {
+    confirm: {
       placeholder: "",
       label: "パスワード（確認）",
       type: "password",
+      required: true,
     },
   };
 
@@ -87,8 +72,7 @@
     <div class="text-center mt-6">
       <button
         on:click={() => {
-          onSave(data);
-          submitted = true;
+          signUp(data);
         }}
         class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
         type="button"

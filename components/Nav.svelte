@@ -22,7 +22,7 @@
 
   function setLanguage({ target: { value: language } }) {
     if ($isAuthenticated) {
-      updateProfile({ language }, { merge: true });
+      updateProfile({ language });
     } else {
       store.commit(SET_LANGUAGE, { language });
     }

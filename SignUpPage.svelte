@@ -7,24 +7,15 @@
   import route from "/utils/router.js";
 
   const { regStep } = require("/index.ellx");
-
-  let data = {
-    lastName: "",
-    email: "",
-    password: "",
-    passwordConfirm: "",
-  };
-  let errors = {};
-
 </script>
 
 <Wrapper>
   <Stepper n={$regStep} />
   {#if $regStep === 1}
-    <Step1 {data} {errors} onSave={() => console.log(data)} />
+    <Step1 />
   {:else if $regStep === 2}
-    <Step2 {data} {errors} onSave={() => $route = "signup/3"} />
+    <Step2 onSave={() => ($route = "signup/3")} />
   {:else if $regStep === 3}
-    <Step3 {data} {errors} onSave={() => $route = "signup/3"} />
+    <Step3 onSave={() => ($route = "")} />
   {/if}
 </Wrapper>
