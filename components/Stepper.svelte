@@ -16,7 +16,7 @@
       <div
         class:text-light-blue-700={n >= (i + 1)}
         class:dark:text-light-blue-200={n >= (i + 1)}
-        class="text-xs mt-3 font-medium text-gray-600 dark:text-gray-200">{$_(step)}</div>
+        class="text-center text-xs mt-3 font-medium text-gray-600 dark:text-gray-200">{$_(step)}</div>
     </div>
   {/each}
 </div>
