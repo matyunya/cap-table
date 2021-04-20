@@ -4,6 +4,9 @@
 
   import { language } from "/store.js";
   import { passwordRules, validate, scrollToError} from "/utils/forms.js";
+  import router from "/utils/router.js";
+
+  const { userId } = require("/index.ellx");
 
   let data = {};
   let errors = {};
@@ -18,6 +21,10 @@
     } else {
       scrollToError();
     }
+  }
+
+  $: if ($userId && $userId !== "@@io.ellx.STALE") {
+    $router = "signup/2"; // do this on the sheet?
   }
 
   export let label = "登録する";

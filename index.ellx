@@ -108,6 +108,9 @@ layout:
   [,,,,,,,,
     {
       "value": "Route user ID:"
+    },,
+    {
+      "value": "Jump to step 2 once authenticated:"
     }
   ],
   [,,,,,,,,
