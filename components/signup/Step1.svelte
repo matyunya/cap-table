@@ -59,7 +59,7 @@
 </script>
 
 {#if submitted}
-  <div class="text-center w-full">
+  <div class="text-center w-full my-8">
     ご登録ありがとうございます。<br />
     本人認証のために、メールを送信しました。<br />
     メールにて本人認証を行ってください。​
