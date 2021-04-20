@@ -1,6 +1,7 @@
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
 import App from "./App.svelte";
 import { writable } from "tinyx";
+import "/index.css";
 
 export { roundTypes } from "/utils/actions.js";
 export {

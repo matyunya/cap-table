@@ -61,13 +61,13 @@
 <div
   data-id={id}
   disabled={!editable}
-  class="{$$props.class ||
-    ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden"
   class:dark:text-light-blue-200={editable}
   class:text-light-blue-600={editable}
   class:ring-2={$editing === id}
   class:hover:ring-light-blue-400={$editing === id}
   class:hover:ring-1={$editing !== id && editable}
+  class="{$$props.class ||
+    ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden"
   style={$$props.style || ""}
   title={value}
 >

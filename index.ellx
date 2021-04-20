@@ -15,6 +15,7 @@ nodes:
   activeSheet = store.documents.get(docId)
   $2 = connect(userId)
   $5 = connectProfile(userId)
+  hl = window.hl
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -175,10 +176,24 @@ layout:
     {
       "node": "$5"
     }
-  ],,,,
+  ],,,
+  [,,,,,,,,
+    {
+      "value": "Headlong:"
+    }
+  ],
   [,,
     {
       "value": "Title:"
+    },,,,,,
+    {
+      "node": "hl",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 4,
+        "width": 1
+      }
     }
   ],
   [,,

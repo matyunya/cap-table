@@ -2,6 +2,7 @@
   import { scale } from "svelte/transition";
   import headlong from "~matyunya/headlong";
   import { onMount } from "svelte";
+  import { classes } from "/utils/cn.js";
 
   import HomePage from "/HomePage.svelte";
   import EditProfilePage from "/EditProfilePage.svelte";
@@ -26,8 +27,10 @@
   }
 
   onMount(() => {
-    const { apply } = headlong();
+    const { apply, ...hl } = headlong({ classes });
     apply('.button', 'bg-gray-600 tracking-widest transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6');
+
+    window.hl = hl;
   });
 
   function logout() {
