@@ -43,4 +43,12 @@
   :global(input[type="number"]) {
     -moz-appearance: textfield;
   }
+
+  :global(input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, textarea:-webkit-autofill, textarea:-webkit-autofill:hover, textarea:-webkit-autofill:focus, select:-webkit-autofill, select:-webkit-autofill:hover, select:-webkit-autofill:focus) {
+    border: inherit;
+    -webkit-text-fill-color: inherit;
+    -webkit-box-shadow: inherit;
+    box-shadow: inherit;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 </style>
