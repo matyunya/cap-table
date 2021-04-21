@@ -5,7 +5,7 @@
 </script>
 
 <section
-  class="relative block py-24 lg:pt-0 text-sm flex items-center justify-center min-h-screen"
+  class="relative block py-24 text-sm flex items-center justify-center min-h-screen"
 >
   <ul
     class="p-4 max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4"

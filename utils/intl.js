@@ -173,6 +173,9 @@ const translations = {
   "資本政策": {
     en: "Cap table",
   },
+  "メールアドレス": {
+    en: "Email address"
+  },
   "正社員": {
     en: "Full-time"
   },

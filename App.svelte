@@ -12,7 +12,7 @@
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Nav from "/components/Nav.svelte";
-  import { store, documentIds } from "/store.js";
+  import { store } from "/store.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/CapTableListPage.svelte";
 
