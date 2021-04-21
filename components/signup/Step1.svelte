@@ -3,8 +3,13 @@
   import _ from "/utils/intl.js";
 
   import { language } from "/store.js";
-  import { passwordRules, validate, scrollToError} from "/utils/forms.js";
-  import router from "/utils/router.js";
+  import {
+    passwordRules,
+    passwordConfirmRules,
+    validate,
+    scrollToError,
+  } from "/utils/forms.js";
+  import { updateProfile } from "/models/profile.js";
 
   const { userId } = require("/index.ellx");
 
@@ -16,21 +21,27 @@
     [ok, errors] = validate(data, fields);
     if (ok) {
       window.ellx.login({ email: data.email, language: $language });
-      // todo: set last name and password
+      // todo: set password from this page
       submitted = true;
     } else {
       scrollToError();
     }
   }
 
-  $: if ($userId && $userId !== "@@io.ellx.STALE") {
-    $router = "signup/2"; // do this on the sheet?
-  }
+  userId.subscribe((value) => {
+    if (value !== "@@io.ellx.STALE") {
+      updateProfile({
+        language: $language,
+        name: data.name,
+      });
+      window.ellx.router.go("signup/2");
+    }
+  });
 
   export let label = "登録する";
 
   const fields = {
-    lastName: {
+    name: {
       placeholder: "お名前",
       label: "お名前",
       required: true,
@@ -52,6 +63,7 @@
       label: "パスワード（確認）",
       type: "password",
       required: true,
+      validate: passwordConfirmRules,
     },
   };
 
@@ -72,8 +84,8 @@
     <Fields bind:data bind:errors {fields} />
 
     <div class="flex flex-row justify-evenly">
-      <a href="#rules" class="a text-xs">利用規約</a>
-      <a href="#privacy" class="a text-xs">プライバシーポリシー に同意の上</a>
+      <a href="rules" class="a text-xs">利用規約</a>
+      <a href="privacy" class="a text-xs">プライバシーポリシー に同意の上</a>
     </div>
 
     <div class="text-center mt-6">

@@ -32,8 +32,6 @@ import {
   uid,
 } from "./index.js";
 
-import router from "./router.js";
-
 const { docId, appId, userId } = require("/index.ellx");
 
 const getStore = () => select(store, () => ['documents', docId.get()]);
@@ -242,7 +240,7 @@ export const createDocument = ({ from } = {}) => {
   const to = uid();
   syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
 
-  router.set(`${userId.get()}/${appId.get()}/${to}`);
+  window.ellx.router.go(`docs/${userId.get()}/${appId.get()}/${to}`);
 }
 
 export const resetDocument = () => syncTable(RESET_DOCUMENT);
@@ -253,5 +251,5 @@ export const removeDocument = ({ id }) => {
 
   syncUp(store, REMOVE_DOCUMENT, { id });
 
-  router.set(`${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
+  window.ellx.router.go(`docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
 }

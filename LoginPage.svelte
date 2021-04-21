@@ -2,7 +2,6 @@
   import Wrapper from "/components/signup/Wrapper.svelte";
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
-  import route from "/utils/router.js";
 
   const fields = {
     email: {
@@ -21,6 +20,7 @@
 
   function login() {
     window.ellx.login(data);
+    window.ellx.router.go("/");
   }
 </script>
 
@@ -39,7 +39,7 @@
     </button>
   </div>
   <div class="mt-2 w-full text-center">
-    <a href="#forgot" on:click={() => ($route = "forgot")} class="a text-xs">
+    <a href="forgot" class="a text-xs">
       {$_("パスワードをお忘れの方")}
     </a>
   </div>

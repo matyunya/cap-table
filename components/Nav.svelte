@@ -4,20 +4,24 @@
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
-  import route from "/utils/router.js";
   import { getDocMenuItems } from "/utils/menus.js";
   import Icon from "/components/ui/Icon.svelte";
   import FounderShare from "/components/FounderShare.svelte";
 
   export let logout = () => {};
   export let dark;
-  export let hideSelect = true;
 
-  const { isAuthenticated, docId, userId, appId } = require("/index.ellx");
+  const {
+    isAuthenticated,
+    docId,
+    userId,
+    appId,
+    route,
+  } = require("/index.ellx");
 
   const languages = [
-    ["en", "en 🇺🇸"],
-    ["ja", "ja 🇯🇵"],
+    ["en", "EN"],
+    ["ja", "JA"],
   ];
 
   function setLanguage({ target: { value: language } }) {
@@ -31,33 +35,48 @@
   $: options = $documentIds.find(([id]) => $docId === id)
     ? $documentIds
     : [[$docId, "--"], ...$documentIds];
+
+  function routeName(r) {
+    if (!r) return false;
+
+    if (r.startsWith("/docs/")) {
+      return "資本政策";
+    }
+  }
 </script>
 
 <div class="fixed w-full h-10 top-0 z-20 flex mb-8">
-  {#if !hideSelect && $isAuthenticated}
-    <div
-      class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
-    >
-      <Icon
-        on:click={(e) => openContextMenu(getDocMenuItems(), e)}
-        size="24"
-        absolute={false}
-      />
+  <div
+    class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
+  >
+    {#if routeName($route)}
+      <a href="/" class="text-xs font-mono underline text-light-blue-500"
+        >← {$_(routeName($route))}</a
+      >
+    {/if}
+    {#if $route && $route.startsWith("/docs/")}
       <Select
-        classes="focus:ring-2 w-32 truncate transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+        classes="mx-6 focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
-          route.set(`${$userId}/${$appId}/${target.value}`)}
+          window.ellx.router.go(`docs/${$userId}/${$appId}/${target.value}`)}
         {options}
       />
-    </div>
-  {/if}
+      <Icon
+        on:click={(e) => openContextMenu(getDocMenuItems(), e)}
+        size="24"
+        class="mx-4"
+        absolute={false}
+        rotate="90"
+      />
+    {/if}
+    <FounderShare />
+  </div>
   <div class="flex-grow" />
   <div
-    class="select-none flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8"
+    class="flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8"
   >
-    <FounderShare />
     <button
       title="Dark mode toggle"
       class="rounded-full outline-none ring-gray-100 mr-3 text-base h-6 w-6 hover:ring-4 transition duration-500"
@@ -66,19 +85,19 @@
       {dark ? "☀️" : "🌙"}
     </button>
     <Select
-      classes="focus:ring-2 transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+      classes="focus:ring-2 p-1 transition duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
       hasEmpty={false}
       value={$language}
       on:change={setLanguage}
       options={languages}
     />
     {#if $isAuthenticated}
-      <button
+      <a
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        on:click={() => ($route = "profile")}
+        href="profile"
       >
         {$_("プロフィール")}
-      </button>
+      </a>
       <button
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
         on:click={logout}
@@ -86,12 +105,12 @@
         {$_("ログアウト")}
       </button>
     {:else}
-      <button
+      <a
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        on:click={() => ($route = "login")}
+        href="/login"
       >
         {$_("ログイン")}
-      </button>
+      </a>
     {/if}
   </div>
 </div>

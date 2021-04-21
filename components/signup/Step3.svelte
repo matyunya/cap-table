@@ -1,7 +1,6 @@
 <script>
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
-  import route from "/utils/router.js";
   import { updateProfile } from "/models/profile.js";
   import { validate, scrollToError } from "/utils/forms.js";
 
@@ -61,17 +60,17 @@
     biggestUseOfInvestedMoney: {
       label: "資金使途のうち、一番大きいものを1つ選択してください。",
       type: "select",
-      options: usesOfInvestedMoney.map(i => [i, i]),
+      options: usesOfInvestedMoney.map((i) => [i, i]),
     },
     currentStage: {
       label: "事業ステージについて教えてください",
       type: "select",
-      options: stages.map(i => [i, i]),
+      options: stages.map((i) => [i, i]),
     },
     investmentConditions: {
       label: "資金調達状況について教えてください",
       type: "select",
-      options: conditions.map(i => [i, i]),
+      options: conditions.map((i) => [i, i]),
     },
   };
 
@@ -98,12 +97,11 @@
     >
       {$_("登録して始める​")}
     </button>
-    <button
-      on:click={() => ($route = "")}
+    <a
+      href="/"
       class="mt-4 bg-gray-900 dark:bg-blue-gray-700 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-      type="button"
     >
       {$_("スキップする")}
-    </button>
+    </a>
   </div>
 </form>

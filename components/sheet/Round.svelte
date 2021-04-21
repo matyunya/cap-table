@@ -70,7 +70,7 @@
     />
     {#if !$isAnon}
       <Icon
-        class="text-white"
+        class="text-white bg-gray-800"
         on:click={(e) => openContextMenu(roundMenuItems(id), e)}
         size="20"
       />

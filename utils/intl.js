@@ -170,6 +170,9 @@ const translations = {
   "従業員数": {
     en: "Number of employees",
   },
+  "資本政策": {
+    en: "Cap table",
+  },
   "正社員": {
     en: "Full-time"
   },

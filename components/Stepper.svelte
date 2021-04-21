@@ -4,7 +4,7 @@
   export let n = 0;
 </script>
 
-<div class="flex flex-row w-full justify-between max-w-sm mx-auto my-4">
+<div class="flex flex-row w-full justify-between max-w-sm mx-auto my-4 px-8">
   {#each steps as step, i}
     <div class="flex flex-col items-center">
       <div

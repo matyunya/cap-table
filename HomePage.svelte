@@ -1,6 +1,10 @@
 <script>
-  import router from "/utils/router.js";
   import _ from "/utils/intl.js";
+  const { isAuthenticated } = require("/index.ellx");
+
+  isAuthenticated.subscribe((v) => {
+    if (v) window.ellx.router.go("/dashboard");
+  });
 </script>
 
 <main>
@@ -18,11 +22,7 @@
         時間とチャンスを無駄にしないように、投資家に会う前にしっかりと理論武装しましょう。`)}
       </div>
 
-      <a
-        on:click={() => ($router = "signup")}
-        class="mx-auto max-w-sm"
-        href="#signup"
-      >
+      <a class="mx-auto max-w-sm" href="/signup">
         <button class="button">{$_("新規登録")}</button>
       </a>
     </div>

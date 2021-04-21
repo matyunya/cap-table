@@ -2,7 +2,6 @@
   import Wrapper from "/components/signup/Wrapper.svelte";
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
-  import route from "/utils/router.js";
 
   const fields = {
     email: {
@@ -38,7 +37,7 @@
     </button>
   </div>
   <div class="mt-2 w-full text-center">
-    <a href="#forgot" on:click={() => ($route = "login")} class="a text-xs">
+    <a href="/login" class="a text-xs">
       {$_("ログインへ戻る")}
     </a>
   </div>

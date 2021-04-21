@@ -5,17 +5,19 @@ nodes:
   docs = store.documents
   auth = ellx.auth
   userId = !authError ? (auth ? auth.userId : null) : null
-  appId = !authError ? auth.appId : router.split('/')[1]
-  regStep = router.startsWith("signup") ? +(router.split('/')[1] || 1) : null
-  routeUserId = router.split('/')[0]
-  docId = router.split('/')[2]
+  appId = !authError ? auth.appId : route.split('/')[1]
+  regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
+  routeUserId = route.split('/')[2]
+  docId = route.split('/')[4]
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
   $2 = connect(userId)
   $5 = connectProfile(userId)
+  route = router.path
   hl = window.hl
+  router = ellx.router
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
@@ -170,16 +172,25 @@ layout:
     },,,,,,
     {
       "node": "$2"
+    },,
+    {
+      "value": "Route:"
     }
   ],
   [,,,,,,,,
     {
       "node": "$5"
+    },,
+    {
+      "node": "route"
     }
   ],,,
   [,,,,,,,,
     {
       "value": "Headlong:"
+    },,
+    {
+      "value": "Router:"
     }
   ],
   [,,
@@ -192,6 +203,15 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "height": 4,
+        "width": 1
+      }
+    },,
+    {
+      "node": "router",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 3,
         "width": 1
       }
     }

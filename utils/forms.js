@@ -32,10 +32,17 @@ export function validate(data, fields) {
   return [Object.keys(errors).length === 0, errors];
 }
 
+const length = (n) => (v) => (v.length < n ? n + "桁のパスワードを入力してください" : false);
+const sameAs = (field) => (v, data) => v !== data[field] ? field + "と同じではありません" : false;
+
 export const passwordRules = [
-  (v, { confirm }) =>
-    v !== confirm ? "パスワードが間違っています" : false,
-  (v) => (v.length < 8 ? "８桁のパスワードを入力してください" : false),
+  sameAs("confirm"),
+  length(8),
+];
+
+export const passwordConfirmRules = [
+  sameAs("password"),
+  length(8),
 ];
 
 export function scrollToError() {

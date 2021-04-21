@@ -1,20 +1,18 @@
 <script>
-  import { scale } from "svelte/transition";
   import headlong from "~matyunya/headlong";
   import { onMount } from "svelte";
   import { classes } from "/utils/cn.js";
 
   import HomePage from "/HomePage.svelte";
+  import DashboardPage from "/DashboardPage.svelte";
   import EditProfilePage from "/EditProfilePage.svelte";
   import SignUpPage from "/SignUpPage.svelte";
   import LoginPage from "/LoginPage.svelte";
   import PasswordRecoveryPage from "/PasswordRecoveryPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
-  import Logo from "/components/ui/Logo.svelte";
   import Nav from "/components/Nav.svelte";
   import { store, documentIds } from "/store.js";
-  import route from "/utils/router.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/CapTableListPage.svelte";
 
@@ -26,16 +24,21 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
+  const { route } = require("/index.ellx");
+
   onMount(() => {
     const { apply, ...hl } = headlong({ classes });
-    apply('.button', 'bg-gray-600 tracking-widest transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6');
+    apply(
+      ".button",
+      "bg-gray-600 tracking-widest transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6"
+    );
 
     window.hl = hl;
   });
 
   function logout() {
     window.ellx.logout();
-    $route = "";
+    window.ellx.router.go("/");
     store.resetStore();
   }
 </script>
@@ -44,32 +47,26 @@
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
-<Nav bind:dark hideSelect={!$route && $documentIds.length > 0} {logout} />
+<Nav bind:dark {logout} />
 
-{#if !$route}
-  {#if $documentIds.length > 0}
-    <CapTableListPage />
-  {:else}
-    <HomePage />
-  {/if}
-{:else if $route === "profile"}
+{#if $route === "/"}
+  <HomePage />
+{:else if $route === "/dashboard"}
+  <DashboardPage />
+{:else if $route === "/docs"}
+  <CapTableListPage />
+{:else if $route === "/profile"}
   <EditProfilePage />
-{:else if $route === "404"}
+{:else if $route === "/404"}
   <div class="w-full text-center mt-16 text-lg relative text-red-400">
     {$_("このページは見つかりませんでした。")}
   </div>
-{:else if $route === "forgot"}
+{:else if $route === "/forgot"}
   <PasswordRecoveryPage />
-{:else if $route === "login"}
+{:else if $route === "/login"}
   <LoginPage />
-{:else if $route.includes("signup")}
+{:else if $route && $route.includes("signup")}
   <SignUpPage />
-{:else if false}
-  <div class="h-full w-full absolute flex items-center justify-center">
-    <div transition:scale={{ delay: 200 }}>
-      <Logo animated size={64} />
-    </div>
-  </div>
 {:else}
   <Sheet />
 {/if}
