@@ -45,14 +45,14 @@
   }
 </script>
 
-<div class="fixed w-full h-10 top-0 z-20 flex mb-8">
+<div class="absolute w-screen h-10 top-0 left-0 z-20 flex mb-8">
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
   >
     {#if routeName($route)}
-      <a href="/" class="text-xs font-mono underline text-light-blue-500"
-        >← {$_(routeName($route))}</a
-      >
+      <a href="/docs" class="text-xs font-mono underline text-light-blue-500">
+        ← {$_(routeName($route))}
+      </a>
     {/if}
     {#if $route && $route.startsWith("/docs/")}
       <Select
@@ -60,7 +60,7 @@
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
-          window.ellx.router.go(`docs/${$userId}/${$appId}/${target.value}`)}
+          window.ellx.router.go(`/docs/${$userId}/${$appId}/${target.value}`)}
         {options}
       />
       <Icon

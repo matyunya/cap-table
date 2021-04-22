@@ -33,7 +33,7 @@ export function validate(data, fields) {
 }
 
 const length = (n) => (v) => (v.length < n ? n + "桁のパスワードを入力してください" : false);
-const sameAs = (field) => (v, data) => v !== data[field] ? field + "と同じではありません" : false;
+const sameAs = (field) => (v, data) => v !== data[field] ? "一緒ではありません" : false;
 
 export const passwordRules = [
   sameAs("confirm"),

@@ -3,18 +3,18 @@
   import { onMount } from "svelte";
   import { classes } from "/utils/cn.js";
 
-  import HomePage from "/HomePage.svelte";
-  import DashboardPage from "/DashboardPage.svelte";
-  import EditProfilePage from "/EditProfilePage.svelte";
-  import SignUpPage from "/SignUpPage.svelte";
-  import LoginPage from "/LoginPage.svelte";
-  import PasswordRecoveryPage from "/PasswordRecoveryPage.svelte";
+  import HomePage from "/pages/HomePage.svelte";
+  import DashboardPage from "/pages/DashboardPage.svelte";
+  import EditProfilePage from "/pages/EditProfilePage.svelte";
+  import SignUpPage from "/pages/SignUpPage.svelte";
+  import LoginPage from "/pages/LoginPage.svelte";
+  import PasswordRecoveryPage from "/pages/PasswordRecoveryPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Nav from "/components/Nav.svelte";
   import { store } from "/store.js";
   import _ from "/utils/intl.js";
-  import CapTableListPage from "/CapTableListPage.svelte";
+  import CapTableListPage from "/pages/CapTableListPage.svelte";
 
   let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
