@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import Wrapper from "/components/signup/Wrapper.svelte";
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
@@ -32,12 +33,11 @@
     }
   }
 
-  isAuthenticated.subscribe((v) => {
-    if (v && v !== "@@io.ellx.STALE" && !(v instanceof Error)) {
-      console.log("redirecting", v);
-      window.ellx.router.go("/dashboard");
-    }
-  });
+  onMount(() =>
+    isAuthenticated.subscribe(
+      (v) => v === true && window.ellx.router.go("/dashboard")
+    )
+  );
 </script>
 
 <Wrapper>

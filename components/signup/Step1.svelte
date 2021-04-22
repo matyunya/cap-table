@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
 
@@ -28,15 +29,22 @@
     }
   }
 
-  userId.subscribe((value) => {
-    if (value !== "@@io.ellx.STALE" && value) {
-      updateProfile({
-        language: $language,
-        name: data.name,
-      });
-      window.ellx.router.go("/signup/2");
-    }
-  });
+  onMount(() =>
+    userId.subscribe((v) => {
+      if (
+        v &&
+        !(v instanceof Error) &&
+        typeof v === "string" &&
+        !v.startsWith("@@io.ellx.STALE")
+      ) {
+        updateProfile({
+          language: $language,
+          name: data.name,
+        });
+        window.ellx.router.go("/signup/2");
+      }
+    })
+  );
 
   export let label = "登録する";
 

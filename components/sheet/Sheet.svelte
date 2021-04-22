@@ -1,6 +1,7 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import Round, { calculateWidth } from "/components/sheet/Round.svelte";
+  import { onMount } from "svelte";
   import ContextMenu, {
     openContextMenu,
   } from "/components/ui/ContextMenu.svelte";
@@ -24,14 +25,13 @@
     investors,
     activeSheet,
     isAnon,
-    sheetReady,
+    sheetChanged,
+    docId,
   } = require("/index.ellx");
 
-  sheetReady.subscribe((v) => {
-    if (!$isAnon && v && v !== "@@io.ellx.STALE" && !(v instanceof Error)) {
-      updateLastViewed();
-    }
-  });
+  onMount(() => sheetChanged.subscribe((v) => {
+    v && v === docId.get() && !v.startsWith("@@io.ellx.STALE") && updateLastViewed()
+  }));
 </script>
 
 <div

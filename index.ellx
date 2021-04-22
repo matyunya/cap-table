@@ -13,15 +13,14 @@ nodes:
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
-  sheetReady = Boolean(activeSheet)
   activeSheet = store.documents.get(docId)
   $2 = connect(userId)
   $5 = connectProfile(userId)
   route = router.path
+  sheetChanged = activeSheet.owner && docId
   hl = window.hl
   router = ellx.router
   title = activeSheet.title
-  $7 = new Date(activeSheet.lastViewed)
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
   investorGroups = groupInvestors(groups, investors)
@@ -70,7 +69,7 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "secondary": true,
-        "height": 4,
+        "height": 5,
         "width": 5
       }
     },,,,,,
@@ -177,13 +176,7 @@ layout:
   [,,
     {
       "value": "Active sheet:"
-    },,
-    {
-      "value": "Sheet ready:"
-    },
-    {
-      "node": "sheetReady"
-    },,,
+    },,,,,
     {
       "value": "Connect to Firebase:"
     }
@@ -197,7 +190,7 @@ layout:
         "height": 5,
         "width": 1
       }
-    },,,,,,
+    },,,,,
     {
       "node": "$2"
     },,
@@ -205,7 +198,7 @@ layout:
       "value": "Route:"
     }
   ],
-  [,,,,,,,,
+  [,,,,,,,
     {
       "node": "$5"
     },,
@@ -213,7 +206,17 @@ layout:
       "node": "route"
     }
   ],,,,,
-  [,,,,,,,,
+  [,,
+    {
+      "value": "Sheet changed:"
+    }
+  ],
+  [,,
+    {
+      "node": "sheetChanged"
+    }
+  ],
+  [,,,,,,,
     {
       "value": "Headlong:"
     },,
@@ -224,10 +227,7 @@ layout:
   [,,
     {
       "value": "Title:"
-    },,
-    {
-      "value": "Last viewed:"
-    },,,,
+    },,,,,
     {
       "node": "hl",
       "expansion": {
@@ -250,9 +250,6 @@ layout:
   [,,
     {
       "node": "title"
-    },,
-    {
-      "node": "$7"
     }
   ],,
   [,,

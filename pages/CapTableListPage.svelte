@@ -17,11 +17,11 @@
   <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
     {$_("資本政策シミュレーター")}
   </h2>
-  <button on:click={createDocument} class="button w-full mb-16">
+  <button on:click={createDocument} class="button w-full">
     {$_("+ 新規テーブルを作成")}
   </button>
   <ul
-    class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4"
+    class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4 mt-12"
   >
     {#each $documentIds as [id, title, lastViewed]}
       <li
@@ -34,7 +34,7 @@
           class="flex flex-row justify-between"
         >
           <Cell
-            class="text-left text-gray-100 text-sm font-medium"
+            class="text-left text-sm font-medium"
             on:change={({ detail }) => renameDocument({ id, detail })}
             value={title}
           />
