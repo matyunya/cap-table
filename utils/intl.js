@@ -218,6 +218,12 @@ const translations = {
   "終わっている": {
     en: "Finished",
   },
+  "様 はじめまして": {
+    en: ", hello",
+  },
+  "最終閲覧": {
+    en: "Last viewed"
+  },
   "業務委託": {
     en: "Subcontractors"
   },
@@ -238,6 +244,9 @@ const translations = {
   },
   "パスワードをお忘れの方": {
     en: "Password recovery"
+  },
+  "株価算定までの3ステップ": {
+    en: "Three steps to something"
   },
   "人": {
     en: ""

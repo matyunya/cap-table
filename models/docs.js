@@ -20,7 +20,7 @@ export function connect() {
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? updateDoc(serialize({ ...defaultDocument, owner: userId.get() }), uid())
+          ? getActiveDocRef().set(serialize({ ...defaultDocument, owner: userId.get() }), uid())
           : store.commit(SYNC_DOCS, querySnapshot)
       }
     );
@@ -39,9 +39,4 @@ export async function getDoc(docId) {
   const d = await doc.get();
 
   return store.commit(() => ({ set }) => set('documents', docId, deserialize(d.data())))
-}
-
-
-export function updateDoc(data) {
-  return getActiveDocRef().set(data);
 }

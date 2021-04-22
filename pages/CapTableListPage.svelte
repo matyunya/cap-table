@@ -1,7 +1,10 @@
 <script>
+  import Cell, { setEditing } from "/components/sheet/Cell.svelte";
+  import _ from "/utils/intl.js";
   import { format, isToday } from "date-fns";
   import { documentIds } from "/store.js";
-  import Icon from "/components/ui/Icon.svelte";
+  // import Icon from "/components/ui/Icon.svelte";
+  import { renameDocument } from "/utils/actions.js";
   const { userId, appId } = require("/index.ellx");
 
   function formatDate(d) {
@@ -22,12 +25,19 @@
         on:click={() =>
           window.ellx.router.go(`/docs/${$userId}/${$appId}/${id}`)}
       >
-        <div class="flex flex-row justify-between">
-          <li>{title}</li>
-          <Icon wrapperClasses="" absolute={false} size="20" />
+        <div
+          on:click|preventDefault|stopPropagation={setEditing}
+          class="flex flex-row justify-between"
+        >
+          <Cell
+            class="text-left text-gray-100 text-sm font-medium"
+            on:change={({ detail }) => renameDocument({ id, detail })}
+            value={title}
+          />
         </div>
         <div class="text-xs">
-          最終閲覧 {formatDate(lastViewed)}
+          {$_("最終閲覧")}
+          {formatDate(lastViewed)}
         </div>
       </li>
     {/each}

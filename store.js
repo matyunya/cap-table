@@ -75,11 +75,11 @@ export function getActiveDocRef(id) {
     .doc(id || docId.get())
 }
 
-export function syncUp(st, TRANSACTION, payload) {
+export function syncUp(st, TRANSACTION, payload, id) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get()));
 
-  getActiveDocRef().set(val);
+  getActiveDocRef(id).set(val);
 };
 
 export function syncDocumentUp(st, TRANSACTION, payload, id) {

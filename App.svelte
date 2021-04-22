@@ -66,3 +66,9 @@
 {:else}
   <Sheet />
 {/if}
+
+<style>
+  :global(.min-h-screen) {
+    height: calc(100vh - 5rem);
+  }
+</style>

@@ -32,7 +32,7 @@ export function validate(data, fields) {
   return [Object.keys(errors).length === 0, errors];
 }
 
-export const length = (n) => (v) => (v.length < n ? n + "桁のパスワードを入力してください" : false);
+export const length = (n) => (v) => (v.length < n ? n + "桁を入力してください" : false);
 const sameAs = (field) => (v, data) => v !== data[field] ? "一緒ではありません" : false;
 
 export const passwordRules = [

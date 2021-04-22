@@ -3,7 +3,7 @@ import {
   createDocument,
   removeDocument,
   resetDocument,
-  syncTable,
+  syncCurrentDoc,
 } from "./actions.js";
 import {
   uid,
@@ -52,7 +52,7 @@ function canRemoveRound(roundId) {
 export const investorGroupMenuItems = (group, investors, isFounderGroup) => [
   {
     text: "グループ追加",
-    cb: () => syncTable(
+    cb: () => syncCurrentDoc(
       ADD_INVESTOR,
       {
         newGroup: true,
@@ -62,23 +62,23 @@ export const investorGroupMenuItems = (group, investors, isFounderGroup) => [
   },
   !isFounderGroup && {
     text: "削除",
-    cb: () => syncTable(REMOVE_GROUP, { group }),
+    cb: () => syncCurrentDoc(REMOVE_GROUP, { group }),
   },
 ].filter(Boolean);
 
 export const investorMenuItems = (id, group) => [{
   text: "投資家追加",
-  cb: () => syncTable(ADD_INVESTOR, { afterId: id }),
+  cb: () => syncCurrentDoc(ADD_INVESTOR, { afterId: id }),
 },
 group !== "Founder" && {
   text: "削除",
-  cb: () => syncTable(REMOVE_INVESTOR, { id }),
+  cb: () => syncCurrentDoc(REMOVE_INVESTOR, { id }),
 }].filter(Boolean);
 
 export const roundMenuItems = (id) => [
   {
     text: "新ラウンド作成（普通株式）",
-    cb: () => syncTable(
+    cb: () => syncCurrentDoc(
       ADD_ROUND,
       {
         type: "common",
@@ -89,7 +89,7 @@ export const roundMenuItems = (id) => [
     text: "J-kissラウンド作成",
     cb: () => {
       const newId = uid();
-      syncTable(ADD_ROUND, { type: "j-kiss", afterId: id, newId }),
+      syncCurrentDoc(ADD_ROUND, { type: "j-kiss", afterId: id, newId }),
         setTimeout(() => {
           const el = document.querySelector(`[data-id="valuation:${newId}"]`);
           if (el) {
@@ -101,11 +101,11 @@ export const roundMenuItems = (id) => [
   } : false,
   canAddSplit(id) ? {
     text: "株式分割ラウンド作成",
-    cb: () => syncTable(ADD_SPLIT_ROUND, { type: "split", afterId: id, splitBy: 100 }),
+    cb: () => syncCurrentDoc(ADD_SPLIT_ROUND, { type: "split", afterId: id, splitBy: 100 }),
   } : false,
   canRemoveRound(id) ? {
     text: "ラウンド削除",
-    cb: () => syncTable(REMOVE_ROUND, { id: id }),
+    cb: () => syncCurrentDoc(REMOVE_ROUND, { id: id }),
   } : false,
 ].filter(Boolean);
 

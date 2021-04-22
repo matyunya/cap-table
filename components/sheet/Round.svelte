@@ -1,5 +1,5 @@
 <script context="module">
-  import Cell from "./Cell.svelte";
+  import Cell from "/components/sheet/Cell.svelte";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import Icon from "/components/ui/Icon.svelte";
 

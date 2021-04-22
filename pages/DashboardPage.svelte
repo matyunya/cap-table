@@ -1,6 +1,6 @@
 <script>
   import _ from "/utils/intl.js";
-  const { isAuthenticated } = require("/index.ellx");
+  const { isAuthenticated, profile } = require("/index.ellx");
 
   isAuthenticated.subscribe((value) => {
     if (value === false) {
@@ -12,23 +12,23 @@
 <main
   class="relative block text-sm flex items-center justify-center max-w-5xl mx-auto pt-12 flex flex-col min-h-screen"
 >
-  <div
-    class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-4 rounded w-full flex justify-between items-center"
-  >
-    <span>山田太郎様 はじめまして</span>
-    <div class="flex flex-row items-center justify-center space-x-4">
-      <a
-        href="/tutorial"
-        class="rounded-xl p-2 bg-light-blue-700 text-xs text-white hover:bg-light-blue-500 transition duration-100"
-      >
-        {$_("チュートリアルはここから")}
-      </a>
-      <!-- what is this anyway? -->
-      <span class="text-lg cursor-pointer">×</span>
+  {#if $profile}
+    <div
+      class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-4 rounded w-full flex justify-between items-center"
+    >
+      <span>{$profile.name}{$_("様 はじめまして")}</span>
+      <div class="flex flex-row items-center justify-center space-x-4">
+        <a
+          href="/tutorial"
+          class="rounded-xl p-2 bg-light-blue-700 text-xs text-white hover:bg-light-blue-500 transition duration-100"
+        >
+          {$_("チュートリアルはここから")}
+        </a>
+        <!-- what is this anyway? -->
+        <span class="text-lg cursor-pointer">×</span>
+      </div>
     </div>
-  </div>
-
-  <div class="flex-grow" />
+  {/if}
 
   <div class="mb-8 w-full">
     <h2 class="text-lg font-bold mb-2">{$_("株価算定までの3ステップ")}</h2>
@@ -36,7 +36,7 @@
   </div>
 
   <div
-    class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-4 mb-8 flex-1"
+    class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-4 mb-8"
   >
     <a
       href="/docs"

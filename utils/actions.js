@@ -35,39 +35,44 @@ import {
 
 const { docId, appId, userId } = require("/index.ellx");
 
-const getStore = () => select(store, () => ['documents', docId.get()]);
+const getDoc = (id) => select(store, () => ['documents', id || docId.get()]);
 
-export const syncTable = (...args) => syncUp(getStore(), ...args);
+export const syncCurrentDoc = (...args) => syncUp(getDoc(), ...args);
 
-export const renameDocument = ({ detail }) => syncTable(UPDATE_DOCUMENT_TITLE, detail);
+// TODO: consider for other actions
+export const syncDoc = (id, ...args) => syncUp(getDoc(id), ...args, id);
 
-export const updateSplitBy = ({ roundId, value }) => syncTable(UPDATE_SPLIT_BY, { roundId, value });
+export const renameDocument = ({ detail, id }) => id
+  ? syncDoc(id, UPDATE_DOCUMENT_TITLE, detail)
+  : syncCurrentDoc(UPDATE_DOCUMENT_TITLE, detail);
 
-export const renameRound = ({ roundId, value }) => syncTable(RENAME_ROUND, { roundId, name: value });
+export const updateSplitBy = ({ roundId, value }) => syncCurrentDoc(UPDATE_SPLIT_BY, { roundId, value });
 
-const updateShares = type => ({ roundId, investorId, value }) => syncTable(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+export const renameRound = ({ roundId, value }) => syncCurrentDoc(RENAME_ROUND, { roundId, name: value });
 
-const updateInvestment = (mutation, fieldName) => ({ roundId, investorId, value }) => syncTable(mutation, { roundId, investorId, [fieldName]: Number(value) });
+const updateShares = type => ({ roundId, investorId, value }) => syncCurrentDoc(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+
+const updateInvestment = (mutation, fieldName) => ({ roundId, investorId, value }) => syncCurrentDoc(mutation, { roundId, investorId, [fieldName]: Number(value) });
 
 const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
 
-const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncTable(mutation, { roundId, [fieldName]: value });
+const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncCurrentDoc(mutation, { roundId, [fieldName]: value });
 
-export const updateRoundDate = ({ roundId, value }) => syncTable(UPDATE_ROUND_DATE, { roundId, date: value });
+export const updateRoundDate = ({ roundId, value }) => syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
 
-export const updateLastViewed = () => syncTable(UPDATE_LAST_VIEWED);
+export const updateLastViewed = () => syncCurrentDoc(UPDATE_LAST_VIEWED);
 
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
-export const updateValuationCap = ({ roundId, value }) => syncTable(UPDATE_VALUATION_CAP, { roundId, value });
+export const updateValuationCap = ({ roundId, value }) => syncCurrentDoc(UPDATE_VALUATION_CAP, { roundId, value });
 
-export const updateDiscount = ({ roundId, value }) => syncTable(UPDATE_DISCOUNT, { roundId, value });
+export const updateDiscount = ({ roundId, value }) => syncCurrentDoc(UPDATE_DISCOUNT, { roundId, value });
 
-export const renameInvestorGroup = ({ oldName, newName }) => syncTable(UPDATE_GROUP_NAME, { oldName, newName });
+export const renameInvestorGroup = ({ oldName, newName }) => syncCurrentDoc(UPDATE_GROUP_NAME, { oldName, newName });
 
-export const renameInvestor = ({ investorId, value }) => syncTable(UPDATE_INVESTOR_NAME, { investorId, name: value });
+export const renameInvestor = ({ investorId, value }) => syncCurrentDoc(UPDATE_INVESTOR_NAME, { investorId, name: value });
 
-export const updateInvestorTitle = ({ investorId, value }) => syncTable(UPDATE_INVESTOR_TITLE, { investorId, title: value });
+export const updateInvestorTitle = ({ investorId, value }) => syncCurrentDoc(UPDATE_INVESTOR_TITLE, { investorId, title: value });
 
 const calcCell = calcFn =>
   (investors, rounds) =>
@@ -235,7 +240,7 @@ function copyToClipboard(text) {
 }
 
 export const togglePublic = () => {
-  syncTable(TOGGLE_PUBLIC);
+  syncCurrentDoc(TOGGLE_PUBLIC);
   copyToClipboard(window.location.href);
 };
 
@@ -246,7 +251,7 @@ export const createDocument = ({ from } = {}) => {
   window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${to}`);
 }
 
-export const resetDocument = () => syncTable(RESET_DOCUMENT);
+export const resetDocument = () => syncCurrentDoc(RESET_DOCUMENT);
 
 export const removeDocument = ({ id }) => {
   const ids = [...store.get('documents').keys()];

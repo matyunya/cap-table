@@ -49,7 +49,7 @@
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
-<nav class="w-screen h-10 flex flex-row mb-8">
+<nav class="w-screen h-10 flex flex-row">
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30"
   >
