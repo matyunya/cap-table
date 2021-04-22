@@ -2,16 +2,21 @@
   import Wrapper from "/components/signup/Wrapper.svelte";
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
+  import { validate, scrollToError, length } from "/utils/forms.js";
+  const { auth, isAuthenticated } = require("/index.ellx");
 
   const fields = {
     email: {
       placeholder: "メールアドレス",
       label: "メールアドレス",
+      required: true,
     },
     password: {
       placeholder: "",
       label: "パスワード",
       type: "password",
+      required: true,
+      validate: length(8),
     },
   };
 
@@ -19,14 +24,27 @@
   let errors = {};
 
   function login() {
-    window.ellx.login(data);
-    window.ellx.router.go("/");
+    [ok, errors] = validate(data, fields);
+    if (ok) {
+      window.ellx.login(data);
+    } else {
+      scrollToError();
+    }
   }
+
+  isAuthenticated.subscribe((v) => {
+    if (v && v !== "@@io.ellx.STALE" && !(v instanceof Error)) {
+      console.log("redirecting", v);
+      window.ellx.router.go("/dashboard");
+    }
+  });
 </script>
 
 <Wrapper>
-  <h2 class="font-bold text-lg mt-6 text-center w-full">ログイン</h2>
-  <button class="button w-full">Googleアカウントでログイン</button>
+  <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    {$_("ログイン")}
+  </h2>
+  <button class="button w-full">{$_("Googleアカウントでログイン")}</button>
   <hr class="my-8" />
   <Fields {fields} bind:data bind:errors />
   <div class="text-center mt-6">
@@ -43,4 +61,7 @@
       {$_("パスワードをお忘れの方")}
     </a>
   </div>
+  {#if $auth instanceof Error}
+    <div class="text-error-500 w-full text-center mt-8">{$auth}</div>
+  {/if}
 </Wrapper>

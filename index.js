@@ -3,7 +3,7 @@ import App from "./App.svelte";
 import { writable } from "tinyx";
 import "/index.css";
 
-export { roundTypes } from "/utils/actions.js";
+export { roundTypes, updateLastViewed } from "/utils/actions.js";
 export {
   uid,
   calcFounderShare,

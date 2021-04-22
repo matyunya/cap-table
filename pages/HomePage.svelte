@@ -3,7 +3,10 @@
   const { isAuthenticated } = require("/index.ellx");
 
   isAuthenticated.subscribe((v) => {
-    if (v) window.ellx.router.go("/dashboard");
+    if (v && v !== "@@io.ellx.STALE" && !(v instanceof Error)) {
+      console.log('redirecting', v);
+      window.ellx.router.go("/dashboard");
+    }
   });
 </script>
 

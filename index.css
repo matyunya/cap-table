@@ -181,34 +181,7 @@
   --tw-text-opacity: 1;
   color: rgba(82, 82, 91, var(--tw-text-opacity));
 }
-.button {
-  --tw-bg-opacity: 1;
-  background-color: rgba(82, 82, 91, var(--tw-bg-opacity));
-  letter-spacing: 0.1em;
-  transition-property: background-color, border-color, color, fill, stroke,
-    opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-  transition-duration: 300ms;
-  font-weight: 700;
-  color: #fff;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-radius: 0.25rem;
-  --tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 transparent),
-    var(--tw-ring-shadow, 0 0 transparent), var(--tw-shadow);
-  outline: 2px solid transparent, 2px;
-  margin-right: 0.25rem;
-  margin-bottom: 0.25rem;
-  margin-top: 1.5rem;
-}
+
 .z-0 {
   z-index: 0;
 }

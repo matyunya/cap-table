@@ -40,6 +40,7 @@ const founderId = "FOUNDER_ID";
 
 export const defaultDocument = {
   title: defaultName("docTitle"),
+  lastViewed: null,
   rounds: new Map([[
     "founded",
     {
@@ -58,7 +59,9 @@ export const defaultDocument = {
 };
 
 const defaultStore = {
-  profile: {},
+  profile: {
+    language: DEFAULT_LANGUAGE,
+  },
   documents: new Map(),
 };
 
@@ -90,7 +93,7 @@ export const language = select(store, () => ["profile", "language"]);
 
 export const userProfile = select(store, () => ["profile"]);
 
-export const documentIds = derived(store, ({ documents }) => [...documents].map(([id, { title }]) => [id, title]));
+export const documentIds = derived(store, ({ documents }) => [...documents].map(([id, { title, lastViewed }]) => [id, title, lastViewed]));
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", investorId, ({ commonShares = 0, votingShares = 0, ...params } = {}) => {
@@ -314,6 +317,10 @@ export function COPY_DOCUMENT({ from, to }) {
 
 export function UPDATE_DOCUMENT_TITLE(value) {
   return ({ set }) => set("title", value);
+}
+
+export function UPDATE_LAST_VIEWED() {
+  return ({ set }) => set("lastViewed", Date.now());
 }
 
 export function RESET_DOCUMENT() {

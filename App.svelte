@@ -30,7 +30,7 @@
     const { apply, ...hl } = headlong({ classes });
     apply(
       ".button",
-      "bg-gray-600 tracking-widest transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6"
+      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6"
     );
 
     window.hl = hl;
@@ -42,10 +42,6 @@
     store.resetStore();
   }
 </script>
-
-<div
-  class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
-/>
 
 <Nav bind:dark {logout} />
 

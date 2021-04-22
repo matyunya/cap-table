@@ -176,6 +176,27 @@ const translations = {
   "メールアドレス": {
     en: "Email address"
   },
+  "お名前": {
+    en: "Full name"
+  },
+  "利用規約": {
+    en: "Site rules"
+  },
+  "Googleアカウントでログイン": {
+    en: "Log in with Google account"
+  },
+  "Googleアカウントで登録": {
+    en: "Sign up with Google account"
+  },
+  "プライバシーポリシー に同意の上": {
+    en: "Privacy policy"
+  },
+  "半角英数字8文字以上": {
+    en: "At least 8 characters long",
+  },
+  "パスワード（確認）": {
+    en: "Confirm password"
+  },
   "正社員": {
     en: "Full-time"
   },
@@ -212,6 +233,12 @@ const translations = {
   "スキップする": {
     en: "Skip for now"
   },
+  "登録して始める​": {
+    en: "Go to app"
+  },
+  "パスワードをお忘れの方": {
+    en: "Password recovery"
+  },
   "人": {
     en: ""
   },
@@ -219,6 +246,14 @@ const translations = {
         本ツールでは、簡単３ステップで、資金調達に必要な準備（資本政策表作成、株価算定）ができます。<br />
         時間とチャンスを無駄にしないように、投資家に会う前にしっかりと理論武装しましょう。`]: {
     en: "lead text"
+  },
+  [`ご登録ありがとうございます。<br />
+  本人認証のために、メールを送信しました。<br />
+  メールにて本人認証を行ってください。​`]: {
+    en: "Thank you for signing up. Please check your email."
+  },
+  "アカウントをお持ちの方は": {
+    en: "Already have an account?"
   }
 };
 

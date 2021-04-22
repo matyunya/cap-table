@@ -35,7 +35,7 @@
 {#if $activeSheet}
   <div
     style="width: {calculateWidth($rounds)}px"
-    class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-8 mt-16 text-gray-700 dark:text-gray-200"
+    class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-8 mt-4 text-gray-700 dark:text-gray-200"
     on:click={setEditing}
   >
     <Cell

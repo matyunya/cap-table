@@ -16,6 +16,7 @@ import {
   UPDATE_DISCOUNT,
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
+  UPDATE_LAST_VIEWED,
 
   syncUp,
   syncDocumentUp,
@@ -53,6 +54,8 @@ const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvest
 const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncTable(mutation, { roundId, [fieldName]: value });
 
 export const updateRoundDate = ({ roundId, value }) => syncTable(UPDATE_ROUND_DATE, { roundId, date: value });
+
+export const updateLastViewed = () => syncTable(UPDATE_LAST_VIEWED);
 
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
@@ -240,7 +243,7 @@ export const createDocument = ({ from } = {}) => {
   const to = uid();
   syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
 
-  window.ellx.router.go(`docs/${userId.get()}/${appId.get()}/${to}`);
+  window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${to}`);
 }
 
 export const resetDocument = () => syncTable(RESET_DOCUMENT);
@@ -251,5 +254,5 @@ export const removeDocument = ({ id }) => {
 
   syncUp(store, REMOVE_DOCUMENT, { id });
 
-  window.ellx.router.go(`docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
+  window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
 }

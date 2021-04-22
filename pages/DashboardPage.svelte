@@ -65,22 +65,4 @@
       <button class="button">{$_("ツールを開く")}</button>
     </a>
   </div>
-
-  <div class="mb-8 w-full">
-    <h2 class="text-lg font-bold mb-2">{$_("お問い合わせ")}</h2>
-    <div class="flex flex-row space-x-4">
-      <div
-        class="w-1/2 border border-gray-400 shadow-lg dark:border-gray-200 rounded p-4"
-      >
-        <a href="mailto:info@cap-drive.jp">info@cap-drive.jp</a>
-      </div>
-      <div
-        class="w-1/2 border border-gray-400 shadow-lg dark:border-gray-200 rounded p-4"
-      >
-        <a href="tel:03-2233-2211">
-          {$_("03-2233-2211（平日　9:00 - 20:00）")}
-        </a>
-      </div>
-    </div>
-  </div>
 </main>

@@ -25,7 +25,7 @@
   class:ring-red-200={error}
   class:ring-0={!error}
   class:ring-1={error}
-  class:dark:bg-gray-700={!error}
+  class:dark:bg-gray-800={!error}
   class:dark:text-gray-200={!error}
   class={classes}
   {placeholder}

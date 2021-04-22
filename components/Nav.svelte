@@ -45,12 +45,19 @@
   }
 </script>
 
-<div class="absolute w-screen h-10 top-0 left-0 z-20 flex mb-8">
+<div
+  class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
+/>
+
+<nav class="w-screen h-10 flex flex-row mb-8">
   <div
-    class="flex items-center h-full justify-start text-sm sm:text-xs font-medium px-8"
+    class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30"
   >
     {#if routeName($route)}
-      <a href="/docs" class="text-xs font-mono underline text-light-blue-500">
+      <a
+        href="/docs"
+        class="text-xs font-mono underline text-light-blue-500 rounded p-1"
+      >
         ← {$_(routeName($route))}
       </a>
     {/if}
@@ -75,7 +82,7 @@
   </div>
   <div class="flex-grow" />
   <div
-    class="flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8"
+    class="flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8 z-30"
   >
     <button
       title="Dark mode toggle"
@@ -105,6 +112,9 @@
         {$_("ログアウト")}
       </button>
     {:else}
+      {#if $route && $route.startsWith("/signup")}
+        <span>{$_("アカウントをお持ちの方は")}</span>
+      {/if}
       <a
         class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
         href="/login"
@@ -113,4 +123,4 @@
       </a>
     {/if}
   </div>
-</div>
+</nav>

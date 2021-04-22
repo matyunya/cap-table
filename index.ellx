@@ -4,11 +4,13 @@ nodes:
   $3 = ellx.login()
   docs = store.documents
   auth = ellx.auth
+  profile = store.profile
   userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : route.split('/')[1]
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
   docId = route.split('/')[4]
+  $6 = updateLastViewed(docId)
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
@@ -19,6 +21,7 @@ nodes:
   hl = window.hl
   router = ellx.router
   title = activeSheet.title
+  $7 = new Date(activeSheet.lastViewed)
   founderShare = calcFounderShare(activeSheet)
   groups = uniqueGroups(investors)
   investorGroups = groupInvestors(groups, investors)
@@ -67,7 +70,7 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "secondary": true,
-        "height": 14,
+        "height": 4,
         "width": 5
       }
     },,,,,,
@@ -85,8 +88,22 @@ layout:
         "width": 1
       }
     }
-  ],,,,,
-  [,,,,,,,,
+  ],,,,
+  [,
+    {
+      "value": "Profile:"
+    }
+  ],
+  [,
+    {
+      "node": "profile",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 11,
+        "width": 1
+      }
+    },,,,,,,
     {
       "value": "Current user ID:"
     },,
@@ -130,7 +147,12 @@ layout:
     {
       "node": "docId"
     }
-  ],,
+  ],
+  [,,,,,,,,
+    {
+      "node": "$6"
+    }
+  ],
   [,,,,,,,,
     {
       "value": "Is authenticated:"
@@ -166,7 +188,7 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 4,
+        "height": 5,
         "width": 1
       }
     },,,,,,
@@ -184,7 +206,7 @@ layout:
     {
       "node": "route"
     }
-  ],,,
+  ],,,,,
   [,,,,,,,,
     {
       "value": "Headlong:"
@@ -196,7 +218,10 @@ layout:
   [,,
     {
       "value": "Title:"
-    },,,,,,
+    },,
+    {
+      "value": "Last viewed:"
+    },,,,
     {
       "node": "hl",
       "expansion": {
@@ -219,6 +244,9 @@ layout:
   [,,
     {
       "node": "title"
+    },,
+    {
+      "node": "$7"
     }
   ],,
   [,,

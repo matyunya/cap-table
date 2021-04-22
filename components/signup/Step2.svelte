@@ -49,7 +49,7 @@
 </script>
 
 <form class="flex-auto dark:text-white">
-  <h2 class="font-bold text-lg mt-6 text-center w-full">{$_("会社情報")}</h2>
+  <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">{$_("会社情報")}</h2>
   <Fields bind:data bind:errors {fields} />
 
   <span class="block text-xs font-bold mb-2 mt-8">

@@ -86,22 +86,22 @@
 </script>
 
 <form class="flex-auto dark:text-white">
-  <h2 class="font-bold text-lg mt-6 text-center w-full">資金調達計画</h2>
+  <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    {$_("資金調達計画")}
+  </h2>
   <Fields bind:data bind:errors {fields} />
 
-  <div class="text-center mt-10">
-    <button
-      on:click={onSubmit}
-      class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-      type="button"
-    >
-      {$_("登録して始める​")}
-    </button>
-    <a
-      href="/"
-      class="mt-4 bg-gray-900 dark:bg-blue-gray-700 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-    >
-      {$_("スキップする")}
-    </a>
-  </div>
+  <button
+    on:click={onSubmit}
+    class="button w-full mt-10 bg-light-blue-700"
+    type="button"
+  >
+    {$_("登録して始める​")}
+  </button>
+  <button
+    on:click={() => window.ellx.router.go("/dashboard")}
+    class="mt-6 button w-full"
+  >
+    {$_("スキップする")}
+  </button>
 </form>

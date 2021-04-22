@@ -29,12 +29,12 @@
   }
 
   userId.subscribe((value) => {
-    if (value !== "@@io.ellx.STALE") {
+    if (value !== "@@io.ellx.STALE" && value) {
       updateProfile({
         language: $language,
         name: data.name,
       });
-      window.ellx.router.go("signup/2");
+      window.ellx.router.go("/signup/2");
     }
   });
 
@@ -72,20 +72,24 @@
 
 {#if submitted}
   <div class="text-center w-full my-8">
-    ご登録ありがとうございます。<br />
+    {@html $_(`ご登録ありがとうございます。<br />
     本人認証のために、メールを送信しました。<br />
-    メールにて本人認証を行ってください。​
+    メールにて本人認証を行ってください。​`)}
   </div>
 {:else}
-  <h2 class="font-bold text-lg mt-6 text-center w-full">ユーザー登録</h2>
-  <button class="button w-full">Googleアカウントで登録</button>
+  <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    {$_("ユーザー登録")}
+  </h2>
+  <button class="button w-full">{$_("Googleアカウントで登録")}</button>
   <hr class="my-8" />
   <form class="flex-auto dark:text-white">
     <Fields bind:data bind:errors {fields} />
 
     <div class="flex flex-row justify-evenly">
-      <a href="rules" class="a text-xs">利用規約</a>
-      <a href="privacy" class="a text-xs">プライバシーポリシー に同意の上</a>
+      <a href="rules" class="a text-xs">{$_("利用規約")}</a>
+      <a href="privacy" class="a text-xs"
+        >{$_("プライバシーポリシー に同意の上")}</a
+      >
     </div>
 
     <div class="text-center mt-6">

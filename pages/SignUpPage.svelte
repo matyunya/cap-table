@@ -13,7 +13,7 @@
   {#if $regStep === 1}
     <Step1 />
   {:else if $regStep === 2}
-    <Step2 onSave={() => window.ellx.router.go("signup/3")} />
+    <Step2 onSave={() => window.ellx.router.go("/signup/3")} />
   {:else if $regStep === 3}
     <Step3 onSave={() => window.ellx.router.go("/docs")} />
   {/if}
