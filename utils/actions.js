@@ -246,6 +246,7 @@ export const togglePublic = () => {
 
 export const createDocument = ({ from } = {}) => {
   const to = uid();
+
   syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
 
   window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${to}`);

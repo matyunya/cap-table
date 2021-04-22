@@ -10,10 +10,10 @@ nodes:
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
   docId = route.split('/')[4]
-  $6 = updateLastViewed(docId)
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
+  sheetReady = Boolean(activeSheet)
   activeSheet = store.documents.get(docId)
   $2 = connect(userId)
   $5 = connectProfile(userId)
@@ -150,7 +150,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "node": "$6"
+      "value": "// $6 = updateLastViewed(docId)"
     }
   ],
   [,,,,,,,,
@@ -177,7 +177,13 @@ layout:
   [,,
     {
       "value": "Active sheet:"
-    },,,,,,
+    },,
+    {
+      "value": "Sheet ready:"
+    },
+    {
+      "node": "sheetReady"
+    },,,
     {
       "value": "Connect to Firebase:"
     }

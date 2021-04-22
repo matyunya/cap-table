@@ -11,6 +11,7 @@
     renameInvestorGroup,
     renameInvestor,
     updateInvestorTitle,
+    updateLastViewed,
   } from "/utils/actions.js";
   import cn from "/utils/cn.js";
   import { investorGroupMenuItems, investorMenuItems } from "/utils/menus.js";
@@ -23,7 +24,14 @@
     investors,
     activeSheet,
     isAnon,
+    sheetReady,
   } = require("/index.ellx");
+
+  sheetReady.subscribe((v) => {
+    if (!$isAnon && v && v !== "@@io.ellx.STALE" && !(v instanceof Error)) {
+      updateLastViewed();
+    }
+  });
 </script>
 
 <div

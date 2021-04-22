@@ -302,7 +302,7 @@ export function SET_DOCUMENT({ id, data }) {
 }
 
 export function COPY_DOCUMENT({ from, to }) {
-  return ({ set, get }) => {
+  return ({ set }) => {
     const newDoc = from ? {
       ...from,
       title: from.title + (language.get() === "ja" ? "コピー" : " copy")

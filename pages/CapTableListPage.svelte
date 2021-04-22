@@ -4,7 +4,7 @@
   import { format, isToday } from "date-fns";
   import { documentIds } from "/store.js";
   // import Icon from "/components/ui/Icon.svelte";
-  import { renameDocument } from "/utils/actions.js";
+  import { renameDocument, createDocument } from "/utils/actions.js";
   const { userId, appId } = require("/index.ellx");
 
   function formatDate(d) {
@@ -13,11 +13,15 @@
   }
 </script>
 
-<section
-  class="relative block py-24 text-sm flex items-center justify-center min-h-screen"
->
+<section class="relative text-sm flex min-h-screen flex-col max-w-4xl mx-auto">
+  <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
+    {$_("資本政策シミュレーター")}
+  </h2>
+  <button on:click={createDocument} class="button w-full mb-16">
+    {$_("+ 新規テーブルを作成")}
+  </button>
   <ul
-    class="p-4 max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4"
+    class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4"
   >
     {#each $documentIds as [id, title, lastViewed]}
       <li
