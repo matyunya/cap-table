@@ -18,7 +18,7 @@
     {$_("資本政策シミュレーター")}
   </h2>
   <button on:click={createDocument} class="button w-full">
-    {$_("+ 新規テーブルを作成")}
+    {$_("新規テーブルを作成")}
   </button>
   <ul
     class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4 mt-12"

@@ -11,7 +11,9 @@
 </script>
 
 <div class="relative w-full mb-3 {classes}">
-  <Label {id} {required} {error} {label} />
+  {#if label}
+    <Label {id} {required} {error} {label} />
+  {/if}
   <input
     on:change
     {value}

@@ -23,10 +23,10 @@
   <div slot="activator">
     <slot></slot>
   </div>
-  <ul class="text-xs py-1 w-auto max-w-sm truncate rounded-sm">
+  <ul class="text-xs py-2 w-auto max-w-sm truncate">
     {#each ($items || []) as i}
       <li
-        class="py-1 cursor-pointer select-none px-2 hover:bg-gray-500 hover:text-white"
+        class="py-1 cursor-pointer select-none px-4 hover:bg-gray-500 hover:text-white"
         on:click={() => action(i)}
       >{$_(i.text)}</li>
     {/each}

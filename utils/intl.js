@@ -239,6 +239,30 @@ const translations = {
   "ユーザー情報": {
     en: "User information"
   },
+  "株価算定": {
+    en: "Stock price calculator"
+  },
+  "事業計画": {
+    en: "Business plan"
+  },
+  "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。": {
+    en: "Thank you for using Capital Dash. We'd love to hear from you!"
+  },
+  "資本政策シミュレーター": {
+    en: "Cap table simulator"
+  },
+  "ご利用ガイド": {
+    en: "Tutorial"
+  },
+  "お問い合わせ": {
+    en: "Feedback form"
+  },
+  "新規テーブルを作成": {
+    en: "New table"
+  },
+  "パスワード再設定": {
+    en: "Change password"
+  },
   "資金調達計画": {
     en: "Financing plan"
   },

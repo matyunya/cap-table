@@ -44,20 +44,20 @@
 
 <Wrapper title="登録情報確認・変更">
   {#if $profileReady && Array.isArray(data.projectedInvestmentTypes)}
-    <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
       {$_("ユーザー情報")}
     </h2>
     <div class="mb-8">
       <Fields bind:data bind:errors fields={userFields} />
     </div>
-    <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
       {$_("会社情報")}
     </h2>
     <div class="mb-8">
       <Fields bind:data bind:errors fields={companyFields} />
       <NumberOfEmployeesFields bind:data bind:errors />
     </div>
-    <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
+    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
       {$_("資金調達計画")}
     </h2>
     <div class="mb-8">

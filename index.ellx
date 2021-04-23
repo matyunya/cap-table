@@ -19,7 +19,6 @@ nodes:
   $5 = connectProfile(userId)
   route = router.path
   sheetChanged = activeSheet.owner && docId
-  hl = window.hl
   router = ellx.router
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
@@ -223,10 +222,7 @@ layout:
       "node": "sheetChanged"
     }
   ],
-  [,,,,,,,
-    {
-      "value": "Headlong:"
-    },,
+  [,,,,,,,,
     {
       "value": "Router:"
     }
@@ -234,16 +230,7 @@ layout:
   [,,
     {
       "value": "Title:"
-    },,,,,
-    {
-      "node": "hl",
-      "expansion": {
-        "vertical": true,
-        "labelsLeft": true,
-        "height": 4,
-        "width": 1
-      }
-    },,
+    },,,,,,
     {
       "node": "router",
       "expansion": {

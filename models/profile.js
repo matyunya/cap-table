@@ -1,5 +1,6 @@
 import { store } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
+import { uid } from "/utils/index.js";
 const { appId, userId } = require("/index.ellx");
 
 function getProfileRef() {
