@@ -47,8 +47,7 @@
   }
 </script>
 
-<Wrapper>
-  <h2>{$_("パスワード再設定")}</h2>
+<Wrapper title="パスワード再設定">
   <Fields {fields} bind:data bind:errors />
   <div class="text-center mt-6">
     <button
