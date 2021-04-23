@@ -35,9 +35,21 @@
     const { apply, ...hl } = headlong({ classes });
     apply(
       ".button",
-      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6 text-center"
+      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6 text-center ring-0 ring-light-blue-500"
     );
-    apply(".nav-button", "h-6 p-1 text-xs mt-0 mb-0 mr-0");
+    apply(
+      ".button:hover",
+      "bg-gray-500 shadow-lg"
+    );
+    apply(
+      ".button:active",
+      "ring-2 bg-gray-400"
+    );
+    apply(
+      ".button:focus",
+      "ring-1"
+    );
+    apply(".nav-button", "h-6 p-1 px-3 text-xs mt-0 mb-0 mr-0");
 
     window.hl = hl;
   });

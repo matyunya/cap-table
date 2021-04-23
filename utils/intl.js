@@ -173,6 +173,9 @@ const translations = {
   "資本政策": {
     en: "Cap table",
   },
+  "登録情報確認・変更": {
+    en: "Edit user profile",
+  },
   "メールアドレス": {
     en: "Email address"
   },
@@ -233,8 +236,11 @@ const translations = {
   "ユーザー登録": {
     en: "User registration"
   },
+  "ユーザー情報": {
+    en: "User information"
+  },
   "資金調達計画": {
-    en: "Some capital plan"
+    en: "Financing plan"
   },
   "スキップする": {
     en: "Skip for now"

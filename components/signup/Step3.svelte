@@ -1,16 +1,4 @@
-<script>
-  import Fields from "/components/signup/Fields.svelte";
-  import _ from "/utils/intl.js";
-  import { updateProfile } from "/models/profile.js";
-  import { validate, scrollToError } from "/utils/forms.js";
-
-  export let onSave = () => {};
-
-  let data = {
-    projectedInvestmentTypes: [],
-  };
-  let errors = {};
-
+<script context="module">
   const investorTypes = [
     "VC",
     "事業会社",
@@ -43,7 +31,7 @@
     "投資家からオファー受領済",
   ];
 
-  const fields = {
+  export const fields = {
     projectedInvestmentAmount: {
       placeholder: "例）20",
       label: "いくら資金調達が必要ですか？",
@@ -73,6 +61,20 @@
       options: conditions.map((i) => [i, i]),
     },
   };
+</script>
+
+<script>
+  import Fields from "/components/signup/Fields.svelte";
+  import _ from "/utils/intl.js";
+  import { updateProfile } from "/models/profile.js";
+  import { validate, scrollToError } from "/utils/forms.js";
+
+  export let onSave = () => {};
+
+  let data = {
+    projectedInvestmentTypes: [],
+  };
+  let errors = {};
 
   function onSubmit() {
     [ok, errors] = validate(data, fields);

@@ -5,6 +5,7 @@ nodes:
   docs = store.documents
   auth = ellx.auth
   profile = store.profile
+  profileReady = profile.owner === userId
   userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : route.split('/')[1]
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
@@ -87,10 +88,13 @@ layout:
         "width": 1
       }
     }
-  ],,,,
+  ],,,,,
   [,
     {
       "value": "Profile:"
+    },,
+    {
+      "value": "Profile ready:"
     }
   ],
   [,
@@ -99,10 +103,13 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 11,
+        "height": 10,
         "width": 1
       }
-    },,,,,,,
+    },,
+    {
+      "node": "profileReady"
+    },,,,,
     {
       "value": "Current user ID:"
     },,

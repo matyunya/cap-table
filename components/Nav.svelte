@@ -55,10 +55,14 @@
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30"
   >
     {#if $route && !$route.startsWith("/docs/")}
-      <a href="/" class="font-bold tracking-wide text-base mr-4">Capital Dash</a>
-      <a class="mx-2 font-mono" href="/docs">{$_("資本政策")}</a>
-      <a class="mx-2 font-mono" href="/plan">{$_("事業計画")}</a>
-      <a class="mx-2 font-mono" href="/calc">{$_("株価算定")}</a>
+      <a href="/" class="font-bold tracking-wide text-base mr-4">
+        Capital Dash
+      </a>
+      {#if $isAuthenticated && !$route.startsWith("/signup")}
+        <a class="mx-2 font-mono" href="/docs">{$_("資本政策")}</a>
+        <a class="mx-2 font-mono" href="/plan">{$_("事業計画")}</a>
+        <a class="mx-2 font-mono" href="/calc">{$_("株価算定")}</a>
+      {/if}
     {/if}
     {#if routeName($route)}
       <a
@@ -131,12 +135,9 @@
       </button>
     {:else}
       {#if $route && $route.startsWith("/signup")}
-        <span>{$_("アカウントをお持ちの方は")}</span>
+        <span class="mr-3 ml-5">{$_("アカウントをお持ちの方は")}</span>
       {/if}
-      <a
-        class="button nav-button"
-        href="/login"
-      >
+      <a class="button nav-button" href="/login">
         {$_("ログイン")}
       </a>
     {/if}

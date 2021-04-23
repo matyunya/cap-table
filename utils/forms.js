@@ -46,9 +46,8 @@ export const passwordConfirmRules = [
 ];
 
 export function scrollToError() {
-  const el = document.querySelector(".error");
+  const el = document.querySelector("label.error");
   if (el) {
-    el.scrollIntoView();
-    el.focus();
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 }

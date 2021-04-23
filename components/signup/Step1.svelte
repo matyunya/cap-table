@@ -1,9 +1,4 @@
-<script>
-  import { onMount } from "svelte";
-  import Fields from "/components/signup/Fields.svelte";
-  import _ from "/utils/intl.js";
-
-  import { language } from "/store.js";
+<script context="module">
   import {
     passwordRules,
     passwordConfirmRules,
@@ -12,6 +7,44 @@
   } from "/utils/forms.js";
   import { updateProfile } from "/models/profile.js";
 
+  export const fields = {
+    name: {
+      placeholder: "お名前",
+      label: "お名前",
+      required: true,
+    },
+  };
+
+  const privateFields = {
+    email: {
+      placeholder: "メールアドレス",
+      label: "メールアドレス",
+      required: true,
+    },
+    password: {
+      placeholder: "",
+      label: "パスワード",
+      type: "password",
+      required: true,
+      validate: passwordRules,
+    },
+    confirm: {
+      placeholder: "",
+      label: "パスワード（確認）",
+      type: "password",
+      required: true,
+      validate: passwordConfirmRules,
+    },
+  };
+</script>
+
+<script>
+  import { onMount } from "svelte";
+  import Fields from "/components/signup/Fields.svelte";
+  import _ from "/utils/intl.js";
+
+  import { language } from "/store.js";
+
   const { userId } = require("/index.ellx");
 
   let data = {};
@@ -19,7 +52,7 @@
   let ok = false;
 
   function signUp() {
-    [ok, errors] = validate(data, fields);
+    [ok, errors] = validate(data, { ...fields, ...privateFields });
     if (ok) {
       window.ellx.login({ email: data.email, language: $language });
       // todo: set password from this page
@@ -48,33 +81,6 @@
 
   export let label = "登録する";
 
-  const fields = {
-    name: {
-      placeholder: "お名前",
-      label: "お名前",
-      required: true,
-    },
-    email: {
-      placeholder: "メールアドレス",
-      label: "メールアドレス",
-      required: true,
-    },
-    password: {
-      placeholder: "",
-      label: "パスワード",
-      type: "password",
-      required: true,
-      validate: passwordRules,
-    },
-    confirm: {
-      placeholder: "",
-      label: "パスワード（確認）",
-      type: "password",
-      required: true,
-      validate: passwordConfirmRules,
-    },
-  };
-
   let submitted = false;
 </script>
 
@@ -91,7 +97,7 @@
   <button class="button w-full">{$_("Googleアカウントで登録")}</button>
   <hr class="my-8" />
   <form class="flex-auto dark:text-white">
-    <Fields bind:data bind:errors {fields} />
+    <Fields bind:data bind:errors fields={{ ...fields, ...privateFields }} />
 
     <div class="flex flex-row justify-evenly">
       <a href="rules" class="a text-xs">{$_("利用規約")}</a>
