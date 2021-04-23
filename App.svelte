@@ -9,9 +9,14 @@
   import SignUpPage from "/pages/SignUpPage.svelte";
   import LoginPage from "/pages/LoginPage.svelte";
   import PasswordRecoveryPage from "/pages/PasswordRecoveryPage.svelte";
+  import PasswordResetPage from "/pages/PasswordResetPage.svelte";
+  import PlanPage from "/pages/PlanPage.svelte";
+  import CalcPage from "/pages/CalcPage.svelte";
+  import TutorialPage from "/pages/TutorialPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Nav from "/components/Nav.svelte";
+  import ContextMenu from "/components/ui/ContextMenu.svelte";
   import { store } from "/store.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/pages/CapTableListPage.svelte";
@@ -30,8 +35,9 @@
     const { apply, ...hl } = headlong({ classes });
     apply(
       ".button",
-      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6"
+      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6 text-center"
     );
+    apply(".nav-button", "h-6 p-1 text-xs mt-0 mb-0 mr-0");
 
     window.hl = hl;
   });
@@ -45,12 +51,16 @@
 
 <Nav bind:dark {logout} />
 
+<ContextMenu />
+
 {#if $route === "/"}
   <HomePage />
 {:else if $route === "/dashboard"}
   <DashboardPage />
 {:else if $route === "/docs"}
   <CapTableListPage />
+{:else if $route && $route.startsWith("/docs")}
+  <Sheet />
 {:else if $route === "/profile"}
   <EditProfilePage />
 {:else if $route === "/404"}
@@ -59,12 +69,20 @@
   </div>
 {:else if $route === "/forgot"}
   <PasswordRecoveryPage />
+{:else if $route === "/plan"}
+  <PlanPage />
+{:else if $route === "/calc"}
+  <CalcPage />
+{:else if $route === "/reset"}
+  <PasswordResetPage />
 {:else if $route === "/login"}
   <LoginPage />
+{:else if $route === "/tutorial"}
+  <TutorialPage />
 {:else if $route && $route.includes("signup")}
   <SignUpPage />
 {:else}
-  <Sheet />
+  Not found
 {/if}
 
 <style>

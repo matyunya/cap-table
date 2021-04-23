@@ -21,7 +21,7 @@
   let node;
   const activeId = writable();
 
-  export async function onClickActivator({ pageX, pageY, ...params }) {
+  export async function onClickActivator({ pageX, pageY }) {
     await tick();
     if (!node) return;
 

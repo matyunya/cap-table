@@ -17,6 +17,7 @@
     userId,
     appId,
     route,
+    profile,
   } = require("/index.ellx");
 
   const languages = [
@@ -49,10 +50,16 @@
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
-<nav class="w-screen h-10 flex flex-row">
+<nav class="w-screen h-10 flex flex-row px-8">
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30"
   >
+    {#if $route && !$route.startsWith("/docs/")}
+      <a href="/" class="font-bold tracking-wide text-base mr-4">Capital Dash</a>
+      <a class="mx-2 font-mono" href="/docs">{$_("資本政策")}</a>
+      <a class="mx-2 font-mono" href="/plan">{$_("事業計画")}</a>
+      <a class="mx-2 font-mono" href="/calc">{$_("株価算定")}</a>
+    {/if}
     {#if routeName($route)}
       <a
         href="/docs"
@@ -99,24 +106,35 @@
       options={languages}
     />
     {#if $isAuthenticated}
-      <a
-        class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        href="profile"
-      >
-        {$_("プロフィール")}
-      </a>
       <button
-        class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
-        on:click={logout}
+        on:click={(e) =>
+          openContextMenu(
+            [
+              {
+                text: "登録情報確認・変更",
+                cb: () => window.ellx.router.go("/profile"),
+              },
+              {
+                text: "パスワード再設定",
+                cb: () => window.ellx.router.go("/reset"),
+              },
+              {
+                text: "ログアウト",
+                cb: logout,
+              },
+            ],
+            e
+          )}
+        class="button nav-button truncate w-16"
       >
-        {$_("ログアウト")}
+        {$profile.name}
       </button>
     {:else}
       {#if $route && $route.startsWith("/signup")}
         <span>{$_("アカウントをお持ちの方は")}</span>
       {/if}
       <a
-        class="rounded text-light-blue-500 hover:ring-1 ring-light-blue-500 cursor-pointer mx-1 px-3 sm:px-1"
+        class="button nav-button"
         href="/login"
       >
         {$_("ログイン")}

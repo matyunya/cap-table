@@ -2,9 +2,7 @@
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import Round, { calculateWidth } from "/components/sheet/Round.svelte";
   import { onMount } from "svelte";
-  import ContextMenu, {
-    openContextMenu,
-  } from "/components/ui/ContextMenu.svelte";
+  import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import Icon from "/components/ui/Icon.svelte";
   import _ from "/utils/intl.js";
   import {
@@ -29,16 +27,19 @@
     docId,
   } = require("/index.ellx");
 
-  onMount(() => sheetChanged.subscribe((v) => {
-    v && v === docId.get() && !v.startsWith("@@io.ellx.STALE") && updateLastViewed()
-  }));
+  onMount(() =>
+    sheetChanged.subscribe((v) => {
+      v &&
+        v === docId.get() &&
+        !v.startsWith("@@io.ellx.STALE") &&
+        updateLastViewed();
+    })
+  );
 </script>
 
 <div
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-200 dark:via-gray-800 to-warm-gray-100 dark:to-warm-gray-800"
 />
-
-<ContextMenu />
 
 {#if $activeSheet}
   <div

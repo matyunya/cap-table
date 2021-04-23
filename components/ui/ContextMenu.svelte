@@ -1,5 +1,4 @@
 <script context="module">
-  import { tick } from "svelte";
   import { writable } from "svelte/store";
   import Menu, { onClickActivator } from './Menu.svelte';
   import _ from "/utils/intl.js";

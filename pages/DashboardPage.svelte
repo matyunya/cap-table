@@ -10,7 +10,7 @@
 </script>
 
 <main
-  class="relative block text-sm flex items-center justify-center max-w-5xl mx-auto pt-12 flex flex-col min-h-screen"
+  class="relative block text-sm flex max-w-5xl mx-auto pt-12 flex flex-col min-h-screen"
 >
   {#if $profile}
     <div
