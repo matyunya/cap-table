@@ -25,7 +25,7 @@
   >
     {#each $documentIds as [id, title, lastViewed]}
       <li
-        class="relative cursor-pointer h-32 w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
+        class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer h-32 w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
         on:click={() =>
           window.ellx.router.go(`/docs/${$userId}/${$appId}/${id}`)}
       >
