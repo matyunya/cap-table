@@ -2,7 +2,7 @@
   import _ from "/utils/intl.js";
   export let title = "Capital Dash";
   import Spinner from "/components/ui/Spinner.svelte";
-  import { authStatus } from "/index.ellx";
+  const { authStatus } = require("/index.ellx");
 
   export let loading = false;
   export let success = false;
