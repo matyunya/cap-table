@@ -1,11 +1,14 @@
 <script>
   import { onMount } from "svelte";
   import _ from "/utils/intl.js";
-  const { isAuthenticated } = require("/index.ellx");
+  const { isAuthenticated, route } = require("/index.ellx");
 
   onMount(() =>
     isAuthenticated.subscribe(
-      (v) => v === true && window.ellx.router.go("/dashboard")
+      (v) =>
+        v === true &&
+        route.get() !== "/signup/2" &&
+        window.ellx.router.go("/dashboard")
     )
   );
 </script>
