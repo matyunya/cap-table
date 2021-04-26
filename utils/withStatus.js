@@ -1,30 +1,15 @@
-export default function statusCell(getter) {
-  function get() {
-    try {
-      const val = getter();
-      if (typeof val === "string" && val.startsWith("@@io.ellx.STALE")) {
-        return ["...", "stale"];
-      }
+const cells = require("/index.ellx");
 
-      console.log('CALLLEDTTT?', typeof val, val instanceof Error, { val });
-
-      if (val instanceof Error) {
-        return [val, "error"];
-      }
-
-      return [val, "success"];
-    } catch (e) {
-      return [e, "error"];
+export default cellName => {
+  const subs = {
+    subscribe: subscriber => {
+      cells[cellName].subscribe(val => {
+        let status = "success";
+        if (val instanceof Error) status = "error";
+        if (typeof val === "string" && val.startsWith("@@io.ellx.STALE")) status = "stale";
+        subscriber(status);
+      });
     }
-  }
-
-  return {
-    get,
-    subscribe(subscriber) {
-      const val = get();
-      subscriber(val);
-
-      return () => { }
-    }
-  }
+  };
+  return () => subs;
 }

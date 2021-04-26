@@ -17,15 +17,16 @@
         window.ellx.router.go("/dashboard")
     )
   );
+  let loading;
 </script>
 
-<Wrapper>
+<Wrapper {loading}>
   <Stepper n={$regStep} />
   {#if $regStep === 1}
-    <Step1 />
+    <Step1 bind:loading />
   {:else if $regStep === 2}
-    <Step2 onSave={() => window.ellx.router.go("/signup/3")} />
+    <Step2 bind:loading onSave={() => window.ellx.router.go("/signup/3")} />
   {:else if $regStep === 3}
-    <Step3 onSave={() => window.ellx.router.go("/docs")} />
+    <Step3 bind:loading onSave={() => window.ellx.router.go("/docs")} />
   {/if}
 </Wrapper>

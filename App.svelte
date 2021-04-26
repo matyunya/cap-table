@@ -78,7 +78,7 @@
   <DashboardPage />
 {:else if $route === "/docs"}
   <CapTableListPage />
-{:else if $route && $route.startsWith("/docs")}
+{:else if $route && typeof $route === "string" && $route.startsWith("/docs")}
   <Sheet />
 {:else if $route === "/profile"}
   <EditProfilePage />
@@ -100,7 +100,7 @@
   <TutorialPage />
 {:else if $route === "/feedback"}
   <FeedbackPage />
-{:else if $route && $route.includes("signup")}
+{:else if $route && typeof $route === "string" && $route.includes("signup")}
   <SignUpPage />
 {:else}
   Not found

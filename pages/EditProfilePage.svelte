@@ -26,23 +26,29 @@
     )
   );
   let errors = {};
-  let ok = false;
+  let ok = false, loading, success;
 
-  function onSubmit() {
-    [ok, errors] = validate(data, {
-      ...userFields,
-      ...companyFields,
-      ...planFields,
-    });
-    if (ok) {
-      updateProfile(data);
-    } else {
-      scrollToError();
+  async function onSubmit() {
+    try {
+      loading = true;
+      [ok, errors] = validate(data, {
+        ...userFields,
+        ...companyFields,
+        ...planFields,
+      });
+      if (ok) {
+        await updateProfile(data);
+        success = true;
+      } else {
+        scrollToError();
+      }
+    } finally {
+      loading = false;
     }
   }
 </script>
 
-<Wrapper title="登録情報確認・変更">
+<Wrapper {loading} {success} title="登録情報確認・変更">
   {#if $profileReady && Array.isArray(data.projectedInvestmentTypes)}
     <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
       {$_("ユーザー情報")}

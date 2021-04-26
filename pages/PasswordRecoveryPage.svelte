@@ -10,18 +10,25 @@
     },
   };
 
-  let data = {};
-  let errors = {};
+  let data = {},
+    errors = {},
+    success,
+    loading;
 
-  function resetPassword() {
-    window.ellx.login.withLink({
-      email: data.email,
-      redirectUrl: "/reset"
-    });
+  async function resetPassword() {
+    try {
+      await window.ellx.login.withLink({
+        email: data.email,
+        redirectUrl: "/reset",
+      });
+      success = true;
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
-<Wrapper>
+<Wrapper {loading} {success}>
   <div class="mb-3">
     {$_(`パスワードをお忘れの方へ、パスワードの再発行を行います。メールアドレスをご入力の上、
     「パスワードを再発行する」ボタンを押して下さい。`)}

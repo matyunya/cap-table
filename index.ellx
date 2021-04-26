@@ -3,7 +3,9 @@ nodes:
   $1 = store
   $3 = ellx.login()
   docs = store.documents
+  getAuth = withStatus("auth")
   auth = ellx.auth
+  authStatus = getAuth()
   profile = store.profile
   profileReady = profile.owner === userId
   userId = !authError ? (auth ? auth.userId : null) : null
@@ -60,6 +62,9 @@ layout:
   [,,
     {
       "value": "Documents:"
+    },,,,,,,,
+    {
+      "value": "Auth status:"
     }
   ],
   [,,
@@ -75,6 +80,9 @@ layout:
     },,,,,,
     {
       "value": "Current user:"
+    },,
+    {
+      "node": "getAuth"
     }
   ],
   [,,,,,,,,
@@ -83,9 +91,12 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 4,
+        "height": 5,
         "width": 1
       }
+    },,
+    {
+      "node": "authStatus"
     }
   ],,,,,
   [,

@@ -1,6 +1,11 @@
 <script>
   import _ from "/utils/intl.js";
   export let title = "Capital Dash";
+  import Spinner from "/components/ui/Spinner.svelte";
+  import { authStatus } from "/index.ellx";
+
+  export let loading = false;
+  export let success = false;
 </script>
 
 <div
@@ -15,6 +20,23 @@
         {$_(title)}
       </h1>
     {/if}
-    <slot />
+    {#if success}
+      <slot name="success">
+        <div
+          class="flex items-center justify-center text-green-500 font-medium text-lg tracking-wide font-mono"
+        >
+          {$_("成功しました")}
+        </div>
+      </slot>
+      <a href="/" class="button w-full mt-12 block">
+        {$_("topへ戻る")}
+      </a>
+    {:else if $authStatus === "stale" || loading}
+      <div class="flex w-full h-full items-center justify-center">
+        <Spinner />
+      </div>
+    {:else}
+      <slot />
+    {/if}
   </div>
 </div>

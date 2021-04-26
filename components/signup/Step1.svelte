@@ -50,20 +50,26 @@
   let data = {};
   let errors = {};
   let ok = false;
+  export let loading;
 
-  function signUp() {
-    [ok, errors] = validate(data, { ...fields, ...privateFields });
-    if (ok) {
-      window.ellx.login.withLink({
-        email: data.email,
-        password: data.password,
-        language: $language,
-        redirectUrl: "/signup/2",
-      });
-      // todo: save name to ls from this page
-      submitted = true;
-    } else {
-      scrollToError();
+  async function signUp() {
+    try {
+      loading = true;
+      [ok, errors] = validate(data, { ...fields, ...privateFields });
+      if (ok) {
+        window.ellx.login.withLink({
+          email: data.email,
+          password: data.password,
+          language: $language,
+          redirectUrl: "/signup/2",
+        });
+        // todo: save name to ls from this page
+        submitted = true;
+      } else {
+        scrollToError();
+      }
+    } finally {
+      loading = false;
     }
   }
 
@@ -99,7 +105,7 @@
   <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
     {$_("ユーザー登録")}
   </h2>
-  <button on:click={loginWithGoogle} class="button w-full">
+  <button on:click={loginWithGoogle("/signup/2")} class="button w-full">
     {$_("Googleアカウントで登録")}
   </button>
   <hr class="my-8" />

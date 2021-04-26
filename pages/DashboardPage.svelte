@@ -16,7 +16,9 @@
     <div
       class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-4 rounded w-full flex justify-between items-center"
     >
-      <span>{$profile.name}{$_("様 はじめまして")}</span>
+      <span class:opacity-0={!$profile.name}>
+        {$profile.name}{$_("様 はじめまして")}
+      </span>
       <div class="flex flex-row items-center justify-center space-x-4">
         <a
           href="/tutorial"

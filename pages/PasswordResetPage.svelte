@@ -29,18 +29,26 @@
   let data = {};
   let errors = {};
   let ok = false;
+  let loading = false;
+  let success = false;
 
-  function resetPassword() {
-    [ok, errors] = validate(data, fields);
-    if (ok) {
-      window.ellx.login.setPassword({ newPassword: data.password });
-    } else {
-      scrollToError();
+  async function resetPassword() {
+    try {
+      [ok, errors] = validate(data, fields);
+      if (ok) {
+        loading = true;
+        await window.ellx.login.setPassword({ newPassword: data.password });
+        success = true;
+      } else {
+        scrollToError();
+      }
+    } finally {
+      loading = false;
     }
   }
 </script>
 
-<Wrapper title="パスワード再設定">
+<Wrapper {loading} {success} title="パスワード再設定">
   <Fields {fields} bind:data bind:errors />
   <div class="text-center mt-6">
     <button

@@ -35,6 +35,4 @@ export function updateProfile(data, options = { merge: true }) {
     .set(data, options);
 }
 
-export async function loginWithGoogle() {
-  return window.ellx.login({ withGoogle: true });
-}
+export const loginWithGoogle = (redirectUrl = "/") => () => window.ellx.login({ withGoogle: true, redirectUrl });

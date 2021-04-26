@@ -5,7 +5,7 @@
   import _ from "/utils/intl.js";
   import { validate, scrollToError, length } from "/utils/forms.js";
   import { loginWithGoogle } from "/models/profile.js";
-  const { auth, isAuthenticated } = require("/index.ellx");
+  import { auth, isAuthenticated } from "/index.ellx";
 
   const fields = {
     email: {
@@ -48,7 +48,7 @@
     {$_("ログイン")}
   </h2>
   <button
-    on:click={loginWithGoogle}
+    on:click={loginWithGoogle()}
     class="button w-full"
   >
     {$_("Googleアカウントでログイン")}

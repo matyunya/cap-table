@@ -70,19 +70,25 @@
   import { validate, scrollToError } from "/utils/forms.js";
 
   export let onSave = () => {};
+  export let loading;
 
   let data = {
     projectedInvestmentTypes: [],
   };
   let errors = {};
 
-  function onSubmit() {
-    [ok, errors] = validate(data, fields);
-    if (ok) {
-      updateProfile(data);
-      onSave();
-    } else {
-      scrollToError();
+  async function onSubmit() {
+    try {
+      loading = true;
+      [ok, errors] = validate(data, fields);
+      if (ok) {
+        updateProfile(data);
+        onSave();
+      } else {
+        scrollToError();
+      }
+    } finally {
+      loading = false;
     }
   }
 </script>

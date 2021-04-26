@@ -34,7 +34,7 @@
   function routeName(r) {
     if (!r) return false;
 
-    if (r.startsWith("/docs/")) {
+    if (typeof r === "string" && r.startsWith("/docs/")) {
       return "資本政策";
     }
   }
