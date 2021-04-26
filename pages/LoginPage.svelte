@@ -68,6 +68,6 @@
     </a>
   </div>
   {#if $auth instanceof Error}
-    <div class="text-error-500 w-full text-center mt-8">{$auth}</div>
+    <div class="text-red-500 w-full text-center mt-8">{$auth}</div>
   {/if}
 </Wrapper>
