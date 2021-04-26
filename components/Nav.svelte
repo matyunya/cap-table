@@ -5,7 +5,6 @@
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import { getDocMenuItems } from "/utils/menus.js";
-  import Icon from "/components/ui/Icon.svelte";
   import FounderShare from "/components/FounderShare.svelte";
 
   export let logout = () => {};
@@ -47,28 +46,37 @@
 
 <nav class="w-screen h-10 flex flex-row px-8 text-gray-600 dark:text-gray-200">
   <div
-    class="flex items-baseline h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
+    class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
   >
     {#if $route && !$route.startsWith("/docs/")}
       <a
         href="/"
-        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white"
+        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded p-1 transition duration-300"
       >
         Capital Dash
       </a>
       {#if $isAuthenticated && !$route.startsWith("/signup")}
         <a
           class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/docs">{$_("資本政策")}</a
+          href="/docs"
+          class:font-bold={$route === "/docs"}
         >
+          {$_("資本政策")}
+        </a>
         <a
           class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/plan">{$_("事業計画")}</a
+          href="/plan"
+          class:font-bold={$route === "/plan"}
         >
+          {$_("事業計画")}
+        </a>
         <a
           class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/calc">{$_("株価算定")}</a
+          href="/calc"
+          class:font-bold={$route === "/calc"}
         >
+          {$_("株価算定")}
+        </a>
       {/if}
     {/if}
     {#if routeName($route)}
@@ -90,7 +98,7 @@
       />
       <button
         title="Dark mode toggle"
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-base dark:ring-gray-100 ring-gray-600"
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-base dark:ring-gray-100 ring-gray-600 p-1"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
         ☰
@@ -155,15 +163,15 @@
             ],
             e
           )}
-        class="button nav-button truncate w-16 mx-3"
+        class="button nav-button truncate w-24 mx-3"
       >
-        {$profile.name}
+        {$profile.name || $_("プロフィール")}
       </button>
     {:else}
       {#if $route && $route.startsWith("/signup")}
-        <span class="mr-3 ml-5">{$_("アカウントをお持ちの方は")}</span>
+        <span class="ml-5">{$_("アカウントをお持ちの方は")}</span>
       {/if}
-      <a class="button nav-button" href="/login">
+      <a class="ml-5 button nav-button" href="/login">
         {$_("ログイン")}
       </a>
     {/if}

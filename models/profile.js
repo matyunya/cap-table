@@ -1,6 +1,5 @@
-import { store } from "/store.js";
+import { store, language, DEFAULT_LANGUAGE } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
-import { uid } from "/utils/index.js";
 const { appId, userId } = require("/index.ellx");
 
 function getProfileRef() {
@@ -18,7 +17,10 @@ export function connect() {
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? updateProfile({ owner: userId.get() })
+          ? updateProfile({
+            owner: userId.get(),
+            language: language.get() || DEFAULT_LANGUAGE
+          })
           : store.commit(SYNC_PROFILE, querySnapshot);
       }
     );
@@ -31,4 +33,10 @@ export function updateProfile(data, options = { merge: true }) {
     .collection('profiles')
     .doc(userId.get())
     .set(data, options);
+}
+
+export async function loginWithGoogle() {
+  const res = await window.ellx.login({ withGoogle: true });
+
+  console.log({ res }) // TODO: save name
 }

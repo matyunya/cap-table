@@ -1,11 +1,18 @@
 <script>
+  import { onMount } from "svelte";
   import Wrapper from "/components/signup/Wrapper.svelte";
   import Stepper from "/components/Stepper.svelte";
   import Step1 from "/components/signup/Step1.svelte";
   import Step2 from "/components/signup/Step2.svelte";
   import Step3 from "/components/signup/Step3.svelte";
 
-  const { regStep } = require("/index.ellx");
+  const { regStep, isAuthenticated } = require("/index.ellx");
+
+  onMount(() =>
+    isAuthenticated.subscribe(
+      (v) => v === true && window.ellx.router.go("/dashboard")
+    )
+  );
 </script>
 
 <Wrapper>

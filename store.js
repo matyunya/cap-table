@@ -13,7 +13,7 @@ import {
 
 const { docId, userId, appId } = require("/index.ellx");
 
-const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
+export const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
 
 const defaultNames = {
   docTitle: {
@@ -93,7 +93,9 @@ export const language = select(store, () => ["profile", "language"]);
 
 export const userProfile = select(store, () => ["profile"]);
 
-export const documentIds = derived(store, ({ documents }) => [...documents].map(([id, { title, lastViewed }]) => [id, title, lastViewed]));
+export const documentIds = derived(store, ({ documents }) => [...documents]
+  .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
+  .sort(([, , a], [, , b]) => b - a));
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) => update("rounds", roundId, "investments", investorId, ({ commonShares = 0, votingShares = 0, ...params } = {}) => {

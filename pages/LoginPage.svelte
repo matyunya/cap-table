@@ -4,6 +4,7 @@
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
   import { validate, scrollToError, length } from "/utils/forms.js";
+  import { loginWithGoogle } from "/models/profile.js";
   const { auth, isAuthenticated } = require("/index.ellx");
 
   const fields = {
@@ -44,7 +45,12 @@
   <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
     {$_("ログイン")}
   </h2>
-  <button class="button w-full">{$_("Googleアカウントでログイン")}</button>
+  <button
+    on:click={loginWithGoogle}
+    class="button w-full"
+  >
+    {$_("Googleアカウントでログイン")}
+  </button>
   <hr class="my-8" />
   <Fields {fields} bind:data bind:errors />
   <div class="text-center mt-6">

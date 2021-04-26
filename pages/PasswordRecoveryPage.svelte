@@ -14,17 +14,17 @@
   let errors = {};
 
   function resetPassword() {
-    window.ellx.login({
-      email
+    window.ellx.login.withLink({
+      email: data.email,
+      redirectUrl: "/reset"
     });
-    // TODO scrim and such
   }
 </script>
 
 <Wrapper>
   <div class="mb-3">
-    パスワードをお忘れの方へ、パスワードの再発行を行います。メールアドレスをご入力の上、
-    「パスワードを再発行する」ボタンを押して下さい。
+    {$_(`パスワードをお忘れの方へ、パスワードの再発行を行います。メールアドレスをご入力の上、
+    「パスワードを再発行する」ボタンを押して下さい。`)}
   </div>
   <Fields {fields} bind:data bind:errors />
   <div class="text-center mt-6">

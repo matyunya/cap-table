@@ -125,6 +125,19 @@ const translations = {
   "グループ追加": {
     en: "Add group",
   },
+  "設定する": {
+    en: "Update",
+  },
+  [`パスワードをお忘れの方へ、パスワードの再発行を行います。メールアドレスをご入力の上、
+    「パスワードを再発行する」ボタンを押して下さい。`]: {
+    en: "Please enter your email to reset password."
+  },
+  "パスワードを再発行する": {
+    en: "Send reset password link"
+  },
+  "ログインへ戻る": {
+    en: "Return to login"
+  },
   "投資家追加": {
     en: "Add investor",
   },
@@ -245,6 +258,27 @@ const translations = {
   "事業計画": {
     en: "Business plan"
   },
+  "プロフィール": {
+    en: "Profile",
+  },
+  "新しいパスワード": {
+    en: "New password"
+  },
+  "新しいパスワード（確認）": {
+    en: "Confirm new password"
+  },
+  "お問い合わせ内容": {
+    en: "Subject"
+  },
+  "選択してください": {
+    en: "Select an option"
+  },
+  "お問い合わせ内容の詳細": {
+    en: "Body"
+  },
+  "送信する": {
+    en: "Submit"
+  },
   "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。": {
     en: "Thank you for using Capital Dash. We'd love to hear from you!"
   },
@@ -285,6 +319,18 @@ const translations = {
         本ツールでは、簡単３ステップで、資金調達に必要な準備（資本政策表作成、株価算定）ができます。<br />
         時間とチャンスを無駄にしないように、投資家に会う前にしっかりと理論武装しましょう。`]: {
     en: "lead text"
+  },
+  "お問い合わせ内容を入力する": {
+    en: "Your message"
+  },
+  "プロダクトの不具合": {
+    en: "Report a problem"
+  },
+  "資金調達のご相談": {
+    en: "Advice on financing plan"
+  },
+  "その他": {
+    en: "Other"
   },
   [`ご登録ありがとうございます。<br />
   本人認証のために、メールを送信しました。<br />

@@ -10,12 +10,6 @@
   } from "/utils/forms.js";
 
   const fields = {
-    currentPassword: {
-      placeholder: "",
-      label: "現在のパスワード",
-      required: true,
-      type: "password",
-    },
     password: {
       placeholder: "",
       label: "新しいパスワード",
@@ -39,8 +33,7 @@
   function resetPassword() {
     [ok, errors] = validate(data, fields);
     if (ok) {
-      // set new password
-      // window.ellx.login({ email: data.email });
+      window.ellx.login.setPassword({ password: data.password });
     } else {
       scrollToError();
     }

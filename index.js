@@ -16,6 +16,7 @@ export { calculate, groupInvestors } from "/utils/selectors.js";
 export { connect, getDoc } from "/models/docs.js";
 export { connect as connectProfile } from "/models/profile.js";
 export { store } from "/store.js";
+export { default as withStatus } from "/utils/withStatus.js";
 
 export const app = ellxify(App);
 

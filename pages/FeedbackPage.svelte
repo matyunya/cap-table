@@ -23,7 +23,9 @@
 
 <Wrapper title="お問い合わせ">
   <div class="mb-8">
-    {$_("弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。")}
+    {$_(
+      "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。"
+    )}
   </div>
   <Select
     label="お問い合わせ内容"
@@ -39,7 +41,7 @@
   {/if}
   <Label class="mt-8" label="お問い合わせ内容の詳細" />
   <textarea
-    placeholder="お問い合わせ内容を入力する"
+    placeholder={$_("お問い合わせ内容を入力する")}
     rows="10"
     class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
   />

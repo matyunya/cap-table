@@ -5,7 +5,7 @@
     validate,
     scrollToError,
   } from "/utils/forms.js";
-  import { updateProfile } from "/models/profile.js";
+  import { updateProfile, loginWithGoogle } from "/models/profile.js";
 
   export const fields = {
     name: {
@@ -54,8 +54,13 @@
   function signUp() {
     [ok, errors] = validate(data, { ...fields, ...privateFields });
     if (ok) {
-      window.ellx.login({ email: data.email, language: $language });
-      // todo: set password from this page
+      window.ellx.login.withLink({
+        email: data.email,
+        password: data.password,
+        language: $language,
+        redirectUrl: "/signup/2",
+      });
+      // todo: save name to ls from this page
       submitted = true;
     } else {
       scrollToError();
@@ -94,7 +99,9 @@
   <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
     {$_("ユーザー登録")}
   </h2>
-  <button class="button w-full">{$_("Googleアカウントで登録")}</button>
+  <button on:click={loginWithGoogle} class="button w-full">
+    {$_("Googleアカウントで登録")}
+  </button>
   <hr class="my-8" />
   <form class="flex-auto dark:text-white">
     <Fields bind:data bind:errors fields={{ ...fields, ...privateFields }} />

@@ -1,4 +1,5 @@
 <script>
+  import _ from "/utils/intl.js";
   import Label from "/components/ui/Label.svelte";
   export let label;
   export let placeholder;
@@ -28,11 +29,11 @@
   class:dark:bg-gray-800={!error}
   class:dark:text-gray-200={!error}
   class={classes}
-  {placeholder}
+  placeholder={$_(placeholder)}
 >
   {#each withEmpty as [val, text]}
     <option value={val}>
-      {text}
+      {$_(text)}
     </option>
   {/each}
 </select>

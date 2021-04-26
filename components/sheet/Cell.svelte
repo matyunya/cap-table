@@ -16,7 +16,6 @@
   import { uid } from "/utils/index.js";
   import { createEventDispatcher } from "svelte";
 
-
   export let id = uid();
   export let value;
   export let editable = true;
@@ -61,8 +60,10 @@
 <div
   data-id={id}
   disabled={!editable}
-  class:dark:text-light-blue-200={editable}
-  class:text-light-blue-600={editable}
+  class:dark:text-light-blue-200={editable &&
+    !($$props.class || "").match(/text-[a-zA-Z0-9]{1,10}-/)}
+  class:text-light-blue-600={editable &&
+    !($$props.class || "").match(/text-[a-zA-Z0-9]{1,10}-/)}
   class:ring-2={$editing === id}
   class:hover:ring-light-blue-400={$editing === id}
   class:hover:ring-1={$editing !== id && editable}
