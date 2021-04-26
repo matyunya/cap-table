@@ -33,7 +33,7 @@
   function resetPassword() {
     [ok, errors] = validate(data, fields);
     if (ok) {
-      window.ellx.login.setPassword({ password: data.password });
+      window.ellx.login.setPassword({ newPassword: data.password });
     } else {
       scrollToError();
     }

@@ -98,7 +98,7 @@
       />
       <button
         title="Dark mode toggle"
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-base dark:ring-gray-100 ring-gray-600 p-1"
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
         ☰
