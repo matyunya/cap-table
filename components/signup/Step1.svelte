@@ -45,7 +45,7 @@
 
   import { language, DEFAULT_LANGUAGE } from "/store.js";
 
-  const { userId } = require("/index.ellx");
+  const { userId, auth } = require("/index.ellx");
 
   let data = {};
   let errors = {};
@@ -83,7 +83,7 @@
       ) {
         updateProfile({
           language: $language || DEFAULT_LANGUAGE,
-          name: data.name || "",
+          name: data.name || $auth.name || "",
         });
         window.ellx.router.go("/signup/2");
       }
