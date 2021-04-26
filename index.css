@@ -475,7 +475,6 @@
 
 .a {
   color: #1d8ef1;
-  color: rgba(29, 142, 241, var(--tw-text-opacity));
   transition-property: background-color, border-color, color, fill, stroke,
     opacity, box-shadow, transform;
   transition-duration: 0.1s;
