@@ -10,5 +10,6 @@ export function addFeedback(data) {
     .set({
       ...data,
       userId: userId.get(),
+      owner: userId.get(),
     });
 }

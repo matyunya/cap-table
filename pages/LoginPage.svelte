@@ -24,11 +24,13 @@
 
   let data = {};
   let errors = {};
+  let submitted = false;
 
   function login() {
     [ok, errors] = validate(data, fields);
     if (ok) {
       window.ellx.login(data);
+      submitted = true;
     } else {
       scrollToError();
     }
@@ -67,7 +69,7 @@
       {$_("パスワードをお忘れの方")}
     </a>
   </div>
-  {#if $auth instanceof Error}
+  {#if submitted && $auth instanceof Error}
     <div class="text-red-500 w-full text-center mt-8">{$auth}</div>
   {/if}
 </Wrapper>

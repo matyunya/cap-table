@@ -43,6 +43,10 @@
       "bg-gray-500 shadow-lg"
     );
     apply(
+      ".button:disabled",
+      "bg-gray-300 text-gray-400 cursor-not-allowed"
+    );
+    apply(
       ".button:active",
       "ring-2 bg-gray-400"
     );

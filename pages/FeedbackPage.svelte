@@ -8,6 +8,7 @@
 
   let subject = "",
     body = "",
+    submitted = false,
     other = "";
 
   const options = [
@@ -17,35 +18,54 @@
   ].map((i) => [i, i]);
 
   function onSubmit() {
+    console.log("ASD");
     addFeedback({ subject, body, other });
+    submitted = true;
   }
 </script>
 
 <Wrapper title="お問い合わせ">
-  <div class="mb-8">
-    {$_(
-      "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。"
-    )}
-  </div>
-  <Select
-    label="お問い合わせ内容"
-    on:change={({ target }) => (subject = target.value)}
-    {options}
-  />
-  {#if subject === "その他"}
-    <Input
-      required={false}
-      placeholder="​その他の詳細"
-      on:change={({ target }) => (other = target.value)}
+  {#if submitted}
+    <h2 class="text-center font-bold text-xl mb-8">
+      {$_("お問い合わせ送信完了")}
+    </h2>
+    <div class="mb-8 text-center">
+      {@html $_(`お問い合わせいただきありがとうございます。
+      お送りいただきました内容を確認させていただき、
+      順次ご回答させていただきます。<br />
+
+      今後ともCapital Dashをよろしくお願いいたします。`)}
+    </div>
+    <a href="/" class="button w-full mt-12 block">
+      {$_("topへ戻る")}
+    </a>
+  {:else}
+    <div class="mb-8">
+      {$_(
+        "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。"
+      )}
+    </div>
+    <Select
+      label="お問い合わせ内容"
+      on:change={({ target }) => (subject = target.value)}
+      {options}
     />
+    {#if subject === "その他"}
+      <Input
+        required={false}
+        placeholder="​その他の詳細"
+        on:change={({ target }) => (other = target.value)}
+      />
+    {/if}
+    <Label class="mt-8" label="お問い合わせ内容の詳細" />
+    <textarea
+      placeholder={$_("お問い合わせ内容を入力する")}
+      rows="10"
+      on:input={({ target }) => (body = target.value)}
+      class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
+    />
+    <button disabled={!body} on:click={onSubmit} class="button w-full mt-12">
+      {$_("送信する")}
+    </button>
   {/if}
-  <Label class="mt-8" label="お問い合わせ内容の詳細" />
-  <textarea
-    placeholder={$_("お問い合わせ内容を入力する")}
-    rows="10"
-    class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
-  />
-  <button disabled={!body} on:click={onSubmit} class="button w-full mt-12">
-    {$_("送信する")}
-  </button>
 </Wrapper>
