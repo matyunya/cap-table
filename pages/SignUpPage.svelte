@@ -6,11 +6,14 @@
   import Step2 from "/components/signup/Step2.svelte";
   import Step3 from "/components/signup/Step3.svelte";
 
-  const { regStep, isAuthenticated } = require("/index.ellx");
+  const { regStep, isAuthenticated, route } = require("/index.ellx");
 
   onMount(() =>
     isAuthenticated.subscribe(
-      (v) => v === true && window.ellx.router.go("/dashboard")
+      (v) =>
+        v === true &&
+        route.get() !== "/signup/2" &&
+        window.ellx.router.go("/dashboard")
     )
   );
 </script>
