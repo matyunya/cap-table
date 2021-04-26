@@ -43,7 +43,7 @@
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
 
-  import { language } from "/store.js";
+  import { language, DEFAULT_LANGUAGE } from "/store.js";
 
   const { userId } = require("/index.ellx");
 
@@ -76,8 +76,8 @@
         !v.startsWith("@@io.ellx.STALE")
       ) {
         updateProfile({
-          language: $language,
-          name: data.name,
+          language: $language || DEFAULT_LANGUAGE,
+          name: data.name || "",
         });
         window.ellx.router.go("/signup/2");
       }

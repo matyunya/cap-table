@@ -36,7 +36,5 @@ export function updateProfile(data, options = { merge: true }) {
 }
 
 export async function loginWithGoogle() {
-  const res = await window.ellx.login({ withGoogle: true });
-
-  console.log({ res }) // TODO: save name
+  return window.ellx.login({ withGoogle: true });
 }
