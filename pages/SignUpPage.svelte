@@ -12,7 +12,8 @@
     isAuthenticated.subscribe(
       (v) =>
         v === true &&
-        route.get() !== "/signup/2" &&
+        route.get() === "/signup/2" &&
+        route.get() === "/signup/3" &&
         window.ellx.router.go("/dashboard")
     )
   );
