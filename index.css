@@ -480,3 +480,8 @@
     opacity, box-shadow, transform;
   transition-duration: 0.1s;
 }
+
+.a:hover {
+  text-decoration: underline;
+  color: #42a6f5;
+}
