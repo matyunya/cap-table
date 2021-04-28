@@ -1,4 +1,5 @@
 import { select } from "tinyx";
+import _ from "/utils/intl.js";
 import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
@@ -6,6 +7,7 @@ import {
   RENAME_ROUND,
   UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
+  UPDATE_JKISS_STOCK_OPTIONS,
   TOGGLE_PUBLIC,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
@@ -29,7 +31,6 @@ import {
   totalSharesForInvestor,
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
-  format,
   uid,
 } from "./index.js";
 
@@ -55,6 +56,7 @@ const updateShares = type => ({ roundId, investorId, value }) => syncCurrentDoc(
 const updateInvestment = (mutation, fieldName) => ({ roundId, investorId, value }) => syncCurrentDoc(mutation, { roundId, investorId, [fieldName]: Number(value) });
 
 const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
+const updateJkissStockOptions = updateInvestment(UPDATE_JKISS_STOCK_OPTIONS, "jkissStockOptions");
 
 const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncCurrentDoc(mutation, { roundId, [fieldName]: value });
 
@@ -113,55 +115,61 @@ const colTypes = {
     label: "株式数",
     onChange: updateShares("common"),
     fn: calcCell(({ commonShares }) => commonShares || 0),
-    format: format.number.format,
+    format: "number",
   },
   shareDiff: {
     label: "株式増減",
     onChange: updateShares("common"),
     fn: calcCell(({ commonShares }) => commonShares || 0),
-    format: format.number.format,
+    format: "number",
   },
   sharesAmount: {
     label: "株式数",
     fn: calcCell(calcCommonShares),
-    format: format.number.format,
+    format: "number",
   },
   sharesPercent: {
     label: "%",
     fn: calcCell(calcSharesPerRound),
-    format: format.percent.format,
+    format: "percent",
   },
   votingShareDiff: {
     label: "潜在株式増減",
     fn: calcCell(({ votingShares }) => votingShares || 0),
     onChange: updateShares("voting"),
-    format: format.number.format,
+    format: "number",
   },
   votingSharesAmount: {
     label: "潜在株式数",
     fn: calcCell(calcCommonVotingShares),
-    format: format.number.format,
+    format: "number",
   },
   jkissShares: {
     label: "株式数",
     fn: calcCell(({ commonShares }) => commonShares || 0),
-    format: format.number.format,
+    format: "number",
   },
   jkissInvested: {
     label: "投資額",
     fn: calcCell(({ jkissInvested }) => jkissInvested || 0),
-    format: format.currency.format,
+    format: "currency",
     onChange: updateJkissInvested,
+  },
+  jkissStockOptions: {
+    label: "新株予約権個数",
+    fn: calcCell(({ jkissStockOptions }) => jkissStockOptions || 0),
+    format: "number",
+    onChange: updateJkissStockOptions,
   },
   totalSharesAmount: {
     label: "発行済株式数",
     fn: calcCell(calcTotalShares),
-    format: format.number.format,
+    format: "number",
   },
   totalSharesPercent: {
     label: "%",
     fn: calcCell(calcTotalSharesPerRound),
-    format: format.percent.format,
+    format: "percent",
   },
 };
 
@@ -176,6 +184,7 @@ const {
   totalSharesPercent,
   jkissShares,
   jkissInvested,
+  jkissStockOptions,
 } = colTypes;
 
 const foundCols = { sharesInitial, sharesPercent };
@@ -193,6 +202,7 @@ const genericCols = {
 const jkissCols = {
   jkissInvested,
   jkissShares,
+  jkissStockOptions,
 };
 
 export const roundOptions = {
@@ -215,6 +225,16 @@ export const roundOptions = {
 };
 
 export const roundTypes = Object.keys(roundOptions);
+
+function filterRoundLabels({ cols }) {
+  return Object.keys(cols).map(k => [k, _.get()(cols[k].label), cols[k].format]);
+}
+
+export const roundLabels = () => roundTypes.reduce((acc, type) => ({
+  ...acc,
+  [type]: filterRoundLabels(roundOptions[type]),
+}), {});
+
 
 function copyToClipboard(text) {
   var textArea = document.createElement("textarea");

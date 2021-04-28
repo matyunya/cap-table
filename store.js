@@ -114,6 +114,13 @@ export function UPDATE_JKISS_INVESTED({ roundId, investorId, jkissInvested }) {
   }))
 }
 
+export function UPDATE_JKISS_STOCK_OPTIONS({ roundId, investorId, jkissStockOptions }) {
+  return ({ update }) => update("rounds", roundId, "investments", investorId, (params = {}) => ({
+    ...params,
+    jkissStockOptions,
+  }))
+}
+
 export function UPDATE_VALUATION_CAP({ roundId, value }) {
   return ({ set }) => set("rounds", roundId, "valuationCap", Number(value));
 }

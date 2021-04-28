@@ -119,6 +119,9 @@ const translations = {
   "分割数": {
     en: "Split by",
   },
+  "Excel抽出": {
+    en: "Export to Excel"
+  },
   "ラウンド削除": {
     en: "Remove this round",
   },
@@ -331,6 +334,12 @@ const translations = {
   },
   "その他": {
     en: "Other"
+  },
+  "テーブル名": {
+    en: "Title"
+  },
+  "新株予約権個数": {
+    en: "#stock options"
   },
   [`ご登録ありがとうございます。<br />
   本人認証のために、メールを送信しました。<br />

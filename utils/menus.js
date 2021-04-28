@@ -9,6 +9,7 @@ import {
   uid,
   lastInvestorIdInGroup,
 } from "./index.js";
+import exportExcel from "/utils/excel.js";
 
 import {
   ADD_INVESTOR,
@@ -121,6 +122,10 @@ export const getDocMenuItems = () => [
   {
     text: "このテーブルをコピー",
     cb: () => createDocument({ from: docId.get() }),
+  },
+  {
+    text: "Excel抽出",
+    cb: () => exportExcel(docId.get()),
   },
   store.get("documents").size > 1 && {
     text: "削除",

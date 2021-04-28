@@ -1,6 +1,7 @@
 <script>
   import Cell from "./Cell.svelte";
   import cn from "/utils/cn.js";
+  import { format } from "/utils/index.js";
   const { investorGroups } = require("/index.ellx");
 
   export let values;
@@ -24,7 +25,7 @@
         "mt-4 border-t dark:border-gray-600": isGroup && i !== 0,
       })}
     >
-      {cols[colType].format(values[colType].get(id))}
+      {format[cols[colType].format].format(values[colType].get(id))}
     </Cell>
   {/each}
 {/each}
@@ -34,6 +35,6 @@
   <div
     class="border-y p-1 pt-3 truncate items-center text-xs text-right font-bold mt-4 border-t dark:border-gray-600"
   >
-    {cols[colType].format(values[colType].get("total"))}
+    {format[cols[colType].format].format(values[colType].get("total"))}
   </div>
 {/each}

@@ -47,12 +47,13 @@
     class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-8 mt-4 text-gray-700 dark:text-gray-200 mt-12"
     on:click={setEditing}
   >
-    <Cell
+    <div
       style="top: 0; left: 0;"
-      class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm shadow"
-      value={$title}
-      on:change={renameDocument}
-    />
+      class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
+    >
+      <div class="text-xs p-1 pb-2 w-full px-2 text-left">{$_("テーブル名")}</div>
+      <Cell class="w-full h-full flex items-center justify-center font-mono" value={$title} on:change={renameDocument} />
+    </div>
     <div
       style="left: 0;"
       class="col-start-1 row-start-2 sticky border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow p-1"

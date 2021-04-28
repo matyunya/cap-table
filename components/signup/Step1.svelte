@@ -113,10 +113,20 @@
     <Fields bind:data bind:errors fields={{ ...fields, ...privateFields }} />
 
     <div class="flex flex-row justify-evenly">
-      <a href="rules" class="a text-xs">{$_("利用規約")}</a>
-      <a href="privacy" class="a text-xs"
-        >{$_("プライバシーポリシー に同意の上")}</a
+      <a
+        target="_blank"
+        href="https://docs.google.com/document/d/1fmgwC6s5rh_0fL7z_8j2aud6WyAKPCnMWzPn5z-FyQU/edit"
+        class="a text-xs"
       >
+        {$_("利用規約")}
+      </a>
+      <a
+        target="_blank"
+        href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
+        class="a text-xs"
+      >
+        {$_("プライバシーポリシー に同意の上")}
+      </a>
     </div>
 
     <div class="text-center mt-6">

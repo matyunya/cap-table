@@ -7,7 +7,7 @@
     founded: 200,
     common: 600,
     split: 600,
-    "j-kiss": 250,
+    "j-kiss": 300,
   };
 
   export const INVESTORS_COL_WIDTH = 200;
