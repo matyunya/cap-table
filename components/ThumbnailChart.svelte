@@ -49,7 +49,7 @@
             return +d.postMoney;
           }),
         ])
-        .range([height, 0]);
+        .range([height - 2, 2]);
 
       const yPercent = scale
         .scaleLinear()
@@ -59,7 +59,7 @@
             return +d.founderShare;
           }),
         ])
-        .range([height, 0]);
+        .range([height - 2, 2]);
 
       // chart.append("g").call(axis.axisLeft(y));
       // chart
@@ -72,7 +72,7 @@
         .datum(data)
         .attr("fill", "none")
         .attr("stroke", "#0285c7")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 1)
         .attr(
           "d",
           shape
@@ -89,7 +89,7 @@
         .datum(data)
         .attr("fill", "none")
         .attr("stroke", "orange")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 1)
         .attr(
           "d",
           shape
