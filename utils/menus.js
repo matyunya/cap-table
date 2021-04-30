@@ -110,6 +110,21 @@ export const roundMenuItems = (id) => [
   } : false,
 ].filter(Boolean);
 
+export const getCommonMenuItems = (id) => [
+  {
+    text: "Excelでダウンロード",
+    cb: () => exportExcel(id),
+  },
+  {
+    text: "チャートを表示",
+    cb: () => null, // TODO:
+  },
+  store.get("documents").size > 1 && {
+    text: "削除",
+    cb: () => removeDocument({ id }),
+  },
+];
+
 export const getDocMenuItems = () => [
   {
     text: "新しいテーブル",
@@ -123,14 +138,7 @@ export const getDocMenuItems = () => [
     text: "このテーブルをコピー",
     cb: () => createDocument({ from: docId.get() }),
   },
-  {
-    text: "Excel抽出",
-    cb: () => exportExcel(docId.get()),
-  },
-  store.get("documents").size > 1 && {
-    text: "削除",
-    cb: () => removeDocument({ id: docId.get() }),
-  },
+  ...getCommonMenuItems(docId.get()),
   {
     text: "リセット",
     cb: resetDocument,

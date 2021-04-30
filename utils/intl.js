@@ -119,7 +119,10 @@ const translations = {
   "分割数": {
     en: "Split by",
   },
-  "Excel抽出": {
+  "チャートを表示": {
+    en: "View chart"
+  },
+  "Excelでダウンロード": {
     en: "Export to Excel"
   },
   "ラウンド削除": {

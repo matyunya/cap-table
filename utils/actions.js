@@ -34,7 +34,7 @@ import {
   uid,
 } from "./index.js";
 
-const { docId, appId, userId } = require("/index.ellx");
+const { docId, appId, userId, route } = require("/index.ellx");
 
 const getDoc = (id) => select(store, () => ['documents', id || docId.get()]);
 
@@ -278,7 +278,9 @@ export const removeDocument = ({ id }) => {
   const ids = [...store.get('documents').keys()];
   const idx = ids.indexOf(id);
 
-  syncUp(store, REMOVE_DOCUMENT, { id });
+  syncUp(store, REMOVE_DOCUMENT, { id }, id);
 
-  window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
+  if (route.get().startsWith("/docs/")) {
+    window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
+  }
 }

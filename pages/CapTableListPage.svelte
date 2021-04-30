@@ -3,8 +3,11 @@
   import _ from "/utils/intl.js";
   import { format, isToday } from "date-fns";
   import { documentIds } from "/store.js";
-  // import Icon from "/components/ui/Icon.svelte";
+  import Icon from "/components/ui/Icon.svelte";
   import { renameDocument, createDocument } from "/utils/actions.js";
+  import { openContextMenu } from "/components/ui/ContextMenu.svelte";
+  import { getCommonMenuItems } from "/utils/menus.js";
+
   const { userId, appId } = require("/index.ellx");
 
   function formatDate(d) {
@@ -31,13 +34,16 @@
       >
         <div
           on:click|preventDefault|stopPropagation={setEditing}
-          class="flex flex-row justify-between"
+          class="flex flex-row justify-between relative"
         >
           <Cell
             class="text-left text-sm font-medium"
             on:change={({ detail }) => renameDocument({ id, detail })}
             value={title}
           />
+          <Icon
+            on:click={(e) => openContextMenu(getCommonMenuItems(id), e)}
+            wrapperClasses="top-0 right-0 h-full flex items-center" />
         </div>
         <div class="text-xs">
           {$_("最終閲覧")}
