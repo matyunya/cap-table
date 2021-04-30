@@ -13,7 +13,7 @@
 >
   <svg
     class="{$$props.class ||
-      ''} rounded-full shadow hover:shadow-lg dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-gray-200 hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200 cursor-pointer icon"
+      ''} rounded-full shadow hover:shadow-lg dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200 cursor-pointer icon"
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}

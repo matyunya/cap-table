@@ -9,6 +9,8 @@ import {
   isValuationCapApplied,
 } from "./index.js";
 
+import { store } from "/store.js";
+
 export function groupInvestors(groups, investors) {
   return [...groups].reduce((acc, group) => [
     ...acc,
@@ -58,4 +60,28 @@ export function calculate(rounds, investors) {
   const roundsWithReactive = convertReactiveRounds(rounds, investors);
 
   return [...roundsWithReactive.keys()].reduce(roundValues(roundsWithReactive, investors), {});
+}
+
+export function roundsCount(docId) {
+  const doc = store.get('documents', docId);
+
+  return doc.rounds.size;
+}
+
+function founderShareForTheRound(values) {
+  // should be founders group
+  return values.totalSharesPercent ? values.totalSharesPercent.get("FOUNDER_ID") : values.sharesPercent.get("FOUNDER_ID");
+}
+
+export function chartData(docId) {
+  const doc = store.get('documents', docId);
+  const data = calculate(doc.rounds, doc.investors);
+
+  const res = [...doc.rounds.keys()].map(id => ({
+    founderShare: founderShareForTheRound(data[id].values),
+    postMoney: data[id].roundResults.postMoney,
+    date: new Date(doc.rounds.get(id).date),
+  }));
+
+  return res;
 }

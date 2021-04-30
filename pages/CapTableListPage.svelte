@@ -1,11 +1,13 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
+
   import _ from "/utils/intl.js";
   import { format, isToday } from "date-fns";
   import { documentIds } from "/store.js";
   import Icon from "/components/ui/Icon.svelte";
   import { renameDocument, createDocument } from "/utils/actions.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
+  import ThumbnailChart from "/components/ThumbnailChart.svelte";
   import { getCommonMenuItems } from "/utils/menus.js";
 
   const { userId, appId } = require("/index.ellx");
@@ -28,7 +30,7 @@
   >
     {#each $documentIds as [id, title, lastViewed]}
       <li
-        class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer h-32 w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
+        class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
         on:click={() =>
           window.ellx.router.go(`/docs/${$userId}/${$appId}/${id}`)}
       >
@@ -45,6 +47,7 @@
             on:click={(e) => openContextMenu(getCommonMenuItems(id), e)}
             wrapperClasses="top-0 right-0 h-full flex items-center" />
         </div>
+        <ThumbnailChart {id} />
         <div class="text-xs">
           {$_("最終閲覧")}
           {formatDate(lastViewed)}
