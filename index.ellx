@@ -29,6 +29,7 @@ nodes:
   investors = activeSheet.investors
   rounds = activeSheet.rounds
   calculated = calculate(rounds, investors)
+  closestRound = getClosestRoundToNow(rounds)
 layout:
 [,
   [,,
@@ -346,6 +347,11 @@ layout:
         "height": 6,
         "width": 4
       }
+    }
+  ],,,,,,,,,,
+  [,,
+    {
+      "node": "closestRound"
     }
   ]
 ]

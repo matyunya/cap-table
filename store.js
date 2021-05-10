@@ -1,6 +1,7 @@
 import bootstrap from "~matyunya/store";
 import { select, derived, produce } from "tinyx";
 import { serialize } from "/utils/sync.js";
+import parseISO from 'date-fns/parseISO';
 
 import {
   lastInvestorIdInGroup,
@@ -9,6 +10,8 @@ import {
   convertReactiveRounds,
   calcRoundResults,
   formatRoundDate,
+  getNewRoundDate,
+  isValidRoundDate,
 } from "/utils/index.js";
 
 const { docId, userId, appId } = require("/index.ellx");
@@ -235,11 +238,18 @@ export function ADD_ROUND({ afterId, name, type, sharePrice = 0, investments = n
 
       roundName = name || (language.get() === "ja" ? "新しいラウンド" : "New round");
 
-      let newRound = { name: roundName, type, date: formatRoundDate(), sharePrice, investments, ...params };
+      let newRound = {
+        name: roundName,
+        type,
+        date: getNewRoundDate(i, idx),
+        sharePrice,
+        investments,
+        ...params
+      };
 
       if (type === "j-kiss") {
         newRound.discount = 20;
-        newRound.valuationCap = calcRoundResults(get("rounds"), afterId).postMoney * 2;
+        newRound.valuationCap = calcRoundResults(i, afterId).postMoney * 2;
       }
 
       newId = newId || uid();
@@ -285,7 +295,14 @@ export function RENAME_ROUND({ roundId, name }) {
 }
 
 export function UPDATE_ROUND_DATE({ roundId, date }) {
-  return (({ set }) => set('rounds', roundId, 'date', date));
+  return ({ set, get }) => {
+    if (isNaN(new Date(date))) {
+      throw new Error("Invalid date");
+    }
+    isValidRoundDate(get("rounds"), roundId, new Date(date));
+
+    set('rounds', roundId, 'date', date);
+  }
 }
 
 export function UPDATE_PROFILE({ profile }) {

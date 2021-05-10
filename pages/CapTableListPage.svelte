@@ -2,7 +2,8 @@
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
 
   import _ from "/utils/intl.js";
-  import { format, isToday } from "date-fns";
+  import isToday from "date-fns/isToday";
+  import format from "date-fns/format";
   import { documentIds } from "/store.js";
   import Icon from "/components/ui/Icon.svelte";
   import { renameDocument, createDocument } from "/utils/actions.js";
@@ -45,7 +46,8 @@
           />
           <Icon
             on:click={(e) => openContextMenu(getCommonMenuItems(id), e)}
-            wrapperClasses="top-0 right-0 h-full flex items-center" />
+            wrapperClasses="top-0 right-0 h-full flex items-center"
+          />
         </div>
         <ThumbnailChart {id} />
         <div class="text-xs">

@@ -35,7 +35,7 @@
   import { roundMenuItems } from "/utils/menus.js";
   import _ from "/utils/intl.js";
   import { format } from "/utils/index.js";
-  const { isAnon } = require("/index.ellx");
+  const { isAnon, closestRound } = require("/index.ellx");
 
   export let type;
   export let name;
@@ -48,11 +48,13 @@
 
   $: width = ROUND_WIDTHS[type];
   $: options = roundOptions[type];
+
+  let dateUpdateError;
 </script>
 
 <div
   style="top: 0; width: {width}px; min-width: 0; min-height: 0"
-  class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20"
+  class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20 relative"
 >
   <div
     class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900 relative"
@@ -62,11 +64,24 @@
       on:change={({ detail }) => renameRound({ roundId: id, value: detail })}
       value={name}
     />
+    {#if $closestRound === id}
+      <div
+        class="font-mono text-xs rounded-full h-4 w-4 bg-light-blue-500 flex items-center justify-center text-white ring-1 ring-offset-1"
+      >
+        今
+      </div>
+    {/if}
     <Cell
       class="text-right text-gray-100 text-xs mr-6"
+      error={dateUpdateError}
       value={date || ""}
-      on:change={({ detail }) =>
-        updateRoundDate({ roundId: id, value: detail })}
+      on:change={({ detail }) => {
+        try {
+          updateRoundDate({ roundId: id, value: detail });
+        } catch (e) {
+          dateUpdateError = e;
+        }
+      }}
     />
     {#if !$isAnon}
       <Icon
@@ -106,7 +121,10 @@
     <div
       class:font-bold={result && !result.isCapApplied}
       class:underline={result && !result.isCapApplied}
-      class="w-1/2 flex items-center justify-end px-4">{$_("分割数")}</div>
+      class="w-1/2 flex items-center justify-end px-4"
+    >
+      {$_("分割数")}
+    </div>
     <Cell
       id="split-by:{id}"
       class="flex-1 h-8 text-center border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex items-center justify-center font-mono text-sm"

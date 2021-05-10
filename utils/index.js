@@ -1,3 +1,15 @@
+import addMonths from 'date-fns/addMonths';
+import isAfter from 'date-fns/isAfter';
+import startOfMonth from 'date-fns/startOfMonth';
+import isEqual from 'date-fns/isEqual';
+
+const firstDayOfMonth = startOfMonth(new Date());
+
+export const getClosestRoundToNow = rounds => [...rounds]
+  .map(([id, r]) => [(new Date(r.date)).getTime(), id])
+  .sort(([a], [b]) => a - b)
+  .find(([date]) => isAfter(date, firstDayOfMonth) || isEqual(date, firstDayOfMonth))[1];
+
 const reduceSumOfShares = (acc, { investments }) => acc + sum([...investments.values()].map(({ commonShares = 0, votingShares = 0 }) => commonShares + votingShares));
 
 const reduceSumOfCommonShares = (acc, { investments }) => acc + sum([...investments.values()].map(({ commonShares = 0 }) => commonShares));
@@ -38,6 +50,51 @@ export const getFutureRounds = (rounds, id) => {
   const idx = [...rounds.keys()].indexOf(id);
 
   return new Map([...rounds].slice(idx + 1));
+}
+
+export const getPreviousRound = (rounds, id) => getAtIndex(rounds, [...rounds.keys()].indexOf(id) - 1);
+
+export const getNextRound = (rounds, id) => getAtIndex(rounds, [...rounds.keys()].indexOf(id) + 1);
+
+export const getAtIndex = (map, idx) => map.get([...map.keys()][idx])
+
+const getPrevNextRoundDates = (rounds, id) => {
+  const [
+    { date: prevRoundDate },
+    { date: nextRoundDate }
+  ] = [
+      getPreviousRound(rounds, id) || {},
+      getNextRound(rounds, id) || {}
+    ];
+
+  return [prevRoundDate, nextRoundDate];
+}
+
+export function getNewRoundDate(rounds, idx) {
+  const [
+    { date: prevRoundDate },
+    { date: nextRoundDate }
+  ] = [
+      getAtIndex(rounds, idx - 1) || {},
+      getAtIndex(rounds, idx + 1) || {}
+    ];
+
+  if (!prevRoundDate) return formatRoundDate();
+
+  if (!nextRoundDate) return formatRoundDate(addMonths(prevRoundDate, 1));
+
+  return formatRoundDate(prevRoundDate);
+}
+
+export function isValidRoundDate(rounds, id, date) {
+  const [prevRoundDate, nextRoundDate] = getPrevNextRoundDates(rounds, id);
+
+  if (isAfter(new Date(prevRoundDate), date)) {
+    throw new Error("Previous round date cannot come before");
+  }
+  if (nextRoundDate && isAfter(date, new Date(nextRoundDate))) {
+    throw new Error("Round date cannot come after following round");
+  }
 }
 
 // if valuation cap < next round premoney diluted (minus jkiss invested)

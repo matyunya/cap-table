@@ -210,8 +210,11 @@ const translations = {
   "Googleアカウントで登録": {
     en: "Sign up with Google account"
   },
-  "プライバシーポリシー に同意の上": {
+  "プライバシーポリシー": {
     en: "Privacy policy"
+  },
+  "に同意の上": {
+    en: ""
   },
   "半角英数字8文字以上": {
     en: "At least 8 characters long",

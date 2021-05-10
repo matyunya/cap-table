@@ -11,6 +11,7 @@ export {
   totalShares,
   totalCommonShares,
   fillEmptyInvestments,
+  getClosestRoundToNow
 } from "/utils/index.js";
 export { calculate, groupInvestors } from "/utils/selectors.js";
 export { connect, getDoc } from "/models/docs.js";
@@ -25,3 +26,4 @@ const { auth } = require("/index.ellx");
 export const authError = writable(false);
 
 auth.subscribe(v => authError.set(v instanceof Error));
+

@@ -1,6 +1,7 @@
 <script context="module">
   import { writable } from "svelte/store";
   import CellEditor from "/components/sheet/CellEditor.svelte";
+  import _ from "/utils/intl.js";
   const { isAnon } = require("/index.ellx");
 
   const editing = writable(false);
@@ -20,6 +21,7 @@
   export let value;
   export let editable = true;
   export let editorClasses = "";
+  export let error;
 
   let editingValue = value;
 
@@ -31,7 +33,7 @@
     dispatch("change", editingValue);
 
     editing.set(false);
-    value = "...";
+    // value = "..."; TODO implement proper loading value
   }
 
   function onKeydown(e) {
@@ -50,6 +52,7 @@
   }
 
   function onInput(e) {
+    error = undefined;
     if (e.target.value.includes("\n")) {
       editingValue = e.target.value.replace(/\n/, "");
       save();
@@ -60,6 +63,8 @@
 <div
   data-id={id}
   disabled={!editable}
+  class:text-red-500={Boolean(error)}
+  class:dark:text-red-500={Boolean(error)}
   class:dark:text-light-blue-200={editable &&
     !($$props.class || "").match(/text-[a-zA-Z0-9]{1,10}-/)}
   class:text-light-blue-600={editable &&
@@ -70,7 +75,7 @@
   class="{$$props.class ||
     ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden"
   style={$$props.style || ""}
-  title={value}
+  title={$_(error) || value}
 >
   {#if $editing !== id}
     <slot>{value}</slot>

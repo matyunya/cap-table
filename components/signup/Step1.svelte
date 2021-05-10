@@ -120,13 +120,16 @@
       >
         {$_("利用規約")}
       </a>
-      <a
-        target="_blank"
-        href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
-        class="a text-xs"
-      >
-        {$_("プライバシーポリシー に同意の上")}
-      </a>
+      <span class="text-xs">
+        <a
+          target="_blank"
+          href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
+          class="a"
+        >
+          {$_("プライバシーポリシー")}
+        </a>
+        {$_("に同意の上")}
+      </span>
     </div>
 
     <div class="text-center mt-6">
