@@ -18,11 +18,8 @@
       label={fields[field].label}
       class="flex-1 mt-4 mb-2 text-xs"
     />
-    <div class="flex flex-row items-center max-w-xs text-xs">
+    <div class="flex flex-row items-center max-w-sm text-xs">
       {#each fields[field].options as option, i}
-        <label for={option}>
-          {$_(option)}
-        </label>
         <input
           class="ml-1 mr-4"
           id={option}
@@ -31,6 +28,9 @@
           on:click={() => (errors[field] = "")}
           value={option}
         />
+        <label for={option}>
+          {$_(option)}
+        </label>
       {/each}
     </div>
   {:else if fields[field].type === "checkbox"}
@@ -43,7 +43,7 @@
     />
 
     <div
-      class="flex flex-row items-center justify-between max-w-xs text-xs flex-wrap"
+      class="flex flex-row items-center justify-between max-w-sm text-xs flex-wrap"
     >
       {#each fields[field].options as type}
         <div class="w-1/2 flex items-center mb-2">

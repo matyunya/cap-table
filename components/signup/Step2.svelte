@@ -8,7 +8,8 @@
     settlementDate: {
       placeholder: "",
       label: "決算月",
-      type: "month",
+      type: "select",
+      options: [...new Array(12)].map((_, i) => [i + 1, (i + 1) + '月']),
       required: true,
     },
     lastSettlementFinished: {

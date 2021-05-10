@@ -4,7 +4,7 @@
     "事業会社",
     "エンジェル",
     "知人",
-    "EGF",
+    "株式型クラウドファンディング",
     "その他",
   ];
 
@@ -34,10 +34,10 @@
   export const fields = {
     projectedInvestmentAmount: {
       placeholder: "例）20",
-      label: "いくら資金調達が必要ですか？",
+      label: "調達予定金額",
     },
     projectedInvestmentDate: {
-      label: "いつまでに必要ですか？",
+      label: "資金調達の目標時期",
       type: "date",
     },
     projectedInvestmentTypes: {

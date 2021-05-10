@@ -192,7 +192,7 @@ const translations = {
   "資本政策": {
     en: "Cap table",
   },
-  "登録情報確認・変更": {
+  "プロフィール情報確認・変更": {
     en: "Edit user profile",
   },
   "メールアドレス": {

@@ -149,7 +149,7 @@
           openContextMenu(
             [
               {
-                text: "登録情報確認・変更",
+                text: "プロフィール情報確認・変更",
                 cb: () => window.ellx.router.go("/profile"),
               },
               {

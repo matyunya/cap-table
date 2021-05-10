@@ -48,7 +48,7 @@
   }
 </script>
 
-<Wrapper {loading} {success} title="登録情報確認・変更">
+<Wrapper {loading} {success} title="プロフィール情報確認・変更">
   {#if $profileReady && Array.isArray(data.projectedInvestmentTypes)}
     <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
       {$_("ユーザー情報")}
