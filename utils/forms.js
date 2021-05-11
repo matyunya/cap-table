@@ -9,7 +9,12 @@ export function validate(data, fields) {
     .filter(k => fields[k].required || fields[k].validate)
     .forEach((key) => {
       if (fields[key].required && data[key] === undefined) {
-        errors[key] = "この項目が必須です。";
+        errors[key] = "この項目が必須です";
+        return;
+      }
+
+      if (fields[key].max && data[key] > fields[key].max) {
+        errors[key] = "上限を超過しました";
         return;
       }
 

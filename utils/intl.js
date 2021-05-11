@@ -172,10 +172,46 @@ const translations = {
     en: "Unexpected error. Please refresh the page."
   },
   "新しいテーブル": {
-    en: "New table"
+    en: "Create new table"
   },
   "リセット": {
     en: "Reset table",
+  },
+  "1月": {
+    en: "January"
+  },
+  "2月": {
+    en: "February"
+  },
+  "3月": {
+    en: "March"
+  },
+  "4月": {
+    en: "April"
+  },
+  "5月": {
+    en: "May"
+  },
+  "6月": {
+    en: "June"
+  },
+  "7月": {
+    en: "July"
+  },
+  "8月": {
+    en: "August"
+  },
+  "9月": {
+    en: "September"
+  },
+  "10月": {
+    en: "October"
+  },
+  "11月": {
+    en: "November"
+  },
+  "12月": {
+    en: "December"
   },
   "共有をキャンセル": {
     en: "Make private",
@@ -225,8 +261,11 @@ const translations = {
   "正社員": {
     en: "Full-time"
   },
-  "この項目が必須です。": {
+  "この項目が必須です": {
     en: "This field is required"
+  },
+  "上限を超過しました": {
+    en: "Value is too large"
   },
   "決算を終えたのはいつですか": {
     en: "Last settlement date"

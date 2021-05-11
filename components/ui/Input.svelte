@@ -8,6 +8,7 @@
   export let classes = "mt-4";
   export let value = "";
   export let required = true;
+  export let max;
 </script>
 
 <div class="relative w-full mb-3 {classes}">
@@ -16,11 +17,13 @@
   {/if}
   <input
     on:change
+    on:input
     {value}
     on:input={() => (error = "")}
     {id}
     {required}
     {type}
+    {max}
     class:error
     class:ring-light-blue-200={!error}
     class:ring-red-200={error}

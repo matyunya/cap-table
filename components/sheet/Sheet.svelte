@@ -44,7 +44,7 @@
 {#if $activeSheet}
   <div
     style="width: {calculateWidth($rounds)}px"
-    class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-8 mt-4 text-gray-700 dark:text-gray-200 mt-12"
+    class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-12 text-gray-700 dark:text-gray-200 mt-12 bg-blurred z-40 p-4"
     on:click={setEditing}
   >
     <div
@@ -161,5 +161,8 @@
 
   :global(.cell .icon) {
     opacity: 0;
+  }
+  .bg-blurred {
+    backdrop-filter: blur(8px);
   }
 </style>

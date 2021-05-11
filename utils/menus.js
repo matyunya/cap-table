@@ -120,7 +120,7 @@ export const getCommonMenuItems = (id) => [
     cb: () => null, // TODO:
   },
   store.get("documents").size > 1 && {
-    text: "削除",
+    text: "削除", // todo confirmation
     cb: () => removeDocument({ id }),
   },
 ];
@@ -130,18 +130,18 @@ export const getDocMenuItems = () => [
     text: "新しいテーブル",
     cb: createDocument,
   },
-  {
-    text: store.get("documents", docId.get(), "access", "read", "public") ? "共有をキャンセル" : "共有する",
-    cb: togglePublic,
-  },
+  // {
+  //   text: store.get("documents", docId.get(), "access", "read", "public") ? "共有をキャンセル" : "共有する",
+  //   cb: togglePublic,
+  // },
   {
     text: "このテーブルをコピー",
     cb: () => createDocument({ from: docId.get() }),
   },
   ...getCommonMenuItems(docId.get()),
-  {
-    text: "リセット",
-    cb: resetDocument,
-  },
+  // {
+  //   text: "リセット",
+  //   cb: resetDocument,
+  // },
 ].filter(Boolean);
 

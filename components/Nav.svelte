@@ -44,7 +44,7 @@
   class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
-<nav class="w-screen h-10 flex flex-row px-8 text-gray-600 dark:text-gray-200">
+<nav class="w-screen h-10 flex flex-row px-8 text-gray-600 dark:text-gray-200 fixed top-0 left-0 z-20">
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
   >
@@ -123,7 +123,7 @@
       on:click={() => setLanguage($language === "ja" ? "en" : "ja")}
       style="font-variant: small-caps;"
     >
-      {$language}
+      {$language === "ja" ? "en" : "ja"}
     </button>
     {#if $isAuthenticated}
       <button

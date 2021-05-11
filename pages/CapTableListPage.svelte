@@ -19,13 +19,10 @@
   }
 </script>
 
-<section class="relative text-sm flex min-h-screen flex-col max-w-4xl mx-auto">
+<section class="relative text-sm flex flex-col max-w-4xl mx-auto mt-12">
   <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
     {$_("資本政策シミュレーター")}
   </h2>
-  <button on:click={createDocument} class="button w-full">
-    {$_("新規テーブルを作成")}
-  </button>
   <ul
     class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4 mt-12"
   >
@@ -56,5 +53,16 @@
         </div>
       </li>
     {/each}
+    <li
+      class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
+      on:click={createDocument}
+    >
+      <div
+        class="flex items-center justify-center flex-col h-full text-5xl"
+      >
+      <span>+</span>
+      <span class="text-xs mt-4">{$_("新しいテーブル")}</span>
+      </div>
+    </li>
   </ul>
 </section>

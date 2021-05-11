@@ -1,11 +1,13 @@
 <script context="module">
+  import format from "date-fns/format";
+
   export const fields = {
     companyName: {
       placeholder: "会社名",
       label: "会社名",
       required: true,
     },
-    settlementDate: {
+    settlementMonth: {
       placeholder: "",
       label: "決算月",
       type: "select",
@@ -17,6 +19,13 @@
       label: "直近決算",
       options: ["終わっていない", "終わっている"],
       required: true,
+    },
+    lastSettlementDate: {
+      type: "month",
+      placeholder: "",
+      label: "決算を終えたのはいつですか",
+      required: true,
+      max: format(new Date(), "yyyy-MM"),
     },
     fullTimeEmployees: {
       ignore: true,

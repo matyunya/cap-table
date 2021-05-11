@@ -6,7 +6,8 @@
   export let fields;
   export let data;
   export let errors;
-  export let update = (field) => (e) => (data[field] = e.target.value);
+  export let update = (field, transform = (i) => i) => (e) =>
+    (data[field] = transform(e.target.value));
 </script>
 
 {#each Object.keys(fields).filter((r) => !fields[r].ignore) as field}
@@ -16,19 +17,19 @@
       required={fields[field].required}
       error={errors[field]}
       label={fields[field].label}
-      class="flex-1 mt-4 mb-2 text-xs"
+      class="flex-1 mt-6 mb-2 text-xs"
     />
     <div class="flex flex-row items-center max-w-sm text-xs">
       {#each fields[field].options as option, i}
         <input
-          class="ml-1 mr-4"
+          class="mr-2"
           id={option}
           type="radio"
           bind:group={data[field]}
           on:click={() => (errors[field] = "")}
           value={option}
         />
-        <label for={option}>
+        <label class="mr-4" for={option}>
           {$_(option)}
         </label>
       {/each}
@@ -39,7 +40,7 @@
       required={fields[field].required}
       error={errors[field]}
       label={fields[field].label}
-      class="flex-1 mt-4 mb-2 text-xs"
+      class="flex-1 mt-6 mb-2 text-xs"
     />
 
     <div
@@ -73,7 +74,8 @@
     />
   {:else}
     <Input
-      on:change={update(field)}
+      classes="mt-6"
+      on:input={update(field, fields[field].transform || ((i) => i))}
       {...fields[field]}
       value={data[field] || ""}
       error={errors[field]}

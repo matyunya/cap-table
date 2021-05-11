@@ -36,7 +36,7 @@ export const totalSharesForInvestor = (rounds, investorId) => {
   return totalCommonSharesForInvestor(rounds, investorId) + totalVotingSharesForInvestor(rounds, investorId);
 }
 
-export const formatRoundDate = d => d || new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
+export const formatRoundDate = d => new Date(d || new Date()).toLocaleDateString("en-US", { year: 'numeric', month: 'short' });
 
 export const getPreviousRounds = (rounds, id) => {
   if (!id) return new Map([]);
@@ -76,12 +76,12 @@ export function getNewRoundDate(rounds, idx) {
     { date: nextRoundDate }
   ] = [
       getAtIndex(rounds, idx - 1) || {},
-      getAtIndex(rounds, idx + 1) || {}
+      getAtIndex(rounds, idx) || {}
     ];
 
   if (!prevRoundDate) return formatRoundDate();
 
-  if (!nextRoundDate) return formatRoundDate(addMonths(prevRoundDate, 1));
+  if (!nextRoundDate) return formatRoundDate(addMonths(new Date(prevRoundDate), 1));
 
   return formatRoundDate(prevRoundDate);
 }

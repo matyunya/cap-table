@@ -238,6 +238,6 @@ export default function exportExcel(docId) {
     // TODO: handle error
     const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 
-    return download("table.xlsx", blob);
+    return download(data.meta.title + ".xlsx", blob);
   });
 }

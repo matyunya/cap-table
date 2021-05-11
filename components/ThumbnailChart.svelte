@@ -86,6 +86,7 @@
         "d",
         shape
           .line()
+          .curve(shape.curveStep)
           .x(function (d) {
             return x(d.date);
           })
@@ -104,6 +105,7 @@
         "d",
         shape
           .line()
+          .curve(shape.curveStep)
           .x(function (d) {
             return x(d.date);
           })

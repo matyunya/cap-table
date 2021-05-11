@@ -1,4 +1,6 @@
 <script context="module">
+  import format from "date-fns/format";
+
   const investorTypes = [
     "VC",
     "事業会社",
@@ -35,6 +37,7 @@
     projectedInvestmentAmount: {
       placeholder: "例）20",
       label: "調達予定金額",
+      transform: (i) => (i.match(/\d{1,3}/g) || []).join(","),
     },
     projectedInvestmentDate: {
       label: "資金調達の目標時期",
