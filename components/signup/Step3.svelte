@@ -1,6 +1,4 @@
 <script context="module">
-  import format from "date-fns/format";
-
   const investorTypes = [
     "VC",
     "事業会社",
