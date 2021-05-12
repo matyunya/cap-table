@@ -9,7 +9,7 @@
 
   export const fields = {
     name: {
-      placeholder: "お名前",
+      placeholder: "​例）山田 太郎",
       label: "お名前",
       required: true,
     },
@@ -17,7 +17,7 @@
 
   const privateFields = {
     email: {
-      placeholder: "メールアドレス",
+      placeholder: "例）info@email.co.jp",
       label: "メールアドレス",
       required: true,
     },
@@ -47,7 +47,7 @@
 
   const { userId, auth } = require("/index.ellx");
 
-  let data = {};
+  export let data = {};
   let errors = {};
   let ok = false;
   export let loading;
@@ -112,7 +112,7 @@
   <form class="flex-auto dark:text-white">
     <Fields bind:data bind:errors fields={{ ...fields, ...privateFields }} />
 
-    <div class="flex flex-row justify-evenly">
+    <div class="text-xs">
       <a
         target="_blank"
         href="https://docs.google.com/document/d/1fmgwC6s5rh_0fL7z_8j2aud6WyAKPCnMWzPn5z-FyQU/edit"
@@ -120,28 +120,29 @@
       >
         {$_("利用規約")}
       </a>
-      <span class="text-xs">
-        <a
-          target="_blank"
-          href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
-          class="a"
-        >
-          {$_("プライバシーポリシー")}
-        </a>
-        {$_("に同意の上")}
-      </span>
+      ・
+      <a
+        target="_blank"
+        href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
+        class="a"
+      >
+        {$_("プライバシーポリシー")}
+      </a>
+      {$_("に同意の上")}
     </div>
 
-    <div class="text-center mt-6">
+    <div class="text-center mt-6 w-full mx-auto">
       <button
         on:click={() => {
           signUp(data);
         }}
-        class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+        class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mb-6"
         type="button"
       >
         {$_(label)}
       </button>
+
+      <a class="a underline" href="/">{$_("戻る")}</a>
     </div>
   </form>
 {/if}

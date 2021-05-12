@@ -14,7 +14,7 @@
 </script>
 
 <main>
-  <section class="relative block py-24 lg:pt-0">
+  <section class="relative block py-24 lg:pt-0 mt-16">
     <div class="container mx-auto px-4 flex flex-col">
       <h1 class="text-center text-6xl pt-8 font-bold tracking-widest uppercase">
         Capital Dash

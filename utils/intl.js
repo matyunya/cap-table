@@ -267,6 +267,9 @@ const translations = {
   "上限を超過しました": {
     en: "Value is too large"
   },
+  "次へ": {
+    en: "Next",
+  },
   "決算を終えたのはいつですか": {
     en: "Last settlement date"
   },

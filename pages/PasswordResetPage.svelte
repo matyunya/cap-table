@@ -59,4 +59,9 @@
       {$_("設定する")}
     </button>
   </div>
+  <div slot="success">
+    <div class="mb-8 text-center">
+      {@html $_(`設定されました`)}
+    </div>
+  </div>
 </Wrapper>

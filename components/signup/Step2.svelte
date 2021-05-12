@@ -3,7 +3,7 @@
 
   export const fields = {
     companyName: {
-      placeholder: "会社名",
+      placeholder: "例）株式会社◯◯◯",
       label: "会社名",
       required: true,
     },
@@ -11,7 +11,7 @@
       placeholder: "",
       label: "決算月",
       type: "select",
-      options: [...new Array(12)].map((_, i) => [i + 1, (i + 1) + '月']),
+      options: [...new Array(12)].map((_, i) => [String(i + 1), (i + 1) + '月']),
       required: true,
     },
     lastSettlementFinished: {
@@ -46,7 +46,7 @@
   import { updateProfile } from "/models/profile.js";
   import { validate, scrollToError } from "/utils/forms.js";
 
-  let data = {};
+  export let data = {};
   let errors = {};
   export let onSave;
   export let loading;
@@ -79,7 +79,7 @@
       class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
       type="button"
     >
-      {$_("登録する")}
+      {$_("次へ")}
     </button>
   </div>
 </form>

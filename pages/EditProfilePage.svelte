@@ -26,7 +26,9 @@
     )
   );
   let errors = {};
-  let ok = false, loading, success;
+  let ok = false,
+    loading,
+    success;
 
   async function onSubmit() {
     try {
@@ -48,31 +50,35 @@
   }
 </script>
 
-<Wrapper {loading} {success} title="プロフィール情報確認・変更">
-  {#if $profileReady && Array.isArray(data.projectedInvestmentTypes)}
-    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
-      {$_("ユーザー情報")}
-    </h2>
-    <div class="mb-8">
-      <Fields bind:data bind:errors fields={userFields} />
+<Wrapper
+  loading={loading ||
+    !($profileReady && Array.isArray(data.projectedInvestmentTypes))}
+  {success}
+  title="プロフィール情報確認・変更"
+>
+  <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
+    {$_("ユーザー情報")}
+  </h2>
+  <div class="mb-8">
+    <Fields bind:data bind:errors fields={userFields} />
+  </div>
+  <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
+    {$_("会社情報")}
+  </h2>
+  <div class="mb-8">
+    <Fields bind:data bind:errors fields={companyFields} />
+    <NumberOfEmployeesFields bind:data bind:errors />
+  </div>
+  <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
+    {$_("資金調達計画")}
+  </h2>
+  <div class="mb-8">
+    <Fields bind:data bind:errors fields={planFields} />
+  </div>
+  <button on:click={onSubmit} class="button w-full">{$_("保存する")}</button>
+  <div slot="success">
+    <div class="mb-8 text-center">
+      {@html $_(`保存されました`)}
     </div>
-    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
-      {$_("会社情報")}
-    </h2>
-    <div class="mb-8">
-      <Fields bind:data bind:errors fields={companyFields} />
-      <NumberOfEmployeesFields bind:data bind:errors />
-    </div>
-    <h2 class="font-bold text-lg mt-6 text-left w-full tracking-wide">
-      {$_("資金調達計画")}
-    </h2>
-    <div class="mb-8">
-      <Fields bind:data bind:errors fields={planFields} />
-    </div>
-    <button on:click={onSubmit} class="button w-full">{$_("保存する")}</button>
-  {:else}
-    <div class="flex w-full h-full items-center justify-center">
-      <Spinner />
-    </div>
-  {/if}
+  </div>
 </Wrapper>

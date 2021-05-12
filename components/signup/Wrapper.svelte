@@ -1,6 +1,6 @@
 <script>
   import _ from "/utils/intl.js";
-  export let title = "Capital Dash";
+  export let title;
   import Spinner from "/components/ui/Spinner.svelte";
   const { authStatus } = require("/index.ellx");
 

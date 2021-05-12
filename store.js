@@ -64,6 +64,7 @@ export const defaultDocument = {
 const defaultStore = {
   profile: {
     language: DEFAULT_LANGUAGE,
+    projectedInvestmentTypes: [],
   },
   documents: new Map(),
 };

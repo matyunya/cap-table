@@ -73,7 +73,7 @@
   export let onSave = () => {};
   export let loading;
 
-  let data = {
+  export let data = {
     projectedInvestmentTypes: [],
   };
   let errors = {};
@@ -100,17 +100,16 @@
   </h2>
   <Fields bind:data bind:errors {fields} />
 
-  <button
-    on:click={onSubmit}
-    class="button w-full mt-10 bg-light-blue-700"
-    type="button"
-  >
-    {$_("登録して始める​")}
-  </button>
-  <button
-    on:click={() => window.ellx.router.go("/dashboard")}
-    class="mt-6 button w-full"
-  >
-    {$_("スキップする")}
-  </button>
+  <div class="text-center mt-6 w-full mx-auto">
+    <button
+      on:click={onSubmit}
+      class="button w-full mt-10 mb-6 bg-light-blue-700"
+      type="button"
+    >
+      {$_("登録して始める​")}
+    </button>
+    <a class="a underline" href="/signup/2">
+      {$_("戻る")}
+    </a>
+  </div>
 </form>

@@ -29,7 +29,17 @@
   }
 </script>
 
-<Wrapper {loading} {success} title="お問い合わせ">
+<Wrapper
+  {loading}
+  {success}
+  title={success ? "お問い合わせ送信完了" : "お問い合わせ"}
+>
+  <div class="mb-8">
+    {$_(
+      "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。"
+    )}
+  </div>
+
   <Select
     label="お問い合わせ内容"
     on:change={({ target }) => (subject = target.value)}
@@ -53,10 +63,7 @@
     {$_("送信する")}
   </button>
 
-  <!-- <div slot="success">
-    <h2 class="text-center font-bold text-xl mb-8">
-      {$_("お問い合わせ送信完了")}
-    </h2>
+  <div slot="success">
     <div class="mb-8 text-center">
       {@html $_(`お問い合わせいただきありがとうございます。
       お送りいただきました内容を確認させていただき、
@@ -64,10 +71,5 @@
 
       今後ともCapital Dashをよろしくお願いいたします。`)}
     </div>
-  </div> -->
-  <div class="mb-8">
-    {$_(
-      "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。"
-    )}
   </div>
 </Wrapper>
