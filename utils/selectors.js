@@ -65,21 +65,30 @@ export function calculate(rounds, investors) {
 export function roundsCount(docId) {
   const doc = store.get('documents', docId);
 
+  if (!doc) return 0;
+
   return doc.rounds.size;
 }
 
 function founderShareForTheRound(values) {
   // should be founders group
+  // todo: fix for jkiss
+
   return values.totalSharesPercent ? values.totalSharesPercent.get("FOUNDER_ID") : values.sharesPercent.get("FOUNDER_ID");
 }
 
-export function chartData(docId) {
-  const doc = store.get('documents', docId);
+export function chartData(docId, docs) {
+  const doc = docs ? docs.get(docId) : store.get('documents', docId);
   const data = calculate(doc.rounds, doc.investors);
+  const keys = [...doc.rounds.keys()];
 
-  const res = [...doc.rounds.keys()].map(id => ({
-    founderShare: founderShareForTheRound(data[id].values),
-    postMoney: data[id].roundResults.postMoney,
+  const res = keys.map((id, i) => ({
+    founderShare: doc.rounds.get(id).type === "j-kiss"
+      ? founderShareForTheRound(data[keys[i - 1]].values)
+      : founderShareForTheRound(data[id].values),
+    postMoney: doc.rounds.get(id).type === "j-kiss"
+      ? data[keys[i - 1]].roundResults.postMoney
+      : data[id].roundResults.postMoney,
     date: new Date(doc.rounds.get(id).date),
   }));
 

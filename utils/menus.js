@@ -1,8 +1,6 @@
 import {
-  togglePublic,
   createDocument,
   removeDocument,
-  resetDocument,
   syncCurrentDoc,
 } from "./actions.js";
 import {
@@ -117,7 +115,7 @@ export const getCommonMenuItems = (id) => [
   },
   {
     text: "チャートを表示",
-    cb: () => null, // TODO:
+    cb: () => window.ellx.router.go("/chart/" + id),
   },
   store.get("documents").size > 1 && {
     text: "削除", // todo confirmation

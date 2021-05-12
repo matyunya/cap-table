@@ -16,7 +16,6 @@
     userId,
     appId,
     route,
-    profile,
   } = require("/index.ellx");
 
   function setLanguage(language) {
@@ -41,7 +40,8 @@
 </script>
 
 <div
-  class="fixed z-0 top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
+  style="z-index: -100"
+  class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
 <nav

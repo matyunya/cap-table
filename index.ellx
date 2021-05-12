@@ -12,7 +12,11 @@ nodes:
   appId = !authError ? auth.appId : route.split('/')[1]
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
+  chartDocId = route.split('/')[2]
+  activeDocChartData = chartData(chartDocId, docs)
+  chartDoc = withStatus("activeDocChartData")
   docId = route.split('/')[4]
+  chartDocStatus = chartDoc()
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
@@ -147,22 +151,37 @@ layout:
       "value": "Route user ID:"
     },,
     {
-      "value": "Jump to step 2 once authenticated:"
+      "value": "Chart doc ID:"
+    },,
+    {
+      "value": "Active doc chart data:"
     }
   ],
   [,,,,,,,,
     {
       "node": "routeUserId"
+    },,
+    {
+      "node": "chartDocId"
+    },,
+    {
+      "node": "activeDocChartData"
     }
   ],
   [,,,,,,,,
     {
       "value": "Route doc ID:"
+    },,,,
+    {
+      "node": "chartDoc"
     }
   ],
   [,,,,,,,,
     {
       "node": "docId"
+    },,,,
+    {
+      "node": "chartDocStatus"
     }
   ],
   [,,,,,,,,

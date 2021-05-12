@@ -13,7 +13,7 @@ export {
   fillEmptyInvestments,
   getClosestRoundToNow
 } from "/utils/index.js";
-export { calculate, groupInvestors } from "/utils/selectors.js";
+export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
 export { connect, getDoc } from "/models/docs.js";
 export { connect as connectProfile } from "/models/profile.js";
 export { store } from "/store.js";

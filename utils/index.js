@@ -146,7 +146,7 @@ export const isValuationCapApplied = ({ rounds, id, valuationCap = 0, discount =
 export const format = {
   number: new Intl.NumberFormat("ja-JA"),
   percent: new Intl.NumberFormat("ja-JA", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }),
-  currency: new Intl.NumberFormat("ja-JA", { style: "currency", currency: 'JPY' }),
+  currency: new Intl.NumberFormat("ja-JA", { style: "currency", currency: "JPY" }),
 };
 
 export const allGroups = investors => [...investors.values()].map(i => i.group);

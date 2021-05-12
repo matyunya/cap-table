@@ -12,6 +12,7 @@
   import PasswordResetPage from "/pages/PasswordResetPage.svelte";
   import PlanPage from "/pages/PlanPage.svelte";
   import CalcPage from "/pages/CalcPage.svelte";
+  import ChartPage from "/pages/ChartPage.svelte";
   import TutorialPage from "/pages/TutorialPage.svelte";
   import FeedbackPage from "/pages/FeedbackPage.svelte";
 
@@ -78,6 +79,8 @@
   <DashboardPage />
 {:else if $route === "/docs"}
   <CapTableListPage />
+{:else if $route && typeof $route === "string" && $route.startsWith("/chart")}
+  <ChartPage />
 {:else if $route && typeof $route === "string" && $route.startsWith("/docs")}
   <Sheet />
 {:else if $route === "/profile"}
