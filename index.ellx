@@ -1,11 +1,11 @@
 version: 1.1
 nodes:
   $1 = store
-  $3 = ellx.login()
+  tryLogin = ellx.login()
   docs = store.documents
-  getAuth = withStatus("auth")
-  auth = ellx.auth
-  authStatus = getAuth()
+  getAuth = tryLogin && withStatus("auth")
+  auth = tryLogin && ellx.auth
+  authStatus = tryLogin && getAuth()
   profile = store.profile
   profileReady = profile.owner === userId
   userId = !authError ? (auth ? auth.userId : null) : null
@@ -61,7 +61,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "node": "$3"
+      "node": "tryLogin"
     }
   ],
   [,,

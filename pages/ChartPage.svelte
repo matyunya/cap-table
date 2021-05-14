@@ -74,23 +74,42 @@
       .domain(array.extent($activeDocChartData, (d) => +d.postMoney))
       .range([4, 12]);
 
+    const rPercent = scale
+      .scaleLinear()
+      .domain(array.extent($activeDocChartData, (d) => +d.founderShare))
+      .range([5, 30]);
+
     chart
       .append("g")
       .attr("transform", "translate(" + margin.left + ",0)")
       .call(
         axis
           .axisLeft(y)
-          .ticks(4)
-          .tickFormat((d) => fmt.format(d))
+          .ticks(3)
+          .tickFormat((d) => fmt.format(d) + "円")
       );
 
     chart
       .append("g")
+      .attr("class", "eval-ticks")
+      .attr("transform", "translate(" + margin.left + ",0)")
+      .call(
+        axis
+          .axisLeft(y)
+          .ticks(3)
+          .tickSize(-width + margin.left + margin.right - 15)
+          .tickFormat((d) => "")
+      );
+
+    chart
+      .append("g")
+      .attr("class", "percent")
       .attr("transform", "translate(" + (width - margin.right + 15) + ",0)")
       .call(
         axis
           .axisRight(yPercent)
           .tickValues([0.333, 0.5, 0.666, 1])
+          .tickSize(-width + margin.left + margin.right - 15)
           .tickFormat(format.percent.format)
       );
 
@@ -124,21 +143,48 @@
           .y((d) => y(d.postMoney))
       );
 
-    const dotNode = chart.selectAll("dot").data($activeDocChartData).enter();
+    const dotEvaluationNode = chart
+      .selectAll("dot")
+      .data($activeDocChartData)
+      .enter();
 
-    dotNode
+    dotEvaluationNode
       .append("circle")
       .attr("r", (d, i) => (i === 0 ? 0 : r(d.postMoney)))
       .attr("fill", "#0285c7")
       .attr("cx", (d, i) => x(i))
       .attr("cy", (d) => y(d.postMoney));
 
-    dotNode
+    dotEvaluationNode
       .append("text")
-      .attr("class", "label")
+      .attr("class", "label blue")
       .attr("x", (d, i) => x(i) - 25)
       .attr("y", (d) => y(d.postMoney) - 10 - r(d.postMoney))
       .text((d, i) => (i === 0 ? "" : fmt.format(d.postMoney) + "円"));
+
+    const dotShareNode = chart
+      .selectAll("dot")
+      .data($activeDocChartData)
+      .enter();
+
+    dotShareNode
+      .append("circle")
+      .attr("r", (d, i) => (i === 0 ? 0 : rPercent(d.founderShare)))
+      .attr("fill", "orange")
+      .attr("cx", (d, i) => x(i))
+      .attr("cy", (d) => yPercent(d.founderShare));
+
+    dotShareNode
+      .append("text")
+      .attr("class", "label orange")
+      .attr("x", (d, i) => x(i) + (d.founderShare > 0.2 ? -50 : 0))
+      .attr(
+        "y",
+        (d) =>
+          yPercent(d.founderShare) +
+          (d.founderShare > 0.2 ? 1 : -1) * (10 + rPercent(d.founderShare))
+      )
+      .text((d, i) => (i === 0 ? "" : format.percent.format(d.founderShare)));
 
     const firstLabelNode = chart
       .selectAll("dot")
@@ -148,15 +194,15 @@
     firstLabelNode
       .append("text")
       .attr("class", "post-money-label")
-      .attr("x", (d, i) => x(i) + 125)
-      .attr("y", (d) => y(d.postMoney) - 50 - r(d.postMoney))
+      .attr("x", 100)
+      .attr("y", height - 40)
       .text("時価総額");
 
     firstLabelNode
       .append("text")
       .attr("class", "share-label")
-      .attr("x", (d, i) => x(i) + 125)
-      .attr("y", (d) => yPercent(d.founderShare) + 50)
+      .attr("x", 100)
+      .attr("y", 0 + 30)
       .text("経営者持分");
   }
 </script>
@@ -187,9 +233,12 @@
   }
 
   :global(.label) {
-    color: #0285c7;
     font-size: 14px;
     font-family: monospace;
+  }
+
+  :global(.blue) {
+    color: #0285c7;
   }
 
   :global(.post-money-label) {
@@ -198,9 +247,30 @@
     font-weight: bold;
   }
 
+  :global(.orange) {
+    color: orange;
+  }
+
   :global(.share-label) {
     color: orange;
     font-size: 18px;
     font-weight: bold;
+  }
+
+  :global(.eval-ticks .tick line) {
+    opacity: 0.2;
+    stroke-dasharray: 5 1;
+  }
+
+  :global(.tick text) {
+    opacity: 0.8;
+  }
+
+  :global(.percent .tick line) {
+    opacity: 0.6;
+    stroke-dasharray: 5 5;
+  }
+  :global(.percent .domain, .eval-ticks .domain) {
+    stroke: none;
   }
 </style>

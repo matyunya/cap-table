@@ -105,7 +105,7 @@
         "d",
         shape
           .line()
-          .curve(shape.curveStep)
+          .curve(shape.curveMonotoneX)
           .x(function (d) {
             return x(d.date);
           })
