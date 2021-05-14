@@ -19,9 +19,9 @@
 
   $: if (el && $activeDocChartData && $chartDocStatus === "success") draw();
 
-  const margin = { top: 20, right: 30, bottom: 30, left: 70 };
-  const width = 800;
-  const height = 300;
+  const margin = { top: 40, right: 30, bottom: 30, left: 70 };
+  const width = 1100;
+  const height = 800;
 
   const fmt = new Intl.NumberFormat("ja-JP", {
     notation: "compact",
@@ -34,7 +34,7 @@
       .select(el)
       .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "0 0 840 300")
+      .attr("viewBox", "0 0 1140 800")
       .classed("inline-block", true)
       .append("g")
       .attr("width", width)
@@ -49,11 +49,14 @@
       .append("g")
       .attr("transform", "translate(0, " + (height - margin.bottom) + ")")
       .call(
-        axis.axisBottom(x).tickFormat((i) => {
-          if (!$activeDocChartData[i]) return "";
+        axis
+          .axisBottom(x)
+          .ticks($activeDocChartData.length)
+          .tickFormat((i) => {
+            if (!$activeDocChartData[i]) return "";
 
-          return dateFormat($activeDocChartData[i].date, "yy年M月");
-        })
+            return dateFormat($activeDocChartData[i].date, "yy年M月");
+          })
       );
 
     const y = scale
@@ -83,7 +86,7 @@
 
     chart
       .append("g")
-      .attr("transform", "translate(" + (width - margin.right) + ",0)")
+      .attr("transform", "translate(" + (width - margin.right + 15) + ",0)")
       .call(
         axis
           .axisRight(yPercent)
@@ -101,9 +104,9 @@
         "d",
         shape
           .line()
-          .curve(shape.curveStep)
-          .x((d, i) => x(i) - 4)
-          .y((d) => yPercent(d.founderShare) - 4)
+          .curve(shape.curveMonotoneX)
+          .x((d, i) => x(i))
+          .y((d) => yPercent(d.founderShare))
       );
 
     chart
@@ -133,28 +136,71 @@
     dotNode
       .append("text")
       .attr("class", "label")
-      .attr("x", (d, i) => x(i) - 10)
-      .attr("y", (d) => y(d.postMoney) - 5)
+      .attr("x", (d, i) => x(i) - 25)
+      .attr("y", (d) => y(d.postMoney) - 10 - r(d.postMoney))
       .text((d, i) => (i === 0 ? "" : fmt.format(d.postMoney) + "円"));
+
+    const firstLabelNode = chart
+      .selectAll("dot")
+      .data($activeDocChartData.slice(0, 1))
+      .enter();
+
+    firstLabelNode
+      .append("text")
+      .attr("class", "post-money-label")
+      .attr("x", (d, i) => x(i) + 125)
+      .attr("y", (d) => y(d.postMoney) - 50 - r(d.postMoney))
+      .text("時価総額");
+
+    firstLabelNode
+      .append("text")
+      .attr("class", "share-label")
+      .attr("x", (d, i) => x(i) + 125)
+      .attr("y", (d) => yPercent(d.founderShare) + 50)
+      .text("経営者持分");
   }
 </script>
 
 <div class="mt-24">
-  <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
-    資本政策チャート
-  </h2>
-  <Select
-    classes="ml-6 mr-3 focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
-    hasEmpty={false}
-    value={$chartDocId}
-    on:change={({ target }) => window.ellx.router.go(`/chart/${target.value}`)}
-    options={$documentIds}
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-bold text-lg my-6 text-left w-full tracking-wide">
+      資本政策チャート
+    </h2>
+    <Select
+      classes="focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+      hasEmpty={false}
+      value={$chartDocId}
+      on:change={({ target }) =>
+        window.ellx.router.go(`/chart/${target.value}`)}
+      options={$documentIds}
+    />
+  </div>
+  <div
+    class="my-4 p-4 dark:bg-gray-900 bg-gray-100 shadow-lg rounded-lg z-50 max-w-5xl mx-auto"
+    bind:this={el}
   />
-  <div class="my-4 z-50 max-w-5xl mx-auto" bind:this={el} />
 </div>
 
 <style>
   :global(text) {
-    font-size: 8px;
+    font-size: 12px;
+  }
+
+  :global(.label) {
+    color: #0285c7;
+    font-size: 14px;
+    font-family: monospace;
+  }
+
+  :global(.post-money-label) {
+    color: #0285c7;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  :global(.share-label) {
+    color: orange;
+    font-size: 18px;
+    font-weight: bold;
   }
 </style>
