@@ -108,7 +108,7 @@
       .call(
         axis
           .axisRight(yPercent)
-          .tickValues([0.333, 0.5, 0.666, 1])
+          .tickValues([0.333, 0.5, 0.666])
           .tickSize(-width + margin.left + margin.right - 15)
           .tickFormat(format.percent.format)
       );
@@ -267,8 +267,13 @@
   }
 
   :global(.percent .tick line) {
-    opacity: 0.6;
-    stroke-dasharray: 5 5;
+    opacity: 0.8;
+    stroke-dasharray: 10 10;
+    stroke: red;
+  }
+  :global(.percent .tick text) {
+    font-size: 16px;
+    font-weight: medium;
   }
   :global(.percent .domain, .eval-ticks .domain) {
     stroke: none;
