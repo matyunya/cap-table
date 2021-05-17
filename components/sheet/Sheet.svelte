@@ -158,7 +158,4 @@
   :global(.cell .icon) {
     opacity: 0;
   }
-  .bg-blurred {
-    backdrop-filter: blur(8px);
-  }
 </style>

@@ -280,7 +280,7 @@ export const removeDocument = ({ id }) => {
 
   syncUp(store, REMOVE_DOCUMENT, { id }, id);
 
-  if (route.get().startsWith("/docs/")) {
+  if ((route.get() || "").startsWith("/docs/")) {
     window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
   }
 }

@@ -45,19 +45,19 @@
 />
 
 <nav
-  class="w-screen h-10 flex flex-row px-8 text-gray-600 dark:text-gray-200 fixed top-0 left-0 z-20"
+  class="bg-blurred shadow-sm w-screen z-30 h-12 pb-1 flex flex-row px-8 text-gray-600 dark:text-gray-200 fixed top-0 left-0"
 >
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
   >
-    {#if $route && !$route.startsWith("/docs/")}
+    {#if typeof $route === "string" && !$route.startsWith("/docs/")}
       <a
         href="/"
         class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded p-1 transition duration-300"
       >
         Capital Dash
       </a>
-      {#if $isAuthenticated && !$route.startsWith("/signup")}
+      {#if $isAuthenticated && typeof $route === "string" && !$route.startsWith("/signup")}
         <a
           class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/docs"
@@ -89,7 +89,7 @@
         ← {$_(routeName($route))}
       </a>
     {/if}
-    {#if $route && $route.startsWith("/docs/")}
+    {#if typeof $route === "string" && $route.startsWith("/docs/")}
       <Select
         classes="ml-6 mr-3 focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
@@ -178,7 +178,7 @@
         >
       </button>
     {:else}
-      {#if $route && $route.startsWith("/signup")}
+      {#if typeof $route === "string" && $route.startsWith("/signup")}
         <span class="ml-5">{$_("アカウントをお持ちの方は")}</span>
       {/if}
       <a class="ml-5 button nav-button" href="/login">

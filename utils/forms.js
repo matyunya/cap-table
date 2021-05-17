@@ -38,7 +38,7 @@ export function validate(data, fields) {
 }
 
 export const length = (n) => (v) => (v.length < n ? n + "桁を入力してください" : false);
-const sameAs = (field) => (v, data) => v !== data[field] ? "一緒ではありません" : false;
+const sameAs = (field) => (v, data) => v !== data[field] ? "パスワードが一致しません" : false;
 
 export const passwordRules = [
   sameAs("confirm"),
