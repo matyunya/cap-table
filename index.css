@@ -488,3 +488,7 @@
 .bg-blurred {
   backdrop-filter: blur(8px);
 }
+
+svg {
+  fill: currentColor;
+}
