@@ -261,7 +261,7 @@ const translations = {
   "正社員": {
     en: "Full-time"
   },
-  "この項目が必須です": {
+  "必須項目です": {
     en: "This field is required"
   },
   "上限を超過しました": {

@@ -26,6 +26,15 @@
   <ul
     class="max-w-5xl w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-4 mt-12"
   >
+    <li
+      class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
+      on:click={createDocument}
+    >
+      <div class="flex items-center justify-center flex-col h-full text-5xl">
+        <span>+</span>
+        <span class="text-xs mt-4">{$_("新しいテーブル")}</span>
+      </div>
+    </li>
     {#each $documentIds as [id, title, lastViewed]}
       <li
         class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
@@ -53,16 +62,5 @@
         </div>
       </li>
     {/each}
-    <li
-      class="relative bg-gray-200 dark:bg-gray-900 cursor-pointer w-full p-3 font-mono rounded hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow hover:shadow-lg flex flex-col justify-between"
-      on:click={createDocument}
-    >
-      <div
-        class="flex items-center justify-center flex-col h-full text-5xl"
-      >
-      <span>+</span>
-      <span class="text-xs mt-4">{$_("新しいテーブル")}</span>
-      </div>
-    </li>
   </ul>
 </section>

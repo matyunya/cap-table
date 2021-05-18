@@ -25,5 +25,4 @@ const { auth } = require("/index.ellx");
 
 export const authError = writable(false);
 
-auth.subscribe(v => authError.set(v instanceof Error));
-
+Promise.resolve().then(() => auth.subscribe(v => authError.set(v instanceof Error)));
