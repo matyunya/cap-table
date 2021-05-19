@@ -60,7 +60,7 @@
         window.ellx.login.withLink({
           email: data.email,
           password: data.password,
-          language: $language,
+          language: $language || DEFAULT_LANGUAGE,
           redirectUrl: "/signup/2",
         });
         // todo: save name to ls from this page
