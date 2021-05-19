@@ -45,8 +45,6 @@
   export let discount;
   export let id;
   export let result;
-  export let isLast = false;
-
   $: width = ROUND_WIDTHS[type];
   $: options = roundOptions[type];
 
@@ -55,7 +53,6 @@
 
 <div
   style="top: 0; width: {width}px; min-width: 0; min-height: 0"
-  class:mr-24={isLast}
   class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20 relative"
 >
   <div
@@ -118,7 +115,10 @@
   />
 </div>
 
-<div class="py-4 flex items-center flex-row flex-wrap" style="height: 6rem">
+<div
+  class="py-4 flex items-center flex-row flex-wrap"
+  style="height: 6rem"
+>
   {#if type === "split"}
     <div
       class:font-bold={result && !result.isCapApplied}

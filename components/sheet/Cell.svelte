@@ -73,7 +73,7 @@
   class:hover:ring-light-blue-400={$editing === id}
   class:hover:ring-1={$editing !== id && editable}
   class="{$$props.class ||
-    ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden"
+    ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden truncate"
   style={$$props.style || ""}
   title={$_(error) || value}
 >

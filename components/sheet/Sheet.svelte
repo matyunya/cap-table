@@ -39,7 +39,9 @@
 
 {#if $activeSheet}
   <div
-    style="width: {calculateWidth($rounds)}px"
+    style="width: {calculateWidth($rounds)}px; padding-right: {calculateWidth(
+      $rounds
+    ) + 200}px"
     class="relative grid auto grid-cols-1 grid-rows-4 cap-table text-xs gap-x-2 m-12 text-gray-700 dark:text-gray-200 mt-12 bg-blurred z-40 p-4"
     on:click={setEditing}
   >
@@ -47,8 +49,14 @@
       style="top: 0; left: 0;"
       class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
     >
-      <div class="text-xs p-1 pb-2 w-full px-2 text-left">{$_("テーブル名")}</div>
-      <Cell class="w-full h-full flex items-center justify-center font-mono" value={$title} on:change={renameDocument} />
+      <div class="text-xs p-1 pb-2 w-full px-2 text-left">
+        {$_("テーブル名")}
+      </div>
+      <Cell
+        class="w-full h-full flex items-center justify-center font-mono"
+        value={$title}
+        on:change={renameDocument}
+      />
     </div>
     <div
       style="left: 0;"
@@ -130,7 +138,6 @@
       {#each [...$rounds.keys()] as roundId, i (roundId)}
         <Round
           id={roundId}
-          isLast={i === ($rounds.size - 1)}
           {...$rounds.get(roundId)}
           result={$calculated[roundId]}
         />
