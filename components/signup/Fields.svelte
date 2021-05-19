@@ -13,7 +13,8 @@
       (data[field] = transform(e.target.value));
 
   $: activeFields = Object.keys(fields).filter(
-    (r) => !fields[r].ignore && (fields[r].active ? fields[r].active(data) : true)
+    (r) =>
+      !fields[r].ignore && (fields[r].active ? fields[r].active(data) : true)
   );
 </script>
 

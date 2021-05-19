@@ -55,7 +55,11 @@
           .tickFormat((i) => {
             if (!$activeDocChartData[i]) return "";
 
-            return dateFormat($activeDocChartData[i].date, "yy年M月");
+            try {
+              return dateFormat($activeDocChartData[i].date, "yy年M月");
+            } catch {
+              return $activeDocChartData[i].date || "Invalid date";
+            }
           })
       );
 

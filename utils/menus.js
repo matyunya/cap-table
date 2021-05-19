@@ -15,8 +15,7 @@ import {
 const { docId, rounds } = require("/index.ellx");
 
 function canAddJkiss(roundId) {
-  if (!rounds.get().get(roundId) || rounds.get().get(roundId).type === "j-kiss")
-    return false;
+  if (rounds.get().get(roundId).type === "j-kiss") return false;
 
   const roundIds = [...rounds.get().keys()];
   const nextId = roundIds[roundIds.indexOf(roundId) + 1];

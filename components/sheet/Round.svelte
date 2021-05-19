@@ -115,10 +115,7 @@
   />
 </div>
 
-<div
-  class="py-4 flex items-center flex-row flex-wrap"
-  style="height: 6rem"
->
+<div class="py-4 flex items-center flex-row flex-wrap" style="height: 6rem">
   {#if type === "split"}
     <div
       class:font-bold={result && !result.isCapApplied}

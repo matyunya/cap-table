@@ -33,7 +33,7 @@
       v &&
         v === docId.get() &&
         !v.startsWith("@@io.ellx.STALE") &&
-        $isAuthenticated === true
+        $isAuthenticated === true &&
         updateLastViewed();
     })
   );
