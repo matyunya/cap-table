@@ -1,6 +1,6 @@
 import { store, language, DEFAULT_LANGUAGE } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
-const { appId, userId } = require("/index.ellx");
+const { appId, userId, isAuthenticated } = require("/index.ellx");
 
 function getProfileRef() {
   return firebase

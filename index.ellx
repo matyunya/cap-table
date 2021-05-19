@@ -21,8 +21,8 @@ nodes:
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
-  $2 = connect(userId)
-  $5 = connectProfile(userId)
+  unsubscribeDocs = connect(userId)
+  unsubscribeProfile = connectProfile(userId)
   route = router.path
   sheetChanged = activeSheet.owner && docId
   router = ellx.router
@@ -229,7 +229,7 @@ layout:
       }
     },,,,,
     {
-      "node": "$2"
+      "node": "unsubscribeDocs"
     },,
     {
       "value": "Route:"
@@ -237,7 +237,7 @@ layout:
   ],
   [,,,,,,,
     {
-      "node": "$5"
+      "node": "unsubscribeProfile"
     },,
     {
       "node": "route"

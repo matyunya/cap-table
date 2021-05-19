@@ -25,6 +25,7 @@
     isAnon,
     sheetChanged,
     docId,
+    isAuthenticated,
   } = require("/index.ellx");
 
   onMount(() =>
@@ -32,6 +33,7 @@
       v &&
         v === docId.get() &&
         !v.startsWith("@@io.ellx.STALE") &&
+        $isAuthenticated === true
         updateLastViewed();
     })
   );
