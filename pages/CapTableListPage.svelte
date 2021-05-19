@@ -43,7 +43,7 @@
       >
         <div
           on:click|preventDefault|stopPropagation={setEditing}
-          class="flex flex-row justify-between relative"
+          class="flex flex-row justify-between items-center relative"
         >
           <Cell
             class="text-left text-sm font-medium"
@@ -51,8 +51,9 @@
             value={title}
           />
           <Icon
+            absolute={false}
             on:click={(e) => openContextMenu(getCommonMenuItems(id), e)}
-            wrapperClasses="top-0 right-0 h-full flex items-center"
+            wrapperClasses="ml-3 h-full flex items-center"
           />
         </div>
         <ThumbnailChart {id} />

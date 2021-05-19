@@ -3,14 +3,21 @@
   import Select from "/components/ui/Select.svelte";
   import Label from "/components/ui/Label.svelte";
   import _ from "/utils/intl.js";
+
   export let fields;
   export let data;
   export let errors;
-  export let update = (field, transform = (i) => i) => (e) =>
-    (data[field] = transform(e.target.value));
+  export let update =
+    (field, transform = (i) => i) =>
+    (e) =>
+      (data[field] = transform(e.target.value));
+
+  $: activeFields = Object.keys(fields).filter(
+    (r) => !fields[r].ignore && (fields[r].active ? fields[r].active(data) : true)
+  );
 </script>
 
-{#each Object.keys(fields).filter((r) => !fields[r].ignore) as field}
+{#each activeFields as field}
   {#if fields[field].type === "radio"}
     <Label
       id={field}

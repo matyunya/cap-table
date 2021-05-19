@@ -19,7 +19,7 @@
 
   $: if (el && $activeDocChartData && $chartDocStatus === "success") draw();
 
-  const margin = { top: 40, right: 30, bottom: 30, left: 70 };
+  const margin = { top: 80, right: 30, bottom: 50, left: 70 };
   const width = 1100;
   const height = 800;
 
@@ -72,7 +72,7 @@
     const r = scale
       .scaleLinear()
       .domain(array.extent($activeDocChartData, (d) => +d.postMoney))
-      .range([4, 12]);
+      .range([5, 30]);
 
     const rPercent = scale
       .scaleLinear()
@@ -195,14 +195,14 @@
       .append("text")
       .attr("class", "post-money-label")
       .attr("x", 100)
-      .attr("y", height - 40)
+      .attr("y", height - 10)
       .text("時価総額");
 
     firstLabelNode
       .append("text")
       .attr("class", "share-label")
       .attr("x", 100)
-      .attr("y", 0 + 30)
+      .attr("y", 50)
       .text("経営者持分");
   }
 </script>

@@ -20,7 +20,7 @@ export function connect() {
     .onSnapshot(
       querySnapshot => {
         querySnapshot.empty
-          ? getActiveDocRef().set(serialize({ ...defaultDocument, owner: userId.get() }), uid())
+          ? getActiveDocRef().set(serialize({ ...defaultDocument(), owner: userId.get() }), uid())
           : store.commit(SYNC_DOCS, querySnapshot)
       }
     );

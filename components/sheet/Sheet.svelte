@@ -97,7 +97,7 @@
             {#if !$isAnon}
               <Icon
                 on:click={(e) =>
-                  openContextMenu(investorMenuItems(id, group), e)}
+                  openContextMenu(investorMenuItems(id, group, investors), e)}
                 rotate="90"
               />
             {/if}
@@ -127,9 +127,10 @@
     </div>
 
     {#if $rounds && $rounds.values}
-      {#each [...$rounds.keys()] as roundId (roundId)}
+      {#each [...$rounds.keys()] as roundId, i (roundId)}
         <Round
           id={roundId}
+          isLast={i === ($rounds.size - 1)}
           {...$rounds.get(roundId)}
           result={$calculated[roundId]}
         />

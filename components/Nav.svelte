@@ -1,5 +1,6 @@
 <script>
   import Select from "/components/ui/Select.svelte";
+  import Icon from "/components/ui/Icon.svelte";
   import { language, documentIds, SET_LANGUAGE, store } from "/store.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
@@ -91,7 +92,7 @@
     {/if}
     {#if typeof $route === "string" && $route.startsWith("/docs/")}
       <Select
-        classes="ml-6 mr-3 focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+        classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
@@ -100,10 +101,20 @@
       />
       <button
         title="Dark mode toggle"
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1"
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow hover:shadow-lg dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
-        ☰
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
+          />
+        </svg>
       </button>
     {/if}
     <FounderShare />
@@ -127,7 +138,7 @@
     >
       {$language === "ja" ? "en" : "ja"}
     </button>
-    {#if $isAuthenticated}
+    {#if $isAuthenticated && $route !== "/signup/2"}
       <button
         on:click={(e) =>
           openContextMenu(
@@ -177,13 +188,15 @@
           /></svg
         >
       </button>
-    {:else}
+    {:else if $route !== "/signup/2"}
       {#if typeof $route === "string" && $route.startsWith("/signup")}
         <span class="ml-5">{$_("アカウントをお持ちの方は")}</span>
       {/if}
-      <a class="ml-5 button nav-button" href="/login">
-        {$_("ログイン")}
-      </a>
+      {#if $route !== "/login"}
+        <a class="ml-5 button nav-button" href="/login">
+          {$_("ログイン")}
+        </a>
+      {/if}
     {/if}
   </div>
 </nav>

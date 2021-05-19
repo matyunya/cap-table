@@ -45,6 +45,7 @@
   export let discount;
   export let id;
   export let result;
+  export let isLast = false;
 
   $: width = ROUND_WIDTHS[type];
   $: options = roundOptions[type];
@@ -54,6 +55,7 @@
 
 <div
   style="top: 0; width: {width}px; min-width: 0; min-height: 0"
+  class:mr-24={isLast}
   class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20 relative"
 >
   <div
@@ -64,13 +66,13 @@
       on:change={({ detail }) => renameRound({ roundId: id, value: detail })}
       value={name}
     />
-    {#if $closestRound === id}
+    <!-- {#if $closestRound === id}
       <div
         class="font-mono text-xs rounded-full h-4 w-4 bg-light-blue-500 flex items-center justify-center text-white ring-1 ring-offset-1"
       >
         今
       </div>
-    {/if}
+    {/if} -->
     <Cell
       class="text-right text-gray-100 text-xs mr-6"
       error={dateUpdateError}
@@ -120,7 +122,6 @@
   {#if type === "split"}
     <div
       class:font-bold={result && !result.isCapApplied}
-      class:underline={result && !result.isCapApplied}
       class="w-1/2 flex items-center justify-end px-4"
     >
       {$_("分割数")}
@@ -134,7 +135,6 @@
   {:else if type === "j-kiss"}
     <div
       class:font-bold={result && result.isCapApplied}
-      class:underline={result && result.isCapApplied}
       class="w-1/2 flex items-center justify-end px-4"
       style="font-size: 0.8rem"
     >
