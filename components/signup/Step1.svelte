@@ -20,6 +20,7 @@
       placeholder: "例）info@email.co.jp",
       label: "メールアドレス",
       required: true,
+      validate: (s) => /^\S+@\S+\.\S+$/.test(s) ? false : "Emailの形式が無効です",
     },
     password: {
       placeholder: "",
