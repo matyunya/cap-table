@@ -49,7 +49,7 @@ export const passwordRules = [
   sameAs("confirm"),
   length(8),
   (v) =>
-    /[0-9]$/.test(v) && /[a-zA-Z]/.test(v)
+    /[0-9]/.test(v) && /[a-zA-Z]/.test(v)
       ? false
       : "半角英数字8文字以上で入力して下さい",
 ];

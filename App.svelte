@@ -23,7 +23,7 @@
   import _ from "/utils/intl.js";
   import CapTableListPage from "/pages/CapTableListPage.svelte";
 
-  let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  let dark = false; //window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   $: if (dark) {
     document.querySelector("body").classList.add("mode-dark");
