@@ -59,21 +59,21 @@
       </a>
       {#if $isAuthenticated && typeof $route === "string" && !$route.startsWith("/signup")}
         <a
-          class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
+          class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/docs"
           class:font-bold={$route === "/docs"}
         >
           {$_("資本政策")}
         </a>
         <a
-          class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
+          class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/plan"
           class:font-bold={$route === "/plan"}
         >
           {$_("事業計画")}
         </a>
         <a
-          class="mx-2 font-mono hover:text-black hover:dark:text-white hover:underline transition duration-150"
+          class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/calc"
           class:font-bold={$route === "/calc"}
         >
@@ -84,7 +84,7 @@
     {#if routeName($route)}
       <a
         href="/docs"
-        class="text-xs font-mono underline text-light-blue-500 rounded-xl p-1"
+        class="text-xs underline text-light-blue-500 rounded-xl p-1"
       >
         ← {$_(routeName($route))}
       </a>

@@ -23,7 +23,7 @@
     {#if success}
       <slot name="success">
         <div
-          class="flex items-center justify-center text-green-500 font-medium text-lg tracking-wide font-mono"
+          class="flex items-center justify-center text-green-500 font-medium text-lg tracking-wide "
         >
           {$_("成功しました")}
         </div>
