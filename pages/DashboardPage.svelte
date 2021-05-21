@@ -32,7 +32,7 @@
 >
   {#if $profile && $profile.loaded && !("hideWelcome" in $profile) && $showWelcome}
     <div
-      out:fly
+      out:fly|local
       class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-8 rounded-xl w-full flex flex-col justify-between space-x-4 items-center bg-white dark:bg-gray-700"
     >
       <h2 class="text-3xl font-medium text-center w-full mb-8">
