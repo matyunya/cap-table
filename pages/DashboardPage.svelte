@@ -7,6 +7,7 @@
 <script>
   import { fly } from "svelte/transition";
   import _ from "/utils/intl.js";
+  import Step from "/components/ui/Step.svelte";
   import { updateProfile } from "/models/profile.js";
   const { isAuthenticated, profile } = require("/index.ellx");
 
@@ -69,13 +70,7 @@
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
-      <div
-        style="left: 10px; top:-20px;"
-        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
-      >
-        <span>Step</span>
-        <span class="text-lg font-medium">1</span>
-      </div>
+      <Step />
       <h3 class="font-bold text-lg mb-4">{$_("資本政策")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">
@@ -91,13 +86,7 @@
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
-      <div
-        style="left: 10px; top:-20px;"
-        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
-      >
-        <span>Step</span>
-        <span class="text-lg font-medium">2</span>
-      </div>
+      <Step n="2" />
       <h3 class="font-bold text-lg mb-4">{$_("事業計画")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">
@@ -114,13 +103,7 @@
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
-      <div
-        style="left: 10px; top:-20px;"
-        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
-      >
-        <span>Step</span>
-        <span class="text-lg font-medium">3</span>
-      </div>
+      <Step n="3" />
       <h3 class="font-bold text-lg mb-4">{$_("株価算定")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">
