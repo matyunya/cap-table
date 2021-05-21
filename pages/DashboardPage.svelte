@@ -1,39 +1,56 @@
 <script>
+  import { fly } from "svelte/transition";
   import _ from "/utils/intl.js";
-  const { isAuthenticated, profile } = require("/index.ellx");
+  import { updateProfile } from "/models/profile.js";
+  const { isAuthenticated, profile, authStatus } = require("/index.ellx");
 
   isAuthenticated.subscribe((value) => {
     if (value === false) {
       window.ellx.router.go("/");
     }
   });
+
+  let showWelcome = true;
+  let shouldHideWelcome = false;
+
+  function closeWelcome() {
+    showWelcome = false;
+    if (shouldHideWelcome) {
+      updateProfile({ hideWelcome: true });
+    }
+  }
+
+  $: console.log($profile);
 </script>
 
 <main
   class="relative block text-sm flex max-w-5xl mx-auto pt-12 flex flex-col px-4 min-h-screen mt-12"
 >
-  <div
-    class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-8 rounded-xl w-full flex flex-col justify-between space-x-4 items-center bg-white dark:bg-gray-700"
-  >
-    <h2 class="text-3xl font-medium text-center w-full mb-8">
-      Capital Dashへようこそ
-    </h2>
-    <p class="mb-2">登録いただきありがとうございます。</p>
-    <p class="max-w-xl">
-      初めてご利用いただく方や、途中で疑問を持たれた方のために「ご利用ガイド」をご用意しました。
-      下のボタン、または画面右上の？マークからご確認ください。
-    </p>
-    <a class="button mx-auto my-8" href="/tutorial">ご利用ガイドを開く</a>
-    <div class="text-xs opacity-75 mt-12 w-full flex justify-end space-x-3">
-      <label class="flex items-center space-x-1">
-        <input type="checkbox" />
-        <span>今後このメッセージを表示しない</span>
-      </label>
-      <button class="underline">閉じる</button>
+  {#if $profile && $profile.loaded && !("hideWelcome" in $profile) && showWelcome}
+    <div
+      out:fly
+      class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-8 rounded-xl w-full flex flex-col justify-between space-x-4 items-center bg-white dark:bg-gray-700"
+    >
+      <h2 class="text-3xl font-medium text-center w-full mb-8">
+        Capital Dashへようこそ
+      </h2>
+      <p class="mb-2">登録いただきありがとうございます。</p>
+      <p class="max-w-xl">
+        初めてご利用いただく方や、途中で疑問を持たれた方のために「ご利用ガイド」をご用意しました。
+        下のボタン、または画面右上の？マークからご確認ください。
+      </p>
+      <a class="button mx-auto my-8" href="/tutorial">ご利用ガイドを開く</a>
+      <div class="text-xs opacity-75 mt-12 w-full flex justify-end space-x-3">
+        <label class="flex items-center space-x-1">
+          <input type="checkbox" bind:checked={shouldHideWelcome} />
+          <span>今後このメッセージを表示しない</span>
+        </label>
+        <button on:click={closeWelcome} class="underline">閉じる</button>
+      </div>
     </div>
-  </div>
+  {/if}
 
-  <div class="mt-12 mb-8 w-full">
+  <div class="mt-16 mb-12 w-full">
     <h2 class="text-lg font-bold mb-2">{$_("株価算定までの3ステップ")}</h2>
     <div>
       {$_(
@@ -43,12 +60,19 @@
   </div>
 
   <div
-    class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-4 mb-8 text-sm"
+    class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-6 mb-8 text-sm"
   >
     <a
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
+      <div
+        style="left: 10px; top:-20px;"
+        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
+      >
+        <span>Step</span>
+        <span class="text-lg font-medium">1</span>
+      </div>
       <h3 class="font-bold text-lg mb-4">{$_("資本政策")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">
@@ -64,6 +88,13 @@
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
+      <div
+        style="left: 10px; top:-20px;"
+        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
+      >
+        <span>Step</span>
+        <span class="text-lg font-medium">2</span>
+      </div>
       <h3 class="font-bold text-lg mb-4">{$_("事業計画")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">
@@ -80,6 +111,13 @@
       href="/docs"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
+      <div
+        style="left: 10px; top:-20px;"
+        class="absolute flex flex-col items-center z-30 bg-white shadow-lg left-0 rounded-full border  border-gray-400 shadow-lg dark:border-gray-200 p-2 w-16 h-16 text-xs uppercase"
+      >
+        <span>Step</span>
+        <span class="text-lg font-medium">3</span>
+      </div>
       <h3 class="font-bold text-lg mb-4">{$_("株価算定")}</h3>
       <div class="flex-1">icon</div>
       <div class="px-4 space-y-4">

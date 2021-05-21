@@ -1,6 +1,5 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import Icon from "/components/ui/Icon.svelte";
   import { language, documentIds, SET_LANGUAGE, store } from "/store.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";

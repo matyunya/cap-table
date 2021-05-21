@@ -389,7 +389,6 @@ export function RENAME_ROUND({ roundId, name }) {
 
 export function UPDATE_ROUND_DATE({ roundId, date }) {
   return ({ set, get }) => {
-    console.log({ date })
     if (isNaN(new Date(date))) {
       throw new Error("Invalid date");
     }
