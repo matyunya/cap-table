@@ -36,7 +36,7 @@
       {noText}
     </button>
     <button
-      class="button bg-red-500 hover:bg-red-400 p-2 text-xs"
+      class="button bg-red-600 hover:bg-red-500 p-2 text-xs w-32"
       on:click={() => resolve(true)}
     >
       {yesText}
