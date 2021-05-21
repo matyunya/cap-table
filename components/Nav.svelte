@@ -100,7 +100,7 @@
       />
       <button
         title="Dark mode toggle"
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-100 hover:bg-gray-50 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
         <svg

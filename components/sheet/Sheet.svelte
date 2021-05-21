@@ -69,7 +69,7 @@
           <div class="relative cell">
             <Cell
               class={cn({
-                "cell p-1 h-6 items-center text-left font-bold relative": true,
+                "cell p-1 h-6 items-center text-left font-bold": true,
                 "tracking-wide text-xs border-t dark:border-gray-600 mt-4":
                   i !== 0,
               })}
@@ -81,6 +81,7 @@
             </Cell>
             {#if !$isAnon}
               <Icon
+                class={cn({ "mt-4": i !== 0 })}
                 on:click={(e) =>
                   openContextMenu(
                     investorGroupMenuItems(label, $investors, i === 0),
