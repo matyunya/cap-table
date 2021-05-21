@@ -65,5 +65,3 @@
     {/each}
   </ul>
 </section>
-
-<footer>企業情報 ©Capital Dash All Rights Reserved.</footer>
