@@ -16,21 +16,24 @@
 </script>
 
 <main>
-  <section class="lg:pt-0 mt-24 max-w-5xl mx-auto">
-    <div class="grid grid-cols-3 gap-6">
-      <div class="flex flex-col space-y-2 items-center">
-        <div class="text-xs">スタートアップ起業家向け 資金調達支援ツール</div>
-        <h1 class="text-4xl font-bold mb-6">capital dash</h1>
-        <div class="font-bold text-base">
+  <section class="px-4 lg:pt-0 mt-24 max-w-5xl mx-auto">
+    <div class="grid grid-cols-7 gap-6">
+      <div class="flex flex-col col-span-4 space-y-2 items-center">
+        <div class="text-base">スタートアップ起業家向け 資金調達支援ツール</div>
+        <h1 class="text-6xl font-bold mb-6">capital dash</h1>
+        <div class="font-bold text-lg">
           資本政策表の作成と株価算定を高速で簡単に
         </div>
-        <a class="button my-8 w-full text-xl" href="/signup">
+        <a
+          class="button mt-8 mb-2 w-full text-xl bg-light-blue-600 hover:bg-light-blue-500 ring-0 hover:ring-4"
+          href="/signup"
+        >
           {$_("会員登録して利用する")}
         </a>
         <div class="text-xs opacity-75">会員登録したらすぐにご利用可能です</div>
       </div>
       <img
-        class="w-full shadow-lg rounded-xl col-span-2"
+        class="w-full shadow-lg rounded-xl col-span-3 flex items-center justify-center"
         loading="lazy"
         src="https://i.ibb.co/3SZ2QkR/ezgif-com-gif-maker.gif"
         alt="cap-table"
@@ -39,29 +42,39 @@
     </div>
   </section>
 
-  <section class="mt-12 max-w-5xl mx-auto flex flex-col items-center space-y-4">
-    <h2 class="font-bold text-xl mb-6">
-      資金調達支援ツール capital dashとは？
-    </h2>
-    <p>
-      資金調達に必要な準備である資本政策表の作成と株価算定が３ステップで簡単にできます。
-    </p>
-    <p>
-      スタートアップ投資家の株価算定ロジックが実装されており、起業家が高速かつミスなく、自社の株価理論値を算定することが可能です。
-    </p>
-    <p>
-      スタートタップ起業家の方など、投資家に会う前に説得力のあるロジック構築にお役立てください。
-    </p>
+  <section
+    class="px-4 mt-12 max-w-5xl mx-auto flex flex-col items-center space-y-4"
+  >
+    <div class="mx-auto mb-12 text-lg max-w-5xl p-12">
+      <div class="flex flex-col items-center space-y-6 max-w-2xl">
+        <h2 class="font-bold text-2xl mb-6">
+          資金調達支援ツール capital dashとは？
+        </h2>
+        <p>
+          資金調達に必要な準備である<em>資本政策表の作成</em>と<em>
+            株価算定
+          </em>が３ステップで簡単にできます。
+        </p>
+        <p>
+          <em>
+            スタートアップ投資家の株価算定ロジックが実装されており、起業家が高速かつミスなく、自社の株価理論値
+          </em>を算定することが可能です。
+        </p>
+        <p>
+          スタートタップ起業家の方など、投資家に会う前に説得力のあるロジック構築にお役立てください。
+        </p>
+      </div>
+    </div>
     <div
       class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-6 mb-8 text-sm"
     >
       <div
-        class="relative shadow-lg h-full py-8 px-4 rounded-xl ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
+        class="relative shadow-lg h-full py-8 px-4 rounded-xl flex flex-col justify-between items-center bg-white dark:bg-gray-700"
       >
         <Step />
         <h3 class="font-bold text-lg mb-4">{$_("資本政策表の作成")}</h3>
         <div class="">icon</div>
-        <h4>作成ツールの便利な機能</h4>
+        <h4 class="font-bold mb-4 mt-2">作成ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
             <h5 class="mt-2 font-bold">さようなら、計算ミス</h5>
@@ -90,12 +103,12 @@
         </div>
       </div>
       <div
-        class="relative shadow-lg h-full py-8 px-4 rounded-xl ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
+        class="relative shadow-lg h-full py-8 px-4 rounded-xl flex flex-col justify-between items-center bg-white dark:bg-gray-700"
       >
         <Step n="2" />
         <h3 class="font-bold text-lg mb-4">{$_("事業計画の作成")}</h3>
         <div class="">icon</div>
-        <h4>作成ツールの便利な機能</h4>
+        <h4 class="font-bold mb-4 mt-2">作成ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
             <h5 class="mt-2 font-bold">株価算定ツールとのデータ連携</h5>
@@ -120,12 +133,12 @@
         </div>
       </div>
       <div
-        class="relative shadow-lg h-full py-8 px-4 rounded-xl ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
+        class="relative shadow-lg h-full py-8 px-4 rounded-xl flex flex-col justify-between items-center bg-white dark:bg-gray-700"
       >
         <Step n="3" />
         <h3 class="font-bold text-lg mb-4">{$_("株価算定")}</h3>
         <div class="">icon</div>
-        <h4>算定ツールの便利な機能</h4>
+        <h4 class="font-bold mb-4 mt-2">算定ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
             <h5 class="mt-2 font-bold">VCや投資家の株価算定ロジックを実装</h5>
@@ -148,14 +161,80 @@
     </div>
   </section>
 
-  <section class="mt-12 max-w-5xl mx-auto">
-    <h2>capital dashが選ばれる理由</h2>
-    4 round points
+  <section class="px-4 mt-16 max-w-5xl mx-auto">
+    <h2 class="font-bold w-full text-center mb-12 text-3xl">
+      capital dashが選ばれる理由
+    </h2>
+
+    <div class="grid grid-cols-4 gap-4">
+      <div
+        class="flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
+      >
+        <div
+          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-light-blue-50"
+        />
+        <h5 class="font-bold mt-8 mb-2">完全無料</h5>
+        <p>
+          本ツールは、起業家の方は、無料で全ての機能がご利用可能です。会員登録ですぐにご利用になれます。
+        </p>
+        <p>
+          投資家の方でご利用になりたい方はお問い合わせフォームから相談ください。
+        </p>
+      </div>
+      <div
+        class="flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
+      >
+        <div
+          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-light-blue-50"
+        />
+        <h5 class="font-bold mt-8 mb-2">直感的な操作性</h5>
+        <p>使い慣れたExcelのように簡単に数値入力ができ、演算も高速です。</p>
+        <p>創業者持分の維持についてもチャートで直感的に理解可能です。</p>
+      </div>
+      <div
+        class="flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
+      >
+        <div
+          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-light-blue-50"
+        />
+        <h5 class="font-bold mt-8 mb-2">時間短縮</h5>
+        <p>
+          資金調達前準備にかかる時間を大幅に短縮できます。よくある、資本政策表の計算間違いも防止できるので、無駄な時間を削減できます。
+        </p>
+      </div>
+      <div
+        class="flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
+      >
+        <div
+          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-light-blue-50"
+        />
+        <h5 class="font-bold mt-8 mb-2">安心のセキュリティ</h5>
+        <p>
+          Firebaseベースのサーバレス構成を採用しており、高い可用性・耐障害性を持っています。また、capital
+          dashとの通信は全てSSL/TLSによって暗号化されています。
+        </p>
+      </div>
+    </div>
   </section>
 
-  <section class="mt-12 max-w-5xl mx-auto">
-    スタートアップ起業家向け 資金調達支援ツール
+  <section class="px-4 mt-16 max-w-5xl mx-auto flex flex-col items-center">
+    <h2 class="font-bold w-full text-center mb-12 text-3xl">
+      スタートアップ起業家向け 資金調達支援ツール
+    </h2>
+    <a
+      class="button mt-8 mb-2 w-full mx-auto max-w-xl text-xl bg-light-blue-600 hover:bg-light-blue-500 ring-0 hover:ring-4"
+      href="/signup"
+    >
+      {$_("会員登録して利用する")}
+    </a>
+    <div class="text-xs opacity-75">会員登録したらすぐにご利用可能です</div>
   </section>
 
-  <section class="mt-12 max-w-5xl mx-auto">footer</section>
+  <section class="px-4 mt-12 max-w-5xl mx-auto">footer</section>
 </main>
+
+<style>
+  em {
+    font-weight: bold;
+  }
+</style>

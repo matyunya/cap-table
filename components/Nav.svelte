@@ -41,11 +41,11 @@
 
 <div
   style="z-index: -100"
-  class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-100 dark:from-gray-900 via-gray-100 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
+  class="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-warm-gray-50 dark:from-gray-900 via-gray-50 dark:via-gray-800 to-blue-gray-100 dark:to-warm-gray-800"
 />
 
 <nav
-  class="bg-blurred shadow-sm w-screen z-30 h-12 pb-1 flex flex-row px-8 text-gray-600 dark:text-gray-200 fixed top-0 left-0"
+  class="bg-blurred bg-white dark:bg-black shadow-sm w-screen z-30 h-12 pb-1 flex flex-row px-8 text-gray-600 dark:text-gray-200 fixed top-0 left-0"
 >
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
@@ -53,7 +53,7 @@
     {#if typeof $route === "string" && !$route.startsWith("/docs/")}
       <a
         href="/"
-        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded p-1 transition duration-300"
+        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded-xl p-1 transition duration-300"
       >
         Capital Dash
       </a>
@@ -84,14 +84,14 @@
     {#if routeName($route)}
       <a
         href="/docs"
-        class="text-xs font-mono underline text-light-blue-500 rounded p-1"
+        class="text-xs font-mono underline text-light-blue-500 rounded-xl p-1"
       >
         ← {$_(routeName($route))}
       </a>
     {/if}
     {#if typeof $route === "string" && $route.startsWith("/docs/")}
       <Select
-        classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
+        classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3 text-light-blue-500"
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
@@ -100,7 +100,7 @@
       />
       <button
         title="Dark mode toggle"
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow hover:shadow-lg dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
         <svg

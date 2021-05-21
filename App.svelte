@@ -37,7 +37,7 @@
     const { apply, unsubscribe, ...hl } = headlong({ classes });
     apply(
       ".button",
-      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6 text-center ring-0 ring-light-blue-500"
+      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 mt-6 text-center ring-0 ring-light-blue-500"
     );
     apply(".button:hover", "bg-gray-500 shadow-lg");
     apply(".button:disabled", "bg-gray-300 text-gray-400 cursor-not-allowed");

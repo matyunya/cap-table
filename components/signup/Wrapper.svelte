@@ -12,7 +12,7 @@
   class="flex items-center justify-center z-20 text-black dark:text-white mt-20"
 >
   <div
-    class="transition duration-200 z-20 border rounded shadow-lg py-12 break-words px-8 mb-6 antialiased dark:bg-gray-700 bg-blue-gray-100"
+    class="transition duration-200 z-20 border rounded-xl shadow-lg py-12 break-words px-8 mb-6 antialiased dark:bg-gray-700 bg-blue-gray-100"
     style="width: 36em"
   >
     {#if title}

@@ -21,7 +21,7 @@
       <input
         value={data.fullTimeEmployees}
         required
-        class="focus:ring-2 text-right transition duration-200 w-16 p-1 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline"
+        class="focus:ring-2 text-right transition duration-200 w-16 p-1 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline"
         id="j"
         placeholder=" 例) 10"
         type="number"
@@ -44,7 +44,7 @@
       <input
         value={data.contractors}
         required
-        class="focus:ring-2 text-right transition duration-200 w-16 p-1 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline"
+        class="focus:ring-2 text-right transition duration-200 w-16 p-1 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline"
         id="n"
         placeholder=" 例) 11"
         type="number"

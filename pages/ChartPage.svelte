@@ -13,6 +13,8 @@
     activeDocChartData,
     chartDocStatus,
     chartDocId,
+    appId,
+    userId,
   } = require("/index.ellx");
 
   let el;
@@ -216,14 +218,17 @@
     <h2 class="font-bold text-lg my-6 text-left w-full tracking-wide">
       資本政策チャート
     </h2>
-    <Select
-      classes="focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
-      hasEmpty={false}
-      value={$chartDocId}
-      on:change={({ target }) =>
-        window.ellx.router.go(`/chart/${target.value}`)}
-      options={$documentIds}
-    />
+    <div class="flex space-x-4">
+      <Select
+        classes="focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3 text-light-blue-500"
+        hasEmpty={false}
+        value={$chartDocId}
+        on:change={({ target }) =>
+          window.ellx.router.go(`/chart/${target.value}`)}
+        options={$documentIds}
+      />
+      <a class="a" href="/docs/{$userId}/{$appId}/{$chartDocId}">編集へ</a>
+    </div>
   </div>
   <div
     class="my-4 p-4 dark:bg-gray-900 bg-gray-100 shadow-lg rounded-lg z-50 max-w-5xl mx-auto"

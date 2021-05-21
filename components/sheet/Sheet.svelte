@@ -66,17 +66,19 @@
     >
       {#each $investorGroups as { id, label, isGroup, title, group }, i}
         {#if isGroup}
-          <Cell
-            class={cn({
-              "cell p-1 h-6 items-center text-left font-bold relative": true,
-              "tracking-wide text-xs border-t dark:border-gray-600 mt-4":
-                i !== 0,
-            })}
-            value={label}
-            on:change={({ detail }) =>
-              renameInvestorGroup({ oldName: label, newName: detail })}
-          >
-            {label}
+          <div class="relative cell">
+            <Cell
+              class={cn({
+                "cell p-1 h-6 items-center text-left font-bold relative": true,
+                "tracking-wide text-xs border-t dark:border-gray-600 mt-4":
+                  i !== 0,
+              })}
+              value={label}
+              on:change={({ detail }) =>
+                renameInvestorGroup({ oldName: label, newName: detail })}
+            >
+              {label}
+            </Cell>
             {#if !$isAnon}
               <Icon
                 on:click={(e) =>
@@ -87,7 +89,7 @@
                 rotate="90"
               />
             {/if}
-          </Cell>
+          </div>
         {:else}
           <div class="flex cell relative">
             <Cell

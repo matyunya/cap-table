@@ -29,7 +29,7 @@
     class:ring-red-200={error}
     class:ring-0={!error}
     class:ring-1={error}
-    class="focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
+    class="focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline w-full"
     {placeholder}
   />
 </div>

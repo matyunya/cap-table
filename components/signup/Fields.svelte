@@ -58,7 +58,7 @@
         <div class="w-1/2 flex items-center mb-2">
           <input
             bind:group={data[field]}
-            class="mr-3 text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-light-blue-500 focus:ring-opacity-50 focus:ring-offset-0"
+            class="mr-3 text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded-xl shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-light-blue-500 focus:ring-opacity-50 focus:ring-offset-0"
             id={type}
             type="checkbox"
             value={type}
