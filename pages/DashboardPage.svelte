@@ -83,7 +83,7 @@
       <button class="button">{$_("資本政策を開く")}</button>
     </a>
     <a
-      href="/docs"
+      href="/plan"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
       <Step n="2" />
@@ -100,7 +100,7 @@
       <button class="button">{$_("ツールを開く")}</button>
     </a>
     <a
-      href="/docs"
+      href="/calc"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
       <Step n="3" />

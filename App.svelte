@@ -15,10 +15,13 @@
   import ChartPage from "/pages/ChartPage.svelte";
   import TutorialPage from "/pages/TutorialPage.svelte";
   import FeedbackPage from "/pages/FeedbackPage.svelte";
+  import RulesPage from "/pages/RulesPage.svelte";
+  import PrivacyPolicyPage from "/pages/PrivacyPolicyPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Nav from "/components/Nav.svelte";
   import ContextMenu from "/components/ui/ContextMenu.svelte";
+  import ConfirmationDialog from "/components/ui/ConfirmationDialog.svelte";
   import { store } from "/store.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/pages/CapTableListPage.svelte";
@@ -63,8 +66,14 @@
 
 <ContextMenu />
 
+<ConfirmationDialog />
+
 {#if $route === "/"}
   <HomePage />
+{:else if $route === "/privacy"}
+  <PrivacyPolicyPage />
+{:else if $route === "/rules"}
+  <RulesPage />
 {:else if $route === "/dashboard"}
   <DashboardPage />
 {:else if $route === "/docs"}
