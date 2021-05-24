@@ -115,10 +115,11 @@ export function getActiveDocRef(id) {
     .collection("apps")
     .doc(appId.get())
     .collection("files")
-    .doc(id || docId.get());
+    .doc(id);
 }
 
 export function syncUp(st, TRANSACTION, payload, id) {
+  id = id || docId.get();
   if (id === undefined) {
     throw new Error("Trying to sync undefined doc");
   }
@@ -129,6 +130,7 @@ export function syncUp(st, TRANSACTION, payload, id) {
 }
 
 export function syncDocumentUp(st, TRANSACTION, payload, id) {
+  id = id || docId.get();
   if (id === undefined) {
     throw new Error("Trying to sync undefined doc");
   }
