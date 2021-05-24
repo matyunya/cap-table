@@ -119,6 +119,9 @@ export function getActiveDocRef(id) {
 }
 
 export function syncUp(st, TRANSACTION, payload, id) {
+  if (id === undefined) {
+    throw new Error("Trying to sync undefined doc");
+  }
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get()));
 
@@ -126,6 +129,9 @@ export function syncUp(st, TRANSACTION, payload, id) {
 }
 
 export function syncDocumentUp(st, TRANSACTION, payload, id) {
+  if (id === undefined) {
+    throw new Error("Trying to sync undefined doc");
+  }
   const reducer = produce(TRANSACTION(payload));
   const newDoc = serialize(reducer(st)).documents[id];
 
