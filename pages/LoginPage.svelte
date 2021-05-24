@@ -22,6 +22,13 @@
     },
   };
 
+  function errorMessage(err) {
+    if (err.toString().includes("Forbidden")) {
+      return "ログインができませんでした";
+    }
+    return err;
+  }
+
   let data = {};
   let errors = {};
   let submitted = false;
@@ -67,6 +74,8 @@
     </a>
   </div>
   {#if submitted && $auth instanceof Error}
-    <div class="text-red-500 w-full text-center mt-8">{$auth}</div>
+    <div class="text-red-500 w-full text-center mt-8">
+      {errorMessage($auth)}
+    </div>
   {/if}
 </Wrapper>
