@@ -51,7 +51,7 @@
     class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline w-full"
   />
   <a
-    href="mailto:support@capitaldash.com?subject={subject}{other}&body={body}"
+    href="mailto:info@cap-drive.jp?subject={subject}{other}&body={body}"
     disabled={!body}
     on:click={onSubmit}
     class="button w-full mt-12"
