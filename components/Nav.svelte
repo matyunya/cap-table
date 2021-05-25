@@ -95,7 +95,7 @@
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
-          window.ellx.router.go(`/docs/${$userId}/${$appId}/${target.value}`)}
+          window.ellx.router.go(`/docs/${$userId}/${target.value}`)}
         {options}
       />
       <button

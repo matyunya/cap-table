@@ -1,6 +1,4 @@
 <script context="module">
-  import format from "date-fns/format";
-
   export const fields = {
     companyName: {
       placeholder: "例）株式会社◯◯◯",

@@ -318,15 +318,15 @@ export const createDocument = ({ from } = {}) => {
     to
   );
 
-  window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${to}`);
+  window.ellx.router.go(`/docs/${userId.get()}/${to}`);
 };
 
 export const resetDocument = () => syncCurrentDoc(RESET_DOCUMENT);
 
 export const removeDocument = async ({ id }) => {
   const ok = await promptYesNo({
-    title: `このテーブルを削除`,
-    yesText: "削除",
+    title: `このテーブルを削除してもよろしいですか？`,
+    yesText: "はい",
     noText: "キャンセル",
     modal: false,
   });
@@ -339,8 +339,6 @@ export const removeDocument = async ({ id }) => {
   syncUp(store, REMOVE_DOCUMENT, { id }, id);
 
   if ((route.get() || "").startsWith("/docs/")) {
-    window.ellx.router.go(
-      `/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`
-    );
+    window.ellx.router.go(`/docs/${userId.get()}/${ids[idx - 1]}`);
   }
 };

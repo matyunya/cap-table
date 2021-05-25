@@ -13,7 +13,7 @@
     activeDocChartData,
     chartDocStatus,
     chartDocId,
-    appId,
+
     userId,
   } = require("/index.ellx");
 
@@ -227,7 +227,7 @@
           window.ellx.router.go(`/chart/${target.value}`)}
         options={$documentIds}
       />
-      <a class="a" href="/docs/{$userId}/{$appId}/{$chartDocId}">編集へ</a>
+      <a class="a" href="/docs/{$userId}/{$chartDocId}">編集へ</a>
     </div>
   </div>
   <div

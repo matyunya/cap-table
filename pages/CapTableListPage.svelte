@@ -8,10 +8,9 @@
   import Icon from "/components/ui/Icon.svelte";
   import { renameDocument, createDocument } from "/utils/actions.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
-  import ThumbnailChart from "/components/ThumbnailChart.svelte";
   import { getCommonMenuItems } from "/utils/menus.js";
 
-  const { userId, appId } = require("/index.ellx");
+  const { userId } = require("/index.ellx");
 
   function formatDate(d) {
     if (!d) return "--";
@@ -38,8 +37,7 @@
     {#each $documentIds as [id, title, lastViewed]}
       <li
         class="relative bg-white dark:bg-gray-700 cursor-pointer w-full p-3 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow-lg hover:shadow-xl flex flex-col justify-between"
-        on:click={() =>
-          window.ellx.router.go(`/docs/${$userId}/${$appId}/${id}`)}
+        on:click={() => window.ellx.router.go(`/docs/${$userId}/${id}`)}
       >
         <div
           on:click|preventDefault|stopPropagation={setEditing}
@@ -56,7 +54,6 @@
             wrapperClasses="ml-3 h-full flex items-center"
           />
         </div>
-        <ThumbnailChart {id} />
         <div class="text-xs">
           {$_("最終閲覧")}
           {formatDate(lastViewed)}
