@@ -1,0 +1,376 @@
+version: 1.1
+nodes:
+  $1 = store
+  tryLogin = ellx.login()
+  docs = store.documents
+  getAuth = tryLogin && withStatus("auth")
+  auth = tryLogin && ellx.auth
+  authStatus = tryLogin && getAuth()
+  profile = store.profile
+  profileReady = profile.owner === userId
+  userId = !authError ? (auth ? auth.userId : null) : null
+  appId = !authError ? auth.appId : null
+  regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
+  routeUserId = route.split('/')[2]
+  chartDocId = route.split('/')[2]
+  activeDocChartData = chartData(chartDocId, docs)
+  chartDoc = withStatus("activeDocChartData")
+  docId = route.split('/')[3]
+  chartDocStatus = chartDoc()
+  isAuthenticated = Boolean(userId)
+  isAnon = docId && (!userId || userId !== routeUserId)
+  $4 = isAnon && getDoc(docId)
+  activeSheet = store.documents.get(docId)
+  unsubscribeDocs = connect(userId)
+  unsubscribeProfile = connectProfile(userId)
+  route = router.path
+  sheetChanged = activeSheet.owner && docId
+  router = ellx.router
+  title = activeSheet.title
+  founderShare = calcFounderShare(activeSheet)
+  groups = uniqueGroups(investors)
+  investorGroups = groupInvestors(groups, investors)
+  investors = activeSheet.investors
+  rounds = activeSheet.rounds
+  calculated = calculate(rounds, investors)
+  closestRound = getClosestRoundToNow(rounds)
+layout:
+[,
+  [,,
+    {
+      "value": "Store:"
+    }
+  ],
+  [,,
+    {
+      "node": "$1",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": false,
+        "labelsTop": false,
+        "height": 2,
+        "width": 1
+      }
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "Call login:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "tryLogin"
+    }
+  ],
+  [,,
+    {
+      "value": "Documents:"
+    },,,,,,,,
+    {
+      "value": "Auth status:"
+    }
+  ],
+  [,,
+    {
+      "node": "docs",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "height": 5,
+        "width": 5
+      }
+    },,,,,,
+    {
+      "value": "Current user:"
+    },,
+    {
+      "node": "getAuth"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "auth",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 5,
+        "width": 1
+      }
+    },,
+    {
+      "node": "authStatus"
+    }
+  ],,,,,
+  [,
+    {
+      "value": "Profile:"
+    },,
+    {
+      "value": "Profile ready:"
+    }
+  ],
+  [,
+    {
+      "node": "profile",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 10,
+        "width": 1
+      }
+    },,
+    {
+      "node": "profileReady"
+    },,,,,
+    {
+      "value": "Current user ID:"
+    },,
+    {
+      "value": "App ID:"
+    },,
+    {
+      "value": "Registration step:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "userId"
+    },,
+    {
+      "node": "appId"
+    },,
+    {
+      "node": "regStep"
+    }
+  ],,
+  [,,,,,,,,
+    {
+      "value": "Route user ID:"
+    },,
+    {
+      "value": "Chart doc ID:"
+    },,
+    {
+      "value": "Active doc chart data:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "routeUserId"
+    },,
+    {
+      "node": "chartDocId"
+    },,
+    {
+      "node": "activeDocChartData"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "Route doc ID:"
+    },,,,
+    {
+      "node": "chartDoc"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "docId"
+    },,,,
+    {
+      "node": "chartDocStatus"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "// $6 = updateLastViewed(docId)"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "Is authenticated:"
+    },,
+    {
+      "value": "Is viewing someone's doc:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "isAuthenticated"
+    },,
+    {
+      "node": "isAnon"
+    }
+  ],
+  [,,,,,,,,,,
+    {
+      "node": "$4"
+    }
+  ],
+  [,,
+    {
+      "value": "Active sheet:"
+    },,,,,
+    {
+      "value": "Connect to Firebase:"
+    }
+  ],
+  [,,
+    {
+      "node": "activeSheet",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 5,
+        "width": 1
+      }
+    },,,,,
+    {
+      "node": "unsubscribeDocs"
+    },,
+    {
+      "value": "Route:"
+    }
+  ],
+  [,,,,,,,
+    {
+      "node": "unsubscribeProfile"
+    },,
+    {
+      "node": "route"
+    }
+  ],,,,,
+  [,,
+    {
+      "value": "Sheet changed:"
+    }
+  ],
+  [,,
+    {
+      "node": "sheetChanged"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "value": "Router:"
+    }
+  ],
+  [,,
+    {
+      "value": "Title:"
+    },,,,,,
+    {
+      "node": "router",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 3,
+        "width": 1
+      }
+    }
+  ],
+  [,,
+    {
+      "node": "title"
+    }
+  ],,
+  [,,
+    {
+      "value": "Founder share:"
+    }
+  ],
+  [,,
+    {
+      "node": "founderShare"
+    }
+  ],,,
+  [,,
+    {
+      "value": "Active sheet investors:"
+    },,,
+    {
+      "value": "Investor groups:"
+    },,
+    {
+      "value": "Groups and investors:"
+    },,
+    {
+      "value": "// First column values"
+    }
+  ],
+  [,,,,,
+    {
+      "node": "groups",
+      "expansion": {
+        "vertical": true,
+        "height": 7,
+        "width": 1
+      }
+    },,
+    {
+      "node": "investorGroups",
+      "expansion": {
+        "vertical": true,
+        "height": 10,
+        "width": 1
+      }
+    }
+  ],
+  [,,
+    {
+      "node": "investors",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 8,
+        "width": 3
+      }
+    }
+  ],,,,,,,,,,
+  [,,
+    {
+      "value": "Active sheet rounds:"
+    }
+  ],,
+  [,,
+    {
+      "node": "rounds",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 6,
+        "width": 5
+      }
+    }
+  ],,,,,,,
+  [,,
+    {
+      "value": "Calculated results:"
+    }
+  ],,
+  [,,
+    {
+      "node": "calculated",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 6,
+        "width": 4
+      }
+    }
+  ],,,,,,,,,,
+  [,,
+    {
+      "node": "closestRound"
+    }
+  ]
+]

@@ -1,22 +1,28 @@
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
-import Sheet from "/components/Sheet.svelte";
 import App from "./App.svelte";
-import HomePage from "./HomePage.svelte";
+import { writable } from "tinyx";
+import "/index.css";
 
-export { roundTypes } from "/utils/actions.js";
-export { calcShare, uid } from "/utils/index.js";
-export { default as router } from "/utils/router.js";
+export { roundTypes, updateLastViewed } from "/utils/actions.js";
+export {
+  uid,
+  calcFounderShare,
+  uniqueGroups,
+  totalShares,
+  totalCommonShares,
+  fillEmptyInvestments,
+  getClosestRoundToNow
+} from "/utils/index.js";
+export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
+export { connect, getDoc } from "/models/docs.js";
+export { connect as connectProfile } from "/models/profile.js";
+export { store } from "/store.js";
+export { default as withStatus } from "/utils/withStatus.js";
 
 export const app = ellxify(App);
 
-/*
-TODO:
+const { auth } = require("/index.ellx");
 
-translations:
-split by
-error document not found
+export const authError = writable(false);
 
-- drag and drop
-- global error handler for production
-- headlong mounted event
-*/
+Promise.resolve().then(() => auth.subscribe(v => authError.set(v instanceof Error)));

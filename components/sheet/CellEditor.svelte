@@ -3,7 +3,6 @@
   export let value;
   export let id;
   export let save;
-  export let type;
 
   let node;
 
@@ -31,8 +30,6 @@
 
 <style>
   .grid__editor {
-    width: 100%;
-    height: 100%;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -45,13 +42,15 @@
 </style>
 
 <textarea
+  data-id={id}
   use:clickedOutside={save}
   {id}
   tabindex="-1"
-  class="grid__editor"
+  class="grid__editor {$$props.class || "flex items-center justify-center w-full"}"
   bind:value
   on:input
   on:keydown
+  on:click|preventDefault
   rows="1"
   autocomplete="off"
   autocorrect="off"

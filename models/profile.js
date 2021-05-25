@@ -1,42 +1,44 @@
-import { defaultProfile, store } from "/store.js";
+import { store, language, DEFAULT_LANGUAGE } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
+const { appId, userId } = require("/index.ellx");
 
 function getProfileRef() {
-  const { appId, userId } = ellx.auth() || {};
-
-  return firebase.firestore()
-    .collection('apps')
-    .doc(appId)
-    .collection('profiles')
-    .where("owner", "==", userId);
+  return firebase
+    .firestore()
+    .collection("apps")
+    .doc(appId.get())
+    .collection("profiles")
+    .where("owner", "==", userId.get());
 }
 
-export function connect(onFirstSnapshot = () => {}) {
-  let initial = true;
-  const { appId, userId } = ellx.auth() || {};
+export function connect() {
+  if (!userId.get()) return;
 
-  return getProfileRef()
-    .onSnapshot(
-      querySnapshot => {
-        querySnapshot.empty
-          ? updateProfile({ ...defaultProfile, owner: userId })
-          : store.commit(SYNC_PROFILE, querySnapshot);
-
-        if (initial) {
-          onFirstSnapshot();
-          initial = false;
-        }
-      }
-  );
+  return getProfileRef().onSnapshot((querySnapshot) => {
+    querySnapshot.empty
+      ? updateProfile({
+          owner: userId.get(),
+          language: language.get() || DEFAULT_LANGUAGE,
+        })
+      : store.commit(SYNC_PROFILE, querySnapshot);
+  });
 }
 
-export function updateProfile(data, options = {}) {
-  const { appId, userId } = ellx.auth() || {};
-
-  return firebase.firestore()
-    .collection('apps')
-    .doc(appId)
-    .collection('profiles')
-    .doc(userId)
+export function updateProfile(data, options = { merge: true }) {
+  return firebase
+    .firestore()
+    .collection("apps")
+    .doc(appId.get())
+    .collection("profiles")
+    .doc(userId.get())
     .set(data, options);
 }
+
+export const loginWithGoogle =
+  (redirectUrl = "/") =>
+  () =>
+    window.ellx.login({
+      withGoogle: true,
+      redirectUrl,
+      language: language.get() || DEFAULT_LANGUAGE,
+    });

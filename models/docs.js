@@ -1,30 +1,47 @@
 import { defaultDocument, store, getActiveDocRef } from "/store.js";
-import { SYNC_DOCS, serialize } from "/utils/sync.js";
+import { SYNC_DOCS, serialize, deserialize } from "/utils/sync.js";
 import { uid } from "/utils/index.js";
+import { store } from "/store.js";
+
+const { appId, userId, isAuthenticated } = require("/index.ellx");
 
 function getDocsRef() {
-  const { appId, userId } = ellx.auth() || {};
-
-  return firebase.firestore()
-    .collection('apps')
-    .doc(appId)
-    .collection('files')
-    .where("owner", "==", userId);
+  return firebase
+    .firestore()
+    .collection("apps")
+    .doc(appId.get())
+    .collection("files")
+    .where("owner", "==", userId.get());
 }
 
 export function connect() {
-  const { userId } = ellx.auth() || {};
+  if (isAuthenticated.get() !== true) return;
 
-  return getDocsRef()
-    .onSnapshot(
-      querySnapshot => {
-        querySnapshot.empty
-          ? updateDoc(serialize({ ...defaultDocument, owner: userId }), uid())
-          : store.commit(SYNC_DOCS, querySnapshot)
-      }
-  );
+  return getDocsRef().onSnapshot((querySnapshot) => {
+    querySnapshot.empty
+      ? getActiveDocRef().set(
+          serialize({ ...defaultDocument(), owner: userId.get() }),
+          uid()
+        )
+      : store.commit(SYNC_DOCS, querySnapshot);
+  });
 }
 
-export function updateDoc(data) {
-  return getActiveDocRef().set(data);
+export async function getDoc(docId) {
+  if (!docId) return;
+
+  const doc = firebase
+    .firestore()
+    .collection("apps")
+    .doc(appId.get())
+    .collection("files")
+    .doc(docId);
+
+  const d = await doc.get();
+
+  return store.commit(
+    () =>
+      ({ set }) =>
+        set("documents", docId, deserialize(d.data()))
+  );
 }

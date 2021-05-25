@@ -1,30 +1,29 @@
-import { get } from "svelte/store";
-
+import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
+import { select } from "tinyx";
+import _ from "/utils/intl.js";
 import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
   UPDATE_GROUP_NAME,
-  REMOVE_GROUP,
-  ADD_INVESTOR,
   RENAME_ROUND,
   UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
-  UPDATE_VALUATION_CAP,
-  UPDATE_DISCOUNT,
+  UPDATE_JKISS_STOCK_OPTIONS,
   TOGGLE_PUBLIC,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
   RESET_DOCUMENT,
-  docId,
-  user,
+  UPDATE_DOCUMENT_TITLE,
+  UPDATE_SPLIT_BY,
+  UPDATE_VALUATION_CAP,
+  UPDATE_DISCOUNT,
+  UPDATE_INVESTOR_NAME,
+  UPDATE_INVESTOR_TITLE,
+  UPDATE_LAST_VIEWED,
   syncUp,
   syncDocumentUp,
+  store,
 } from "/store.js";
-
-import {
-  firstColClasses,
-  groupClasses,
-} from "./classes.js";
 
 import {
   totalShares,
@@ -32,82 +31,98 @@ import {
   totalSharesForInvestor,
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
-  format,
-  getPosition,
-  allGroups,
-  lastInvestorIdInGroup,
   uid,
 } from "./index.js";
 
-import router from "./router.js";
+const { docId, appId, userId, route } = require("/index.ellx");
 
-export function groupNames(investors) {
-  const investorGroups = allGroups(investors);
+const getDoc = (id) => select(store, () => ["documents", id || docId.get()]);
 
-  return investorGroups.reduce((acc, cur, i) => {
-    if (investorGroups[i - 1] === cur) {
-      return acc;
-    }
+export const syncCurrentDoc = (...args) => syncUp(getDoc(), ...args);
 
-    const y = i + 3 + acc.length;
+// TODO: consider for other actions
+export const syncDoc = (id, ...args) => syncUp(getDoc(id), ...args, id);
 
+export const renameDocument = ({ detail, id }) =>
+  id
+    ? syncDoc(id, UPDATE_DOCUMENT_TITLE, detail)
+    : syncCurrentDoc(UPDATE_DOCUMENT_TITLE, detail);
+
+export const updateSplitBy = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_SPLIT_BY, { roundId, value });
+
+export const renameRound = ({ roundId, value }) =>
+  syncCurrentDoc(RENAME_ROUND, { roundId, name: value });
+
+const updateShares =
+  (type) =>
+  ({ roundId, investorId, value }) =>
+    syncCurrentDoc(UPDATE_SHARE, {
+      roundId,
+      investorId,
+      shares: Number(value),
+      type,
+    });
+
+const updateInvestment =
+  (mutation, fieldName) =>
+  ({ roundId, investorId, value }) =>
+    syncCurrentDoc(mutation, {
+      roundId,
+      investorId,
+      [fieldName]: Number(value),
+    });
+
+const updateJkissInvested = updateInvestment(
+  UPDATE_JKISS_INVESTED,
+  "jkissInvested"
+);
+const updateJkissStockOptions = updateInvestment(
+  UPDATE_JKISS_STOCK_OPTIONS,
+  "jkissStockOptions"
+);
+
+const updateRound =
+  (mutation, fieldName) =>
+  ({ roundId, value }) =>
+    syncCurrentDoc(mutation, { roundId, [fieldName]: value });
+
+export const updateRoundDate = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
+
+export const updateLastViewed = () => syncCurrentDoc(UPDATE_LAST_VIEWED);
+
+export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
+
+export const updateValuationCap = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_VALUATION_CAP, { roundId, value });
+
+export const updateDiscount = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_DISCOUNT, { roundId, value });
+
+export const renameInvestorGroup = ({ oldName, newName }) =>
+  syncCurrentDoc(UPDATE_GROUP_NAME, { oldName, newName });
+
+export const renameInvestor = ({ investorId, value }) =>
+  syncCurrentDoc(UPDATE_INVESTOR_NAME, { investorId, name: value });
+
+export const updateInvestorTitle = ({ investorId, value }) =>
+  syncCurrentDoc(UPDATE_INVESTOR_TITLE, { investorId, title: value });
+
+const calcCell =
+  (calcFn) =>
+  (investors, rounds) =>
+  ([investorId, investment]) => {
     return [
-      ...acc,
-      // Three label rows
-      [
-        `group-label:${cur}:${i}`,
-        {
-          position: [y, 0, y, 2],
-          value: cur,
-          classes: groupClasses + " " + firstColClasses,
-          onChange: (store, { value }) => {
-            syncUp(store, UPDATE_GROUP_NAME, { oldName: cur, newName: value });
-          },
-          menuItems: (store, { id }) => [
-            {
-              text: "グループ追加",
-              cb: () => {
-                syncUp(
-                  store,
-                  ADD_INVESTOR,
-                  {
-                    newGroup: true,
-                    afterId: [...store.get('investors')].reduce(lastInvestorIdInGroup(id.split(':')[1]), "")
-                  }
-                )
-              },
-            },
-            {
-              text: "削除",
-              cb: () => syncUp(store, REMOVE_GROUP, { group: id.split(':')[1] }),
-            },
-          ],
-        }
-      ],
-    ];
-  }, []);
-}
-
-const calcCell = calcFn =>
-  prefix =>
-  (investors, rounds, col, id, colSpan, ...options) =>
-  ([investorId, { commonShares, votingShares, ...investment }]) => {
-  return [
-    `${prefix}:${id}:${investorId}`,
-    {
-      position: getPosition(investors, investorId, col, colSpan ? (colSpan - 1) : 0),
-      value: calcFn({
-        commonShares,
-        votingShares,
+      investorId,
+      calcFn({
         rounds,
         investors,
         investorId,
-        ...investment
+        ...investment,
       }),
-      ...options[0],
-    }
-  ];
-};
+    ];
+  };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
@@ -123,100 +138,75 @@ const calcTotalSharesPerRound = ({ rounds, investorId }) => {
   return previousRoundShares / total;
 };
 
-const calcCommonShares = ({ rounds, investorId }) => totalCommonSharesForInvestor(rounds, investorId);
+const calcCommonShares = ({ rounds, investorId }) =>
+  totalCommonSharesForInvestor(rounds, investorId);
 
-const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForInvestor(rounds, investorId);
+const calcCommonVotingShares = ({ rounds, investorId }) =>
+  totalVotingSharesForInvestor(rounds, investorId);
 
-const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
-
-const updateShares = type => (store, { id, value }) => {
-  const [, roundId, investorId] = id.split(":");
-
-  syncUp(store, UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
-};
-
-const updateInvestment = (mutation, fieldName) => (store, { id, value }) => {
-  const [, roundId, investorId] = id.split(":");
-  syncUp(store, mutation, { roundId, investorId, [fieldName]: Number(value) });
-};
-
-const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
-
-const updateRound = (mutation, fieldName) => (store, { id, value }) => {
-  const [roundId] = id.split(":");
-  syncUp(store, mutation, { roundId, [fieldName]: value });
-};
-
-export const renameRound = (store, { id, value }) => {
-  const [,roundId] = id.split(":");
-  syncUp(store, RENAME_ROUND, { roundId, name: value });
-};
-export const updateRoundDate = (store, { id, value }) => {
-  const [,roundId] = id.split(":");
-  syncUp(store, UPDATE_ROUND_DATE, { roundId, date: value });
-};
-export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
+const calcTotalShares = ({ rounds, investorId }) =>
+  totalSharesForInvestor(rounds, investorId);
 
 const colTypes = {
   sharesInitial: {
     label: "株式数",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares || 0)("initial"),
-    format: format.number.format,
+    fn: calcCell(({ commonShares }) => commonShares || 0),
+    format: "number",
   },
   shareDiff: {
     label: "株式増減",
     onChange: updateShares("common"),
-    fn: calcCell(({ commonShares }) => commonShares || 0)("diff"),
-    format: format.number.format,
+    fn: calcCell(({ commonShares }) => commonShares || 0),
+    format: "number",
   },
   sharesAmount: {
     label: "株式数",
-    fn: calcCell(calcCommonShares)("amount"),
-    format: format.number.format,
+    fn: calcCell(calcCommonShares),
+    format: "number",
   },
   sharesPercent: {
     label: "%",
-    fn: calcCell(calcSharesPerRound)("percent"),
-    format: format.percent.format,
+    fn: calcCell(calcSharesPerRound),
+    format: "percent",
   },
   votingShareDiff: {
-    label: "株式増減",
-    hasRowspan: true,
-    classes: "dark:border-blue-800 border-blue-300 border-l",
-    voting: true,
-    fn: calcCell(({ votingShares }) => votingShares || 0)("voting-diff"),
+    label: "潜在株式増減",
+    fn: calcCell(({ votingShares }) => votingShares || 0),
     onChange: updateShares("voting"),
-    format: format.number.format,
+    format: "number",
+  },
+  votingSharesAmount: {
+    label: "潜在株式数",
+    fn: calcCell(calcCommonVotingShares),
+    format: "number",
   },
   jkissShares: {
     label: "株式数",
-    fn: calcCell(({ commonShares }) => commonShares || 0)("jkiss"),
-    colSpan: 2,
-    format: format.number.format,
+    fn: calcCell(({ commonShares }) => commonShares || 0),
+    format: "number",
   },
   jkissInvested: {
     label: "投資額",
-    fn: calcCell(({ jkissInvested }) => jkissInvested || 0)("jkiss-invested"),
-    colSpan: 2,
-    format: format.currency.format,
+    fn: calcCell(({ jkissInvested }) => jkissInvested || 0),
+    format: "currency",
     onChange: updateJkissInvested,
   },
-  votingSharesAmount: {
-    label: "株式数",
-    hasRowspan: true,
-    fn: calcCell(calcCommonVotingShares)("voting-total"),
-    format: format.number.format,
+  jkissStockOptions: {
+    label: "新株予約権個数",
+    fn: calcCell(({ jkissStockOptions }) => jkissStockOptions || 0),
+    format: "number",
+    onChange: updateJkissStockOptions,
   },
   totalSharesAmount: {
     label: "発行済株式数",
-    fn: calcCell(calcTotalShares)("total-amount"),
-    format: format.number.format,
+    fn: calcCell(calcTotalShares),
+    format: "number",
   },
   totalSharesPercent: {
     label: "%",
-    fn: calcCell(calcTotalSharesPerRound)("total-percent"),
-    format: format.percent.format,
+    fn: calcCell(calcTotalSharesPerRound),
+    format: "percent",
   },
 };
 
@@ -231,29 +221,26 @@ const {
   totalSharesPercent,
   jkissShares,
   jkissInvested,
+  jkissStockOptions,
 } = colTypes;
 
-const rightAligned = r => ({
-  ...r,
-  classes: (r.classes || "") + " text-right",
-});
+const foundCols = { sharesInitial, sharesPercent };
 
-const foundCols = [sharesInitial, sharesPercent].map(rightAligned);
-
-const genericCols = [
+const genericCols = {
   shareDiff,
   sharesAmount,
   sharesPercent,
   votingShareDiff,
   votingSharesAmount,
   totalSharesAmount,
-  totalSharesPercent
-].map(rightAligned);
+  totalSharesPercent,
+};
 
-const jkissCols = [
+const jkissCols = {
   jkissInvested,
   jkissShares,
-].map(rightAligned);
+  jkissStockOptions,
+};
 
 export const roundOptions = {
   founded: {
@@ -265,20 +252,33 @@ export const roundOptions = {
     cols: genericCols,
   },
   "j-kiss": {
-    colSpan: jkissCols.reduce((acc, cur) => acc + cur.colSpan, 0),
+    colSpan: jkissCols.length,
     cols: jkissCols,
   },
   split: {
     colSpan: genericCols.length,
     cols: genericCols,
   },
-  preferred: {
-    colSpan: genericCols.length,
-    cols: genericCols,
-  },
 };
 
 export const roundTypes = Object.keys(roundOptions);
+
+function filterRoundLabels({ cols }) {
+  return Object.keys(cols).map((k) => [
+    k,
+    _.get()(cols[k].label),
+    cols[k].format,
+  ]);
+}
+
+export const roundLabels = () =>
+  roundTypes.reduce(
+    (acc, type) => ({
+      ...acc,
+      [type]: filterRoundLabels(roundOptions[type]),
+    }),
+    {}
+  );
 
 function copyToClipboard(text) {
   var textArea = document.createElement("textarea");
@@ -293,41 +293,52 @@ function copyToClipboard(text) {
   textArea.select();
 
   try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Fallback: Copying text command was ' + msg);
+    var successful = document.execCommand("copy");
+    var msg = successful ? "successful" : "unsuccessful";
+    console.log("Fallback: Copying text command was " + msg);
   } catch (err) {
-    console.error('Fallback: Oops, unable to copy', err);
+    console.error("Fallback: Oops, unable to copy", err);
   }
 
   document.body.removeChild(textArea);
 }
 
-export const togglePublic = (store) => {
-  syncUp(store, TOGGLE_PUBLIC);
+export const togglePublic = () => {
+  syncCurrentDoc(TOGGLE_PUBLIC);
   copyToClipboard(window.location.href);
 };
 
-export const createDocument = (store, { from } = {}) => {
+export const createDocument = ({ from } = {}) => {
   const to = uid();
-  syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
 
-  const { userId, appId } = ellx.auth();
+  syncDocumentUp(
+    store,
+    COPY_DOCUMENT,
+    { from: store.get("documents", from), to },
+    to
+  );
 
-  router.set(`${userId}/${appId}/${to}`);
-}
+  window.ellx.router.go(`/docs/${userId.get()}/${to}`);
+};
 
-export const resetDocument = (store) => {
-  syncUp(store, RESET_DOCUMENT);
-}
+export const resetDocument = () => syncCurrentDoc(RESET_DOCUMENT);
 
-export const removeDocument = (store, { id }) => {
-  const ids = [...store.get('documents').keys()];
+export const removeDocument = async ({ id }) => {
+  const ok = await promptYesNo({
+    title: `このテーブルを削除してもよろしいですか？`,
+    yesText: "はい",
+    noText: "キャンセル",
+    modal: false,
+  });
+
+  if (!ok) return;
+
+  const ids = [...store.get("documents").keys()];
   const idx = ids.indexOf(id);
 
-  syncUp(store, REMOVE_DOCUMENT, { id });
+  syncUp(store, REMOVE_DOCUMENT, { id }, id);
 
-  const { userId, appId } = ellx.auth();
-
-  router.set(`${userId}/${appId}/${ids[idx - 1]}`);
-}
+  if ((route.get() || "").startsWith("/docs/")) {
+    window.ellx.router.go(`/docs/${userId.get()}/${ids[idx - 1]}`);
+  }
+};
