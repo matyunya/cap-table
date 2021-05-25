@@ -2,6 +2,19 @@
   import { onMount } from "svelte";
   import _ from "/utils/intl.js";
   import Step from "/components/ui/Step.svelte";
+  import Step1 from "/icons/step1.svelte";
+  import Step2 from "/icons/step2.svelte";
+  import Step3 from "/icons/step3.svelte";
+  import Free from "/icons/free.svelte";
+  import Edge from "/icons/edge.svelte";
+  import Chrome from "/icons/chrome.svelte";
+  import Firefox from "/icons/firefox.svelte";
+  import Ie from "/icons/ie.svelte";
+  import Excel from "/icons/excel.svelte";
+  import Lock from "/icons/lock.svelte";
+  import Opera from "/icons/opera.svelte";
+  import Safari from "/icons/safari.svelte";
+  import Time from "/icons/time.svelte";
 
   const { isAuthenticated, route } = require("/index.ellx");
 
@@ -76,7 +89,7 @@
       >
         <Step />
         <h3 class="font-bold text-lg mb-4">{$_("資本政策表の作成")}</h3>
-        <div class="">icon</div>
+        <div class="w-24 mb-4"><Step1 /></div>
         <h4 class="font-bold mb-4 mt-2">作成ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
@@ -110,7 +123,7 @@
       >
         <Step n="2" />
         <h3 class="font-bold text-lg mb-4">{$_("事業計画の作成")}</h3>
-        <div class="">icon</div>
+        <div class="w-24 mb-4"><Step2 /></div>
         <h4 class="font-bold mb-4 mt-2">作成ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
@@ -140,7 +153,7 @@
       >
         <Step n="3" />
         <h3 class="font-bold text-lg mb-4">{$_("株価算定")}</h3>
-        <div class="">icon</div>
+        <div class="w-24 mb-4"><Step3 /></div>
         <h4 class="font-bold mb-4 mt-2">算定ツールの便利な機能</h4>
         <div class="flex-1 flex flex-col justify-between px-4 space-y-1">
           <div class="flex flex-col">
@@ -173,7 +186,9 @@
       <div
         class="space-y-2 flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
       >
-        <div class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-cyan-200" />
+        <div class="h-16 w-16">
+          <Free />
+        </div>
         <h5 class="font-bold mt-8 mb-2">完全無料</h5>
         <p>
           本ツールは、起業家の方は、無料で全ての機能がご利用可能です。会員登録ですぐにご利用になれます。
@@ -185,9 +200,9 @@
       <div
         class="space-y-2 flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
       >
-        <div
-          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-fuchsia-200"
-        />
+        <div class="h-16 w-16">
+          <Excel />
+        </div>
         <h5 class="font-bold mt-8 mb-2">直感的な操作性</h5>
         <p>使い慣れたExcelのように簡単に数値入力ができ、演算も高速です。</p>
         <p>創業者持分の維持についてもチャートで直感的に理解可能です。</p>
@@ -195,7 +210,9 @@
       <div
         class="space-y-2 flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
       >
-        <div class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-teal-300" />
+        <div class="h-16 w-16">
+          <Time />
+        </div>
         <h5 class="font-bold mt-8 mb-2">時間短縮</h5>
         <p>
           資金調達前準備にかかる時間を大幅に短縮できます。よくある、資本政策表の計算間違いも防止できるので、無駄な時間を削減できます。
@@ -204,15 +221,51 @@
       <div
         class="space-y-2 flex flex-col items-center px-4 py-8 rounded-xl bg-white dark:bg-gray-700 shadow-lg"
       >
-        <div
-          class="rounded-full shadow-lg h-16 w-16 shadow-lg bg-light-blue-400"
-        />
+        <div class="h-16 w-16">
+          <Lock />
+        </div>
         <h5 class="font-bold mt-8 mb-2">安心のセキュリティ</h5>
         <p>
           Firebaseベースのサーバレス構成を採用しており、高い可用性・耐障害性を持っています。また、capital
           dashとの通信は全てSSL/TLSによって暗号化されています。
         </p>
       </div>
+    </div>
+  </section>
+
+  <section
+    class="p-4 mt-16 max-w-5xl mx-auto flex justify-between flex-row items-center rounded-xl shadow-lg bg-white"
+  >
+    <div class="font-bold text-xs">推奨ブラウザ</div>
+    <div class="flex space-x-2 items-center p-4">
+      <Chrome class="w-12 h-12 p-1" />
+      Chrome<br />
+      73+
+    </div>
+    <div class="flex space-x-2 items-center p-4">
+      <Firefox class="w-12 h-12 p-1" />
+      Firefox<br />
+      63+
+    </div>
+    <div class="flex space-x-2 items-center p-4">
+      <Edge class="w-12 h-12 p-1" />
+      Edge<br />
+      79+
+    </div>
+    <div class="flex space-x-2 items-center p-4">
+      <Safari class="w-12 h-12 p-1" />
+      Safari<br />
+      12.1+
+    </div>
+    <div class="flex space-x-2 items-center p-4">
+      <Opera class="w-12 h-12 p-1" />
+      Opera<br />
+      60+
+    </div>
+    <div class="flex space-x-2 items-center p-4 opacity-25">
+      <Ie class="w-12 h-12 p-1" />
+      IE<br />
+      サポートなし
     </div>
   </section>
 

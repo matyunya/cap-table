@@ -9,6 +9,10 @@
   import _ from "/utils/intl.js";
   import Step from "/components/ui/Step.svelte";
   import { updateProfile } from "/models/profile.js";
+  import Step1 from "/icons/step1.svelte";
+  import Step2 from "/icons/step2.svelte";
+  import Step3 from "/icons/step3.svelte";
+
   const { isAuthenticated, profile } = require("/index.ellx");
 
   isAuthenticated.subscribe((value) => {
@@ -72,7 +76,7 @@
     >
       <Step />
       <h3 class="font-bold text-lg mb-4">{$_("資本政策")}</h3>
-      <div class="flex-1">icon</div>
+      <div class="flex-1 w-24 mb-4"><Step1 /></div>
       <div class="px-4 space-y-4">
         <p>
           「資本政策」では、EXCELより簡単かつ高速に資本政策表を作成できます。
@@ -88,7 +92,7 @@
     >
       <Step n="2" />
       <h3 class="font-bold text-lg mb-4">{$_("事業計画")}</h3>
-      <div class="flex-1">icon</div>
+      <div class="flex-1 w-24 mb-4"><Step2 /></div>
       <div class="px-4 space-y-4">
         <p>
           「事業計画」では作成した「資本政策表」に整合的な事業計画数値を入力してください。
@@ -105,7 +109,7 @@
     >
       <Step n="3" />
       <h3 class="font-bold text-lg mb-4">{$_("株価算定")}</h3>
-      <div class="flex-1">icon</div>
+      <div class="flex-1 w-24 mb-4"><Step3 /></div>
       <div class="px-4 space-y-4">
         <p>
           策定した資本政策表と事業計画、類似企業のPER等を参考にして、自社の現在の株価理論値を算出します。
