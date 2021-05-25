@@ -172,14 +172,15 @@
           />
         </svg>
       </button>
-    {:else if $route !== "/signup/2"}
-      {#if typeof $route === "string" && $route.startsWith("/signup")}
-        <span class="ml-5">{$_("アカウントをお持ちの方は")}</span>
-      {/if}
-      {#if $route !== "/login"}
-        <a class="ml-5 button nav-button" href="/login">
-          {$_("ログイン")}
-        </a>
+      {#if !$isAuthenticated}
+        {#if typeof $route === "string" && $route.startsWith("/signup")}
+          <span class="ml-5">{$_("アカウントをお持ちの方は")}</span>
+        {/if}
+        {#if $route !== "/login"}
+          <a class="ml-5 button nav-button" href="/login">
+            {$_("ログイン")}
+          </a>
+        {/if}
       {/if}
     {/if}
   </div>
