@@ -31,11 +31,13 @@
     "投資家からオファー受領済",
   ];
 
+  const fmt = new Intl.NumberFormat("en-US");
+
   export const fields = {
     projectedInvestmentAmount: {
       placeholder: "例）20",
       label: "調達予定金額",
-      transform: (i) => (i.match(/\d{1,3}/g) || []).join(","),
+      transform: (i) => (i ? fmt.format(i.replace(/\D/g, "")) : i),
     },
     projectedInvestmentDate: {
       label: "資金調達の目標時期",

@@ -20,14 +20,6 @@
       options: ["決算申告が完了", "決算申告は未済"],
       required: true,
     },
-    lastSettlementDate: {
-      type: "month",
-      placeholder: "",
-      active: (d) => d.lastSettlementFinished === "決算申告が完了",
-      label: "決算を終えたのはいつですか",
-      required: true,
-      max: format(new Date(), "yyyy-MM"),
-    },
     fullTimeEmployees: {
       ignore: true,
       required: true,
