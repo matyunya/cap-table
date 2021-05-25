@@ -32,11 +32,11 @@
   <h5>{title}</h5>
   <div class="flex pt-8 text-sm font-medium">
     <div class="flex-grow" />
-    <button class="button p-2　text-xs" on:click={() => resolve(false)}>
+    <button class="button p-1　text-xs" on:click={() => resolve(false)}>
       {noText}
     </button>
     <button
-      class="button bg-red-600 hover:bg-red-500 p-2 text-xs w-32"
+      class="button bg-red-600 hover:bg-red-500 p-1 text-xs w-32"
       on:click={() => resolve(true)}
     >
       {yesText}

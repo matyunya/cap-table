@@ -10,13 +10,7 @@
   export let logout = () => {};
   export let dark;
 
-  const {
-    isAuthenticated,
-    docId,
-    userId,
-    appId,
-    route,
-  } = require("/index.ellx");
+  const { isAuthenticated, docId, userId, route } = require("/index.ellx");
 
   function setLanguage(language) {
     if ($isAuthenticated) {
@@ -82,16 +76,13 @@
       {/if}
     {/if}
     {#if routeName($route)}
-      <a
-        href="/docs"
-        class="text-xs underline text-light-blue-500 rounded-xl p-1"
-      >
+      <a href="/docs" class="text-xs underline rounded-xl p-1">
         ← {$_(routeName($route))}
       </a>
     {/if}
     {#if typeof $route === "string" && $route.startsWith("/docs/")}
       <Select
-        classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3 text-light-blue-500"
+        classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3"
         hasEmpty={false}
         value={$docId}
         on:change={({ target }) =>
@@ -99,7 +90,6 @@
         {options}
       />
       <button
-        title="Dark mode toggle"
         class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-100 hover:bg-gray-50 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
         on:click={(e) => openContextMenu(getDocMenuItems(), e)}
       >
@@ -122,22 +112,7 @@
   <div
     class="flex items-center h-full justify-end text-sm sm:text-xs font-medium px-8 z-30 pt-2"
   >
-    <button
-      title="Dark mode toggle"
-      class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-base dark:ring-gray-100 ring-gray-600"
-      on:click={() => (dark = !dark)}
-    >
-      {dark ? "💡" : "🕶️"}
-    </button>
-    <button
-      title="Switch language"
-      class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600"
-      on:click={() => setLanguage($language === "ja" ? "en" : "ja")}
-      style="font-variant: small-caps;"
-    >
-      {$language === "ja" ? "en" : "ja"}
-    </button>
-    {#if $isAuthenticated && $route !== "/signup/2"}
+    {#if $route !== "/signup/2"}
       <button
         on:click={(e) =>
           openContextMenu(
@@ -153,6 +128,7 @@
             ],
             e
           )}
+        class:hidden={!$isAuthenticated}
         class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-base dark:ring-gray-100 ring-gray-600"
         >?</button
       >
@@ -160,19 +136,27 @@
         on:click={(e) =>
           openContextMenu(
             [
-              {
+              $isAuthenticated && {
                 text: "プロフィール情報確認・変更",
                 cb: () => window.ellx.router.go("/profile"),
               },
-              {
+              $isAuthenticated && {
                 text: "パスワード再設定",
                 cb: () => window.ellx.router.go("/reset"),
               },
               {
+                text: $language === "ja" ? "English" : "ja",
+                cb: () => setLanguage($language === "ja" ? "en" : "ja"),
+              },
+              {
+                text: "外観モード：" + (dark ? "ライト" : "ダーク") + "に変更",
+                cb: () => (dark = !dark),
+              },
+              $isAuthenticated && {
                 text: "ログアウト",
                 cb: logout,
               },
-            ],
+            ].filter(Boolean),
             e
           )}
         class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600"
@@ -182,10 +166,11 @@
           width="14"
           height="14"
           viewBox="0 0 24 24"
-          ><path
-            d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"
-          /></svg
         >
+          <path
+            d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"
+          />
+        </svg>
       </button>
     {:else if $route !== "/signup/2"}
       {#if typeof $route === "string" && $route.startsWith("/signup")}

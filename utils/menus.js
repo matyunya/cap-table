@@ -161,7 +161,7 @@ export const getDocMenuItems = () =>
     //   cb: togglePublic,
     // },
     {
-      text: "このテーブルをコピー",
+      text: "このテーブルを複製",
       cb: () => createDocument({ from: docId.get() }),
     },
     ...getCommonMenuItems(docId.get()),

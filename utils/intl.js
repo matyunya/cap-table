@@ -165,7 +165,7 @@ const translations = {
   共有する: {
     en: "Make public",
   },
-  このテーブルをコピー: {
+  このテーブルを複製: {
     en: "Make a copy",
   },
   "認証メールを発信しました。ご確認をお願いします。": {
