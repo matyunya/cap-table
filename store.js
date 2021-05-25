@@ -135,7 +135,7 @@ export function syncDocumentUp(st, TRANSACTION, payload, id) {
     throw new Error("Trying to sync undefined doc");
   }
   const reducer = produce(TRANSACTION(payload));
-  const newDoc = serialize(reducer(st)).documents[id];
+  const newDoc = serialize(reducer(st.get()).documents.get(id));
 
   getActiveDocRef(id).set(newDoc);
 }

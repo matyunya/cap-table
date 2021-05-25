@@ -117,7 +117,7 @@ export function getNewRoundDate(rounds, idx) {
 export function isValidRoundDate(rounds, id, date) {
   const [prevRoundDate, nextRoundDate] = getPrevNextRoundDates(rounds, id);
 
-  if (isAfter(new Date(prevRoundDate), date)) {
+  if (prevRoundDate && isAfter(new Date(prevRoundDate), date)) {
     throw new Error("Previous round date cannot come before");
   }
   if (nextRoundDate && isAfter(date, new Date(nextRoundDate))) {

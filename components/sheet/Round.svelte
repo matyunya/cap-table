@@ -45,6 +45,7 @@
   export let discount;
   export let id;
   export let result;
+
   $: width = ROUND_WIDTHS[type];
   $: options = roundOptions[type];
 
@@ -73,7 +74,7 @@
     <Cell
       class="text-right text-gray-100 text-xs mr-6"
       error={dateUpdateError}
-      value={date || ""}
+      value={date || "未設定"}
       on:change={({ detail }) => {
         try {
           updateRoundDate({ roundId: id, value: detail });
@@ -97,7 +98,6 @@
       <div class="flex-1 h-full p-1 flex items-center justify-end truncate">
         {$_(options.cols[colType].label)}
       </div>
-      <!-- {/if} -->
     {/each}
   </div>
 </div>
