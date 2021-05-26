@@ -62,8 +62,8 @@ const defaultName = (n) => {
 };
 const founderId = "FOUNDER_ID";
 
-export const defaultDocument = () => ({
-  title: defaultName("docTitle"),
+export const defaultDocument = (title) => ({
+  title: title || defaultName("docTitle"),
   lastViewed: null,
   rounds: new Map([
     [
@@ -358,9 +358,13 @@ export function ADD_ROUND({
       return new Map(newIds.map((id) => [id, i.get(id) || newRound]));
     });
 
-    const lastId = [...get("investors").keys()].pop();
+    if (type !== "split") {
+      const lastId = [...get("investors").keys()].pop();
 
-    apply(ADD_INVESTOR({ newGroup: true, afterId: lastId, group: roundName }));
+      apply(
+        ADD_INVESTOR({ newGroup: true, afterId: lastId, group: roundName })
+      );
+    }
   };
 }
 
@@ -430,14 +434,25 @@ export function SET_DOCUMENT({ id, data }) {
   return ({ set }) => set("documents", id, data);
 }
 
+function getDefaultTitle(docs) {
+  const defaultZeroName = defaultName("docTitle");
+  const defaultNameDocsCount = [...docs.values()]
+    .map((d) => d.title)
+    .filter((t) => t.startsWith(defaultZeroName)).length;
+
+  return (
+    defaultZeroName + (defaultNameDocsCount ? defaultNameDocsCount + 1 : "")
+  );
+}
+
 export function COPY_DOCUMENT({ from, to }) {
-  return ({ set }) => {
+  return ({ set, get }) => {
     const newDoc = from
       ? {
           ...from,
           title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
         }
-      : defaultDocument();
+      : defaultDocument(getDefaultTitle(get("documents")));
 
     set("documents", to, {
       ...newDoc,

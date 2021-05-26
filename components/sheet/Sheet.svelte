@@ -50,11 +50,11 @@
         style="top: 0; left: 0;"
         class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
       >
-        <div class="text-xs p-1 pb-2 w-full px-2 text-left">
+        <div class="text-xs w-full p-2 text-left">
           {$_("テーブル名")}
         </div>
         <Cell
-          class="w-full h-full flex items-center justify-center font-mono"
+          class="w-full h-full p-2 text-left truncate"
           value={$title}
           on:change={renameDocument}
         />

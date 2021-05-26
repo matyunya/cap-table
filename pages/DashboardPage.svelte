@@ -101,7 +101,7 @@
           「事業計画」で算出した「当期利益」の数値を「株価算定」で参照します。
         </p>
       </div>
-      <button class="button">{$_("ツールを開く")}</button>
+      <button disabled class="button">{$_("開発中")}</button>
     </a>
     <a
       href="/calc"
@@ -118,7 +118,7 @@
           上場時の基準利益や、事業ステージごとの割引率が株価にも影響します。​
         </p>
       </div>
-      <button class="button">{$_("ツールを開く")}</button>
+      <button disabled class="button">{$_("開発中")}</button>
     </a>
   </div>
 </main>
