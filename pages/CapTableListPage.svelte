@@ -1,5 +1,6 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
+  import ChartPage from "/pages/ChartPage.svelte";
 
   import _ from "/utils/intl.js";
   import isToday from "date-fns/isToday";
@@ -29,6 +30,9 @@
       {$_("新しいテーブルを作成")}
     </button>
   </div>
+
+  <ChartPage />
+
   <ul
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
   >
@@ -68,7 +72,7 @@
 
           <button
             on:click|stopPropagation={() =>
-              window.ellx.router.go(`/chart/${id}`)}
+              window.ellx.router.go(`/docs?chart_doc_id=${id}`)}
             class="flex items-center transition duration-200 hover:text-yellow-800"
           >
             <div

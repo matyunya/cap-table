@@ -12,7 +12,7 @@ nodes:
   appId = !authError ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
-  chartDocId = route.split('/')[2]
+  chartDocId = routeUrl.searchParams.get("chart_doc_id")
   activeDocChartData = chartData(chartDocId, docs)
   chartDoc = withStatus("activeDocChartData")
   docId = route.split('/')[3]
@@ -22,8 +22,9 @@ nodes:
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
   unsubscribeDocs = connect(userId)
+  routeUrl = new URL("http://internet.com" + router.path)
   unsubscribeProfile = connectProfile(userId)
-  route = router.path
+  route = routeUrl.pathname
   sheetChanged = activeSheet.owner && docId
   router = ellx.router
   title = activeSheet.title
@@ -220,19 +221,18 @@ layout:
   ],
   [,,
     {
-      "node": "activeSheet",
-      "expansion": {
-        "vertical": true,
-        "labelsLeft": true,
-        "height": 5,
-        "width": 1
-      }
+      "node": "activeSheet"
     },,,,,
     {
       "node": "unsubscribeDocs"
     },,
     {
       "value": "Route:"
+    }
+  ],
+  [,,,,,,,,,
+    {
+      "node": "routeUrl"
     }
   ],
   [,,,,,,,

@@ -142,10 +142,10 @@ export const getCommonMenuItems = (id) => [
   },
   {
     text: "チャートを表示",
-    cb: () => window.ellx.router.go("/chart/" + id),
+    cb: () => window.ellx.router.go("/docs?chart_doc_id=" + id),
   },
   store.get("documents").size > 1 && {
-    text: "削除", // todo confirmation
+    text: "削除",
     cb: () => removeDocument({ id }),
   },
 ];
