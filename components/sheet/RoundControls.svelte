@@ -6,7 +6,7 @@
     updateSplitBy,
     updateValuationCap,
     updateDiscount,
-  } from "/utils/actions/documents.js";
+  } from "/utils/actions/docs.js";
 
   export let result;
   export let id;

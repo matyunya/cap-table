@@ -29,7 +29,7 @@
     roundOptions,
     renameRound,
     updateRoundDate,
-  } from "/utils/actions/documents.js";
+  } from "/utils/actions/docs.js";
   import { roundMenuItems } from "/utils/menus.js";
   import _ from "/utils/intl.js";
   const { isAnon, investorGroups } = require("/index.ellx");

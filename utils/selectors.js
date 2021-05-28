@@ -1,4 +1,4 @@
-import { roundOptions } from "/utils/actions/documents.js";
+import { roundOptions } from "/utils/actions/docs.js";
 
 import {
   calcRoundResults,
@@ -63,7 +63,7 @@ export function calculate(rounds, investors) {
 }
 
 export function roundsCount(docId) {
-  const doc = store.get('documents', docId);
+  const doc = store.get("documents", docId);
 
   if (!doc) return 0;
 
@@ -78,7 +78,7 @@ function founderShareForTheRound(values) {
 }
 
 export function chartData(docId, docs) {
-  const doc = docs ? docs.get(docId) : store.get('documents', docId);
+  const doc = docs ? docs.get(docId) : store.get("documents", docId);
   const data = calculate(doc.rounds, doc.investors);
   const keys = [...doc.rounds.keys()];
 

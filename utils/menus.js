@@ -1,4 +1,4 @@
-import { createDocument, removeDocument, syncCurrentDoc } from "/utils/actions/documents.js";
+import { createDocument, removeDocument, syncCurrentDoc } from "/utils/actions/docs.js";
 import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
 
@@ -11,7 +11,7 @@ import {
   ADD_SPLIT_ROUND,
   REMOVE_ROUND,
   REMOVE_GROUP,
-} from "/utils/mutations/documents.js";
+} from "/utils/mutations/docs.js";
 
 const { docId, rounds } = require("/index.ellx");
 

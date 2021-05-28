@@ -1,6 +1,6 @@
 <script context="module">
   import { writable } from "svelte/store";
-  import Menu, { onClickActivator } from './Menu.svelte';
+  import Menu, { onClickActivator } from "./Menu.svelte";
   import _ from "/utils/intl.js";
   const items = writable();
 

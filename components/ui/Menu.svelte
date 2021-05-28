@@ -5,14 +5,14 @@
   function clickedOutside(node, cb) {
     const onclick = e => !node.contains(e.target) && cb();
 
-    window.addEventListener('mousedown', onclick, true);
+    window.addEventListener("mousedown", onclick, true);
 
     return {
       update(newCb) {
         cb = newCb;
       },
       destroy() {
-        window.removeEventListener('mousedown', onclick, true);
+        window.removeEventListener("mousedown", onclick, true);
       }
     };
   }
@@ -40,7 +40,7 @@
 </script>
 
 <script>
-  import { uid } from '/utils/index.js';
+  import { uid } from "/utils/index.js";
 
   export let open = false;
 
@@ -53,7 +53,7 @@
   }
 
   function onKeydown(e) {
-    if (e.code === 'Escape') {
+    if (e.code === "Escape") {
       open = false;
     }
   }
@@ -63,7 +63,7 @@
 
 <div
   use:clickedOutside={() => open = false}
-  class="{$$props.class || ''} cursor-pointer relative z-50"
+  class="{$$props.class || ""} cursor-pointer relative z-50"
   on:click|stopPropagation
 >
   <span on:click={(e) => {

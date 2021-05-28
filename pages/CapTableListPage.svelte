@@ -8,7 +8,7 @@
     renameDocument,
     createDocument,
     removeDocument,
-  } from "/utils/actions/documents.js";
+  } from "/utils/actions/docs.js";
   import { formatDate } from "/utils/index.js";
   import exportExcel from "/utils/excel.js";
 

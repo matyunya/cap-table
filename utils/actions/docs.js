@@ -25,7 +25,7 @@ import {
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
   UPDATE_LAST_VIEWED,
-} from "/utils/mutations/documents.js";
+} from "/utils/mutations/docs.js";
 
 import {
   totalShares,

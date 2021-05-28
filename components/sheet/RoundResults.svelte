@@ -1,6 +1,6 @@
 <script>
   import Cell from "/components/sheet/Cell.svelte";
-  import { updateSharePrice } from "/utils/actions/documents.js";
+  import { updateSharePrice } from "/utils/actions/docs.js";
   import { format } from "/utils/index.js";
 
   export let result;

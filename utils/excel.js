@@ -6,13 +6,13 @@ import _ from "/utils/intl.js";
 import { uniqueGroups } from "/utils/index.js";
 import { calculate, groupInvestors } from "/utils/selectors.js";
 
-import { roundLabels } from "/utils/actions/documents.js";
+import { roundLabels } from "/utils/actions/docs.js";
 
 const entityId = "generate-excel";
 
 function createWorker(fn) {
-  const code = fn.toString().replace(/^function.+?\{/g, '').slice(0, -1);
-  const blob = new Blob([code], { type: 'text/javascript' });
+  const code = fn.toString().replace(/^function.+?\{/g, "").slice(0, -1);
+  const blob = new Blob([code], { type: "text/javascript" });
   const url = URL.createObjectURL(blob);
 
   return new Worker(url);
@@ -27,7 +27,7 @@ function makeWorker(bodyFunction) {
     const request = runningTasks.get(entityId);
 
     if (!request || request.taskId !== taskId) return;
-    const response = type === 'error' ? [new Error(output)] : [null, output];
+    const response = type === "error" ? [new Error(output)] : [null, output];
 
     runningTasks.delete(entityId);
     for (let cb of request.callbacks) cb(...response);
@@ -184,7 +184,7 @@ function xlsxWorker() {
     return wb.outputAsync("arraybuffer");
   }
 
-  self.addEventListener('message', async (event) => {
+  self.addEventListener("message", async (event) => {
     let {
       taskId,
       data,
@@ -210,7 +210,7 @@ function xlsxWorker() {
 const requestGenerate = makeWorker(xlsxWorker);
 
 export default function exportExcel(docId) {
-  const doc = store.get('documents', docId);
+  const doc = store.get("documents", docId);
   const { investors } = doc;
   const trans = _.get();
 

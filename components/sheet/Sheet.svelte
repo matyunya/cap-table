@@ -11,7 +11,7 @@
     renameInvestor,
     updateInvestorTitle,
     updateLastViewed,
-  } from "/utils/actions/documents.js";
+  } from "/utils/actions/docs.js";
   import cn from "/utils/cn.js";
   import { investorGroupMenuItems, investorMenuItems } from "/utils/menus.js";
 
