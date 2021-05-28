@@ -484,3 +484,7 @@
   text-decoration: underline;
   color: #42a6f5;
 }
+
+svg {
+  fill: currentColor;
+}
