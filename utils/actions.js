@@ -1,3 +1,4 @@
+import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
 import { select } from "tinyx";
 import _ from "/utils/intl.js";
 import {
@@ -19,7 +20,6 @@ import {
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
   UPDATE_LAST_VIEWED,
-
   syncUp,
   syncDocumentUp,
   store,
@@ -36,59 +36,93 @@ import {
 
 const { docId, appId, userId, route } = require("/index.ellx");
 
-const getDoc = (id) => select(store, () => ['documents', id || docId.get()]);
+const getDoc = (id) => select(store, () => ["documents", id || docId.get()]);
 
 export const syncCurrentDoc = (...args) => syncUp(getDoc(), ...args);
 
 // TODO: consider for other actions
 export const syncDoc = (id, ...args) => syncUp(getDoc(id), ...args, id);
 
-export const renameDocument = ({ detail, id }) => id
-  ? syncDoc(id, UPDATE_DOCUMENT_TITLE, detail)
-  : syncCurrentDoc(UPDATE_DOCUMENT_TITLE, detail);
+export const renameDocument = ({ detail, id }) =>
+  id
+    ? syncDoc(id, UPDATE_DOCUMENT_TITLE, detail)
+    : syncCurrentDoc(UPDATE_DOCUMENT_TITLE, detail);
 
-export const updateSplitBy = ({ roundId, value }) => syncCurrentDoc(UPDATE_SPLIT_BY, { roundId, value });
+export const updateSplitBy = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_SPLIT_BY, { roundId, value });
 
-export const renameRound = ({ roundId, value }) => syncCurrentDoc(RENAME_ROUND, { roundId, name: value });
+export const renameRound = ({ roundId, value }) =>
+  syncCurrentDoc(RENAME_ROUND, { roundId, name: value });
 
-const updateShares = type => ({ roundId, investorId, value }) => syncCurrentDoc(UPDATE_SHARE, { roundId, investorId, shares: Number(value), type });
+const updateShares =
+  (type) =>
+  ({ roundId, investorId, value }) =>
+    syncCurrentDoc(UPDATE_SHARE, {
+      roundId,
+      investorId,
+      shares: Number(value),
+      type,
+    });
 
-const updateInvestment = (mutation, fieldName) => ({ roundId, investorId, value }) => syncCurrentDoc(mutation, { roundId, investorId, [fieldName]: Number(value) });
+const updateInvestment =
+  (mutation, fieldName) =>
+  ({ roundId, investorId, value }) =>
+    syncCurrentDoc(mutation, {
+      roundId,
+      investorId,
+      [fieldName]: Number(value),
+    });
 
-const updateJkissInvested = updateInvestment(UPDATE_JKISS_INVESTED, "jkissInvested");
-const updateJkissStockOptions = updateInvestment(UPDATE_JKISS_STOCK_OPTIONS, "jkissStockOptions");
+const updateJkissInvested = updateInvestment(
+  UPDATE_JKISS_INVESTED,
+  "jkissInvested"
+);
+const updateJkissStockOptions = updateInvestment(
+  UPDATE_JKISS_STOCK_OPTIONS,
+  "jkissStockOptions"
+);
 
-const updateRound = (mutation, fieldName) => ({ roundId, value }) => syncCurrentDoc(mutation, { roundId, [fieldName]: value });
+const updateRound =
+  (mutation, fieldName) =>
+  ({ roundId, value }) =>
+    syncCurrentDoc(mutation, { roundId, [fieldName]: value });
 
-export const updateRoundDate = ({ roundId, value }) => syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
+export const updateRoundDate = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
 
 export const updateLastViewed = () => syncCurrentDoc(UPDATE_LAST_VIEWED);
 
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
-export const updateValuationCap = ({ roundId, value }) => syncCurrentDoc(UPDATE_VALUATION_CAP, { roundId, value });
+export const updateValuationCap = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_VALUATION_CAP, { roundId, value });
 
-export const updateDiscount = ({ roundId, value }) => syncCurrentDoc(UPDATE_DISCOUNT, { roundId, value });
+export const updateDiscount = ({ roundId, value }) =>
+  syncCurrentDoc(UPDATE_DISCOUNT, { roundId, value });
 
-export const renameInvestorGroup = ({ oldName, newName }) => syncCurrentDoc(UPDATE_GROUP_NAME, { oldName, newName });
+export const renameInvestorGroup = ({ oldName, newName }) =>
+  syncCurrentDoc(UPDATE_GROUP_NAME, { oldName, newName });
 
-export const renameInvestor = ({ investorId, value }) => syncCurrentDoc(UPDATE_INVESTOR_NAME, { investorId, name: value });
+export const renameInvestor = ({ investorId, value }) =>
+  syncCurrentDoc(UPDATE_INVESTOR_NAME, { investorId, name: value });
 
-export const updateInvestorTitle = ({ investorId, value }) => syncCurrentDoc(UPDATE_INVESTOR_TITLE, { investorId, title: value });
+export const updateInvestorTitle = ({ investorId, value }) =>
+  syncCurrentDoc(UPDATE_INVESTOR_TITLE, { investorId, title: value });
 
-const calcCell = calcFn =>
+const calcCell =
+  (calcFn) =>
   (investors, rounds) =>
-    ([investorId, investment]) => {
-      return [
+  ([investorId, investment]) => {
+    return [
+      investorId,
+      calcFn({
+        rounds,
+        investors,
         investorId,
-        calcFn({
-          rounds,
-          investors,
-          investorId,
-          ...investment
-        })
-      ];
-    };
+        ...investment,
+      }),
+    ];
+  };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
@@ -104,11 +138,14 @@ const calcTotalSharesPerRound = ({ rounds, investorId }) => {
   return previousRoundShares / total;
 };
 
-const calcCommonShares = ({ rounds, investorId }) => totalCommonSharesForInvestor(rounds, investorId);
+const calcCommonShares = ({ rounds, investorId }) =>
+  totalCommonSharesForInvestor(rounds, investorId);
 
-const calcCommonVotingShares = ({ rounds, investorId }) => totalVotingSharesForInvestor(rounds, investorId);
+const calcCommonVotingShares = ({ rounds, investorId }) =>
+  totalVotingSharesForInvestor(rounds, investorId);
 
-const calcTotalShares = ({ rounds, investorId }) => totalSharesForInvestor(rounds, investorId);
+const calcTotalShares = ({ rounds, investorId }) =>
+  totalSharesForInvestor(rounds, investorId);
 
 const colTypes = {
   sharesInitial: {
@@ -196,8 +233,8 @@ const genericCols = {
   votingShareDiff,
   votingSharesAmount,
   totalSharesAmount,
-  totalSharesPercent
-}
+  totalSharesPercent,
+};
 
 const jkissCols = {
   jkissInvested,
@@ -227,14 +264,21 @@ export const roundOptions = {
 export const roundTypes = Object.keys(roundOptions);
 
 function filterRoundLabels({ cols }) {
-  return Object.keys(cols).map(k => [k, _.get()(cols[k].label), cols[k].format]);
+  return Object.keys(cols).map((k) => [
+    k,
+    _.get()(cols[k].label),
+    cols[k].format,
+  ]);
 }
 
-export const roundLabels = () => roundTypes.reduce((acc, type) => ({
-  ...acc,
-  [type]: filterRoundLabels(roundOptions[type]),
-}), {});
-
+export const roundLabels = () =>
+  roundTypes.reduce(
+    (acc, type) => ({
+      ...acc,
+      [type]: filterRoundLabels(roundOptions[type]),
+    }),
+    {}
+  );
 
 function copyToClipboard(text) {
   var textArea = document.createElement("textarea");
@@ -249,11 +293,11 @@ function copyToClipboard(text) {
   textArea.select();
 
   try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Fallback: Copying text command was ' + msg);
+    var successful = document.execCommand("copy");
+    var msg = successful ? "successful" : "unsuccessful";
+    console.log("Fallback: Copying text command was " + msg);
   } catch (err) {
-    console.error('Fallback: Oops, unable to copy', err);
+    console.error("Fallback: Oops, unable to copy", err);
   }
 
   document.body.removeChild(textArea);
@@ -267,20 +311,34 @@ export const togglePublic = () => {
 export const createDocument = ({ from } = {}) => {
   const to = uid();
 
-  syncDocumentUp(store, COPY_DOCUMENT, { from: store.get("documents", from), to }, to);
+  syncDocumentUp(
+    store,
+    COPY_DOCUMENT,
+    { from: store.get("documents", from), to },
+    to
+  );
 
-  window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${to}`);
-}
+  window.ellx.router.go(`/docs/${userId.get()}/${to}`);
+};
 
 export const resetDocument = () => syncCurrentDoc(RESET_DOCUMENT);
 
-export const removeDocument = ({ id }) => {
-  const ids = [...store.get('documents').keys()];
+export const removeDocument = async ({ id }) => {
+  const ok = await promptYesNo({
+    title: `このテーブルを削除してもよろしいですか？`,
+    yesText: "はい",
+    noText: "キャンセル",
+    modal: false,
+  });
+
+  if (!ok) return;
+
+  const ids = [...store.get("documents").keys()];
   const idx = ids.indexOf(id);
 
   syncUp(store, REMOVE_DOCUMENT, { id }, id);
 
-  if (route.get().startsWith("/docs/")) {
-    window.ellx.router.go(`/docs/${userId.get()}/${appId.get()}/${ids[idx - 1]}`);
+  if ((route.get() || "").startsWith("/docs/")) {
+    window.ellx.router.go(`/docs/${userId.get()}/${ids[idx - 1]}`);
   }
-}
+};

@@ -283,7 +283,7 @@
 .focus\:outline-none:focus {
   outline: 2px solid transparent, 2px;
 }
-.rounded {
+.rounded-xl {
   border-radius: 0.25rem;
 }
 .mr-3 {
@@ -483,6 +483,10 @@
 .a:hover {
   text-decoration: underline;
   color: #42a6f5;
+}
+
+.bg-blurred {
+  backdrop-filter: blur(8px);
 }
 
 svg {

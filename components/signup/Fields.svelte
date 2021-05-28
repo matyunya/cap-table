@@ -3,14 +3,22 @@
   import Select from "/components/ui/Select.svelte";
   import Label from "/components/ui/Label.svelte";
   import _ from "/utils/intl.js";
+
   export let fields;
   export let data;
   export let errors;
-  export let update = (field, transform = (i) => i) => (e) =>
-    (data[field] = transform(e.target.value));
+  export let update =
+    (field, transform = (i) => i) =>
+    (e) =>
+      (data[field] = transform(e.target.value));
+
+  $: activeFields = Object.keys(fields).filter(
+    (r) =>
+      !fields[r].ignore && (fields[r].active ? fields[r].active(data) : true)
+  );
 </script>
 
-{#each Object.keys(fields).filter((r) => !fields[r].ignore) as field}
+{#each activeFields as field}
   {#if fields[field].type === "radio"}
     <Label
       id={field}
@@ -50,7 +58,7 @@
         <div class="w-1/2 flex items-center mb-2">
           <input
             bind:group={data[field]}
-            class="mr-3 text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-light-blue-500 focus:ring-opacity-50 focus:ring-offset-0"
+            class="mr-3 text-blue-500 transition duration-100 ease-in-out border-gray-300 rounded-xl shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-light-blue-500 focus:ring-opacity-50 focus:ring-offset-0"
             id={type}
             type="checkbox"
             value={type}

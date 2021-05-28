@@ -3,5 +3,7 @@
 </script>
 
 <Wrapper>
-  <h2>TODO</h2>
+  <h2 class="font-bold w-full text-center text-3xl">
+    このページは開発中です。
+  </h2>
 </Wrapper>

@@ -22,6 +22,13 @@
     },
   };
 
+  function errorMessage(err) {
+    if (err.toString().includes("Forbidden")) {
+      return "ログインができませんでした";
+    }
+    return err;
+  }
+
   let data = {};
   let errors = {};
   let submitted = false;
@@ -47,10 +54,7 @@
   <h2 class="font-bold text-lg mt-6 text-center w-full tracking-wide">
     {$_("ログイン")}
   </h2>
-  <button
-    on:click={loginWithGoogle()}
-    class="button w-full"
-  >
+  <button on:click={loginWithGoogle()} class="button w-full">
     {$_("Googleアカウントでログイン")}
   </button>
   <hr class="my-8" />
@@ -58,7 +62,7 @@
   <div class="text-center mt-6">
     <button
       on:click={login}
-      class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+      class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded-xl shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1"
       type="button"
     >
       {$_("ログイン")}
@@ -70,6 +74,8 @@
     </a>
   </div>
   {#if submitted && $auth instanceof Error}
-    <div class="text-red-500 w-full text-center mt-8">{$auth}</div>
+    <div class="text-red-500 w-full text-center mt-8">
+      {errorMessage($auth)}
+    </div>
   {/if}
 </Wrapper>

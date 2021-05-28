@@ -15,15 +15,18 @@
   import ChartPage from "/pages/ChartPage.svelte";
   import TutorialPage from "/pages/TutorialPage.svelte";
   import FeedbackPage from "/pages/FeedbackPage.svelte";
+  import RulesPage from "/pages/RulesPage.svelte";
+  import PrivacyPolicyPage from "/pages/PrivacyPolicyPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
   import Nav from "/components/Nav.svelte";
   import ContextMenu from "/components/ui/ContextMenu.svelte";
+  import ConfirmationDialog from "/components/ui/ConfirmationDialog.svelte";
   import { store } from "/store.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/pages/CapTableListPage.svelte";
 
-  let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  let dark = false; //window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   $: if (dark) {
     document.querySelector("body").classList.add("mode-dark");
@@ -31,30 +34,18 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  const { route } = require("/index.ellx");
+  const { route, unsubscribeDocs, unsubscribeProfile } = require("/index.ellx");
 
   onMount(() => {
     const { apply, unsubscribe, ...hl } = headlong({ classes });
     apply(
       ".button",
-      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 mt-6 text-center ring-0 ring-light-blue-500"
+      "bg-gray-600 transition duration-300 font-bold text-white active:bg-gray-700 text-sm font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 mt-6 text-center ring-0 ring-light-blue-500"
     );
-    apply(
-      ".button:hover",
-      "bg-gray-500 shadow-lg"
-    );
-    apply(
-      ".button:disabled",
-      "bg-gray-300 text-gray-400 cursor-not-allowed"
-    );
-    apply(
-      ".button:active",
-      "ring-2 bg-gray-400"
-    );
-    apply(
-      ".button:focus",
-      "ring-1"
-    );
+    apply(".button:hover", "bg-gray-500 shadow-lg");
+    apply(".button:disabled", "bg-gray-300 text-gray-400 cursor-not-allowed");
+    apply(".button:active", "ring-2 bg-gray-400");
+    apply(".button:focus", "ring-1");
     apply(".nav-button", "h-6 p-1 px-3 text-xs mt-0 mb-0 mr-0");
 
     window.hl = hl;
@@ -63,6 +54,8 @@
   });
 
   function logout() {
+    $unsubscribeDocs();
+    $unsubscribeProfile();
     window.ellx.logout();
     window.ellx.router.go("/");
     store.resetStore();
@@ -73,8 +66,14 @@
 
 <ContextMenu />
 
+<ConfirmationDialog />
+
 {#if $route === "/"}
   <HomePage />
+{:else if $route === "/privacy"}
+  <PrivacyPolicyPage />
+{:else if $route === "/rules"}
+  <RulesPage />
 {:else if $route === "/dashboard"}
   <DashboardPage />
 {:else if $route === "/docs"}

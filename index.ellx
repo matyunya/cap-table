@@ -9,21 +9,22 @@ nodes:
   profile = store.profile
   profileReady = profile.owner === userId
   userId = !authError ? (auth ? auth.userId : null) : null
-  appId = !authError ? auth.appId : route.split('/')[1]
+  appId = !authError ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
-  chartDocId = route.split('/')[2]
+  chartDocId = routeUrl.searchParams.get("chart_doc_id")
   activeDocChartData = chartData(chartDocId, docs)
   chartDoc = withStatus("activeDocChartData")
-  docId = route.split('/')[4]
+  docId = route.split('/')[3]
   chartDocStatus = chartDoc()
   isAuthenticated = Boolean(userId)
   isAnon = docId && (!userId || userId !== routeUserId)
   $4 = isAnon && getDoc(docId)
   activeSheet = store.documents.get(docId)
-  $2 = connect(userId)
-  $5 = connectProfile(userId)
-  route = router.path
+  unsubscribeDocs = connect(userId)
+  routeUrl = new URL("http://internet.com" + router.path)
+  unsubscribeProfile = connectProfile(userId)
+  route = routeUrl.pathname
   sheetChanged = activeSheet.owner && docId
   router = ellx.router
   title = activeSheet.title
@@ -220,24 +221,23 @@ layout:
   ],
   [,,
     {
-      "node": "activeSheet",
-      "expansion": {
-        "vertical": true,
-        "labelsLeft": true,
-        "height": 5,
-        "width": 1
-      }
+      "node": "activeSheet"
     },,,,,
     {
-      "node": "$2"
+      "node": "unsubscribeDocs"
     },,
     {
       "value": "Route:"
     }
   ],
+  [,,,,,,,,,
+    {
+      "node": "routeUrl"
+    }
+  ],
   [,,,,,,,
     {
-      "node": "$5"
+      "node": "unsubscribeProfile"
     },,
     {
       "node": "route"

@@ -10,7 +10,7 @@
   export let hasEmpty = true;
   export let required = false;
   export let classes =
-    "focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full";
+    "focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline w-full";
 
   $: withEmpty = hasEmpty ? [["", "選択してください"], ...options] : options;
 </script>
@@ -27,7 +27,7 @@
   class:ring-0={!error}
   class:ring-1={error}
   class:dark:text-gray-200={!error}
-  class="dark:bg-gray-800 {classes}"
+  class="dark:bg-gray-800 pr-4 {classes}"
   placeholder={$_(placeholder)}
 >
   {#each withEmpty as [val, text]}

@@ -3,9 +3,42 @@
   .right-0 {
     right: 0;
   }
+  .top-0 {
+    top: 0;
+  }
 
-  button:focus, input:focus, select:focus, [contenteditable]:focus {
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus,
+  [contenteditable]:focus {
     outline: none;
   }
-   .mode-dark{--text-opacity:1;color:#f5f5f5;color:rgba(245,245,245,var(--text-opacity));background-color:#212121;transition-duration:.1s;pointer-events:auto}.text-xxs{font-size:.6rem}.tip{transform:rotate(90deg)}.text-s{font-size:.8rem}
+  .mode-dark {
+    --text-opacity: 1;
+    color: #f5f5f5;
+    color: rgba(245, 245, 245, var(--text-opacity));
+    background-color: #212121;
+    transition-duration: 0.1s;
+    pointer-events: auto;
+  }
+  .text-xxs {
+    font-size: 0.6rem;
+  }
+  .tip {
+    transform: rotate(90deg);
+  }
+  .text-s {
+    font-size: 0.8rem;
+  }
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='currentColor' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 0px;
+    padding: 0.5rem auto;
+  }
 </style>

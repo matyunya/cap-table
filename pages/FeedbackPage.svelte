@@ -4,7 +4,6 @@
   import Label from "/components/ui/Label.svelte";
   import Input from "/components/ui/Input.svelte";
   import Wrapper from "/components/signup/Wrapper.svelte";
-  import { addFeedback } from "/models/feedback.js";
 
   let subject = "",
     body = "",
@@ -12,20 +11,12 @@
     loading = false,
     other = "";
 
-  const options = [
-    "プロダクトの不具合",
-    "資金調達のご相談",
-    "その他",
-  ].map((i) => [i, i]);
+  const options = ["プロダクトの不具合", "資金調達のご相談", "その他"].map(
+    (i) => [i, i]
+  );
 
-  async function onSubmit() {
-    try {
-      loading = true;
-      await addFeedback({ subject, body, other });
-      success = true;
-    } finally {
-      loading = false;
-    }
+  function onSubmit() {
+    success = true;
   }
 </script>
 
@@ -57,11 +48,16 @@
     placeholder={$_("お問い合わせ内容を入力する")}
     rows="10"
     on:input={({ target }) => (body = target.value)}
-    class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
+    class="mb-8 focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline w-full"
   />
-  <button disabled={!body} on:click={onSubmit} class="button w-full mt-12">
+  <a
+    href="mailto:info@cap-drive.jp?subject={subject}{other}&body={body}"
+    disabled={!body}
+    on:click={onSubmit}
+    class="button w-full mt-12"
+  >
     {$_("送信する")}
-  </button>
+  </a>
 
   <div slot="success">
     <div class="mb-8 text-center">

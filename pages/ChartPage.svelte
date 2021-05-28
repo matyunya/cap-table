@@ -19,8 +19,8 @@
 
   $: if (el && $activeDocChartData && $chartDocStatus === "success") draw();
 
-  const margin = { top: 40, right: 30, bottom: 30, left: 70 };
-  const width = 1100;
+  const margin = { top: 80, right: 0, bottom: 50, left: 100 };
+  const width = 1500;
   const height = 800;
 
   const fmt = new Intl.NumberFormat("ja-JP", {
@@ -28,13 +28,14 @@
   });
 
   function draw() {
-    d3.select(el).selectAll("*").remove();
+    d3.select(el).selectAll("svg").remove();
 
     const chart = d3
       .select(el)
       .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "0 0 1140 800")
+      .attr("viewBox", "0 0 1600 800")
+      .attr("height", 460)
       .classed("inline-block", true)
       .append("g")
       .attr("width", width)
@@ -55,7 +56,11 @@
           .tickFormat((i) => {
             if (!$activeDocChartData[i]) return "";
 
-            return dateFormat($activeDocChartData[i].date, "yy年M月");
+            try {
+              return dateFormat($activeDocChartData[i].date, "yy年M月");
+            } catch {
+              return $activeDocChartData[i].date || "Invalid date";
+            }
           })
       );
 
@@ -72,7 +77,7 @@
     const r = scale
       .scaleLinear()
       .domain(array.extent($activeDocChartData, (d) => +d.postMoney))
-      .range([4, 12]);
+      .range([5, 30]);
 
     const rPercent = scale
       .scaleLinear()
@@ -195,45 +200,49 @@
       .append("text")
       .attr("class", "post-money-label")
       .attr("x", 100)
-      .attr("y", height - 40)
+      .attr("y", height)
       .text("時価総額");
 
     firstLabelNode
       .append("text")
       .attr("class", "share-label")
       .attr("x", 100)
-      .attr("y", 0 + 30)
+      .attr("y", 50)
       .text("経営者持分");
+
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }
 </script>
 
-<div class="mt-24">
-  <div class="max-w-5xl mx-auto">
-    <h2 class="font-bold text-lg my-6 text-left w-full tracking-wide">
-      資本政策チャート
-    </h2>
-    <Select
-      classes="focus:ring-2 w-32 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded mr-3 text-light-blue-500"
-      hasEmpty={false}
-      value={$chartDocId}
-      on:change={({ target }) =>
-        window.ellx.router.go(`/chart/${target.value}`)}
-      options={$documentIds}
-    />
-  </div>
+{#if $chartDocId}
   <div
-    class="my-4 p-4 dark:bg-gray-900 bg-gray-100 shadow-lg rounded-lg z-50 max-w-5xl mx-auto"
+    id="chart"
+    style="min-height: 460px"
+    class="my-4 p-4 dark:bg-gray-900 bg-white shadow-lg rounded-lg z-50 w-full"
     bind:this={el}
-  />
-</div>
+  >
+    <div class="flex items-center justify-between">
+      <Select
+        classes="focus:ring-2 w-32 truncate transition p-1 duration-200 text-xs shadow focus:outline-none rounded-xl"
+        hasEmpty={false}
+        value={$chartDocId}
+        on:change={({ target }) =>
+          window.ellx.router.go(`/docs?chart_doc_id=${target.value}`)}
+        options={$documentIds}
+      />
+      <a class="text-black dark:text-white text-lg" href="/docs">×</a>
+    </div>
+  </div>
+{/if}
 
 <style>
   :global(text) {
-    font-size: 12px;
+    font-size: 20px;
   }
 
   :global(.label) {
-    font-size: 14px;
+    font-size: 22px;
     font-family: monospace;
   }
 
@@ -243,7 +252,7 @@
 
   :global(.post-money-label) {
     color: #0285c7;
-    font-size: 18px;
+    font-size: 24px;
     font-weight: bold;
   }
 
@@ -253,7 +262,7 @@
 
   :global(.share-label) {
     color: orange;
-    font-size: 18px;
+    font-size: 24px;
     font-weight: bold;
   }
 
@@ -272,7 +281,7 @@
     stroke: red;
   }
   :global(.percent .tick text) {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: medium;
   }
   :global(.percent .domain, .eval-ticks .domain) {

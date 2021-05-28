@@ -20,6 +20,8 @@
       placeholder: "例）info@email.co.jp",
       label: "メールアドレス",
       required: true,
+      validate: (s) =>
+        /^\S+@\S+\.\S+$/.test(s) ? false : "Emailの形式が無効です",
     },
     password: {
       placeholder: "",
@@ -60,7 +62,7 @@
         window.ellx.login.withLink({
           email: data.email,
           password: data.password,
-          language: $language,
+          language: $language || DEFAULT_LANGUAGE,
           redirectUrl: "/signup/2",
         });
         // todo: save name to ls from this page
@@ -113,19 +115,11 @@
     <Fields bind:data bind:errors fields={{ ...fields, ...privateFields }} />
 
     <div class="text-xs">
-      <a
-        target="_blank"
-        href="https://docs.google.com/document/d/1fmgwC6s5rh_0fL7z_8j2aud6WyAKPCnMWzPn5z-FyQU/edit"
-        class="a text-xs"
-      >
+      <a href="/rules" class="a text-xs">
         {$_("利用規約")}
       </a>
       ・
-      <a
-        target="_blank"
-        href="https://docs.google.com/document/d/1qoW24mJggZrwM1pah_hdrVQTRJospcUgZVPml8DEL3k/edit"
-        class="a"
-      >
+      <a href="/privacy" class="a">
         {$_("プライバシーポリシー")}
       </a>
       {$_("に同意の上")}
@@ -136,7 +130,7 @@
         on:click={() => {
           signUp(data);
         }}
-        class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mb-6"
+        class="bg-gray-900 dark:bg-blue-gray-500 tracking-widest transition duration-300 font-bold w-full text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded-xl shadow-lg hover:shadow-xl outline-none focus:outline-none mb-6"
         type="button"
       >
         {$_(label)}
