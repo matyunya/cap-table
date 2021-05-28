@@ -1,7 +1,5 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
-  import ChartPage from "/pages/ChartPage.svelte";
-
   import _ from "/utils/intl.js";
   import { documentIds } from "/store.js";
   import {
@@ -18,14 +16,12 @@
 <section class="relative text-sm flex flex-col max-w-5xl mx-auto mt-12">
   <div class="flex justify-start items-center space-x-6">
     <h2 class="font-bold text-lg mt-6 text-left tracking-wide">
-      {$_("資本政策")}
+      {$_("事業計画")}
     </h2>
     <button on:click={createDocument} class="button text-xs">
-      {$_("新しいテーブルを作成")}
+      {$_("新規計画を作成")}
     </button>
   </div>
-
-  <ChartPage />
 
   <ul
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
@@ -62,27 +58,6 @@
               </svg>
             </div>
             <div>Excel</div>
-          </button>
-
-          <button
-            on:click|stopPropagation={() =>
-              window.ellx.router.go(`/docs?chart_doc_id=${id}`)}
-            class="flex items-center transition duration-200 hover:text-yellow-800"
-          >
-            <div
-              class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 cursor-pointer  dark:ring-yellow-100 ring-yellow-600 hover:text-yellow-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                ><path
-                  d="M24 3.875l-6 1.221 1.716 1.708-5.351 5.358-3.001-3.002-7.336 7.242 1.41 1.418 5.922-5.834 2.991 2.993 6.781-6.762 1.667 1.66 1.201-6.002zm0 16.125v2h-24v-20h2v18h22z"
-                /></svg
-              >
-            </div>
-            <div>チャート表示</div>
           </button>
 
           <button

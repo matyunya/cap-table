@@ -1,19 +1,7 @@
 import addMonths from "date-fns/addMonths";
 import isAfter from "date-fns/isAfter";
-import startOfMonth from "date-fns/startOfMonth";
-import isEqual from "date-fns/isEqual";
-import formatDate from "date-fns/format";
-
-const firstDayOfMonth = startOfMonth(new Date());
-
-export const getClosestRoundToNow = (rounds) =>
-  [...rounds]
-    .map(([id, r]) => [new Date(r.date).getTime(), id])
-    .sort(([a], [b]) => a - b)
-    .find(
-      ([date]) =>
-        isAfter(date, firstDayOfMonth) || isEqual(date, firstDayOfMonth)
-    )[1];
+import fmtDate from "date-fns/format";
+import isToday from "date-fns/isToday";
 
 const reduceSumOfShares = (acc, { investments }) =>
   acc +
@@ -67,7 +55,7 @@ export const totalSharesForInvestor = (rounds, investorId) => {
 };
 
 export const formatRoundDate = (d) =>
-  formatDate(new Date(d || new Date()), "yyyy/MM");
+  fmtDate(new Date(d || new Date()), "yyyy/MM");
 
 export const getPreviousRounds = (rounds, id) => {
   if (!id) return new Map([]);
@@ -189,6 +177,12 @@ export const isValuationCapApplied = ({
 
   return sharePrice * (1 - discount * 0.01) > valuationCap / totalDilutedShares;
 };
+
+export function formatDate(d) {
+  if (!d) return "--";
+  return fmtDate(new Date(d), isToday(new Date(d)) ? "HH:mm" : "MM/dd HH:mm");
+}
+
 
 export const format = {
   number: new Intl.NumberFormat("ja-JA"),

@@ -130,12 +130,9 @@
         style="left: 0;"
         class="col-start-1 row-start-4 sticky p-1 border dark:border-gray-700 flex flex-col bg-white dark:bg-gray-800 shadow"
       >
-        <div class="p-1 h-6 items-center">{$_("株価")}</div>
-        <div class="p-1 h-6 items-center">{$_("調達金額")}</div>
-        <div class="p-1 h-6 items-center">{$_("時価総額（Pre）")}</div>
-        <div class="p-1 h-6 items-center">{$_("時価総額（Post）")}</div>
-        <div class="p-1 h-6 items-center">{$_("時価総額（Pre/潜在込）")}</div>
-        <div class="p-1 h-6 items-center">{$_("時価総額（Post/潜在込）")}</div>
+        <div class="p-1 h-6 items-center">{$_("税引前当期損益")}</div>
+        <div class="p-1 h-6 items-center">{$_("法人税（実効税率）")}</div>
+        <div class="p-1 h-6 items-center">{$_("当期利益")}</div>
       </div>
 
       {#if $rounds && $rounds.values}

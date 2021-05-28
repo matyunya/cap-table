@@ -2,6 +2,12 @@ import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
 import { select } from "tinyx";
 import _ from "/utils/intl.js";
 import {
+  syncUp,
+  syncItemUp,
+  store,
+} from "/store.js";
+
+import {
   UPDATE_SHARE,
   UPDATE_SHARE_PRICE,
   UPDATE_GROUP_NAME,
@@ -12,7 +18,6 @@ import {
   TOGGLE_PUBLIC,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
-  RESET_DOCUMENT,
   UPDATE_DOCUMENT_TITLE,
   UPDATE_SPLIT_BY,
   UPDATE_VALUATION_CAP,
@@ -20,10 +25,7 @@ import {
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
   UPDATE_LAST_VIEWED,
-  syncUp,
-  syncDocumentUp,
-  store,
-} from "/store.js";
+} from "/utils/mutations/documents.js";
 
 import {
   totalShares,
@@ -32,9 +34,9 @@ import {
   totalCommonSharesForInvestor,
   totalVotingSharesForInvestor,
   uid,
-} from "./index.js";
+} from "/utils/index.js";
 
-const { docId, appId, userId, route } = require("/index.ellx");
+const { docId, userId, route } = require("/index.ellx");
 
 const getDoc = (id) => select(store, () => ["documents", id || docId.get()]);
 
@@ -56,22 +58,22 @@ export const renameRound = ({ roundId, value }) =>
 
 const updateShares =
   (type) =>
-  ({ roundId, investorId, value }) =>
-    syncCurrentDoc(UPDATE_SHARE, {
-      roundId,
-      investorId,
-      shares: Number(value),
-      type,
-    });
+    ({ roundId, investorId, value }) =>
+      syncCurrentDoc(UPDATE_SHARE, {
+        roundId,
+        investorId,
+        shares: Number(value),
+        type,
+      });
 
 const updateInvestment =
   (mutation, fieldName) =>
-  ({ roundId, investorId, value }) =>
-    syncCurrentDoc(mutation, {
-      roundId,
-      investorId,
-      [fieldName]: Number(value),
-    });
+    ({ roundId, investorId, value }) =>
+      syncCurrentDoc(mutation, {
+        roundId,
+        investorId,
+        [fieldName]: Number(value),
+      });
 
 const updateJkissInvested = updateInvestment(
   UPDATE_JKISS_INVESTED,
@@ -84,8 +86,8 @@ const updateJkissStockOptions = updateInvestment(
 
 const updateRound =
   (mutation, fieldName) =>
-  ({ roundId, value }) =>
-    syncCurrentDoc(mutation, { roundId, [fieldName]: value });
+    ({ roundId, value }) =>
+      syncCurrentDoc(mutation, { roundId, [fieldName]: value });
 
 export const updateRoundDate = ({ roundId, value }) =>
   syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
@@ -111,18 +113,18 @@ export const updateInvestorTitle = ({ investorId, value }) =>
 
 const calcCell =
   (calcFn) =>
-  (investors, rounds) =>
-  ([investorId, investment]) => {
-    return [
-      investorId,
-      calcFn({
-        rounds,
-        investors,
-        investorId,
-        ...investment,
-      }),
-    ];
-  };
+    (investors, rounds) =>
+      ([investorId, investment]) => {
+        return [
+          investorId,
+          calcFn({
+            rounds,
+            investors,
+            investorId,
+            ...investment,
+          }),
+        ];
+      };
 
 const calcSharesPerRound = ({ rounds, investorId }) => {
   const total = totalCommonShares(rounds);
@@ -311,17 +313,16 @@ export const togglePublic = () => {
 export const createDocument = ({ from } = {}) => {
   const to = uid();
 
-  syncDocumentUp(
+  syncItemUp(
     store,
     COPY_DOCUMENT,
     { from: store.get("documents", from), to },
-    to
+    to,
+    "documents",
   );
 
   window.ellx.router.go(`/docs/${userId.get()}/${to}`);
 };
-
-export const resetDocument = () => syncCurrentDoc(RESET_DOCUMENT);
 
 export const removeDocument = async ({ id }) => {
   const ok = await promptYesNo({

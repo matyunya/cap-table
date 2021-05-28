@@ -1,6 +1,7 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import { language, documentIds, SET_LANGUAGE, store } from "/store.js";
+  import { language, documentIds, store } from "/store.js";
+  import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";

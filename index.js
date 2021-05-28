@@ -3,15 +3,14 @@ import App from "./App.svelte";
 import { writable } from "tinyx";
 import "/index.css";
 
-export { roundTypes, updateLastViewed } from "/utils/actions.js";
+export { roundTypes, updateLastViewed } from "/utils/actions/documents.js";
 export {
   uid,
   calcFounderShare,
   uniqueGroups,
   totalShares,
   totalCommonShares,
-  fillEmptyInvestments,
-  getClosestRoundToNow
+  fillEmptyInvestments
 } from "/utils/index.js";
 export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
 export { connect, getDoc } from "/models/docs.js";

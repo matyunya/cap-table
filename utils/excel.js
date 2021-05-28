@@ -6,7 +6,7 @@ import _ from "/utils/intl.js";
 import { uniqueGroups } from "/utils/index.js";
 import { calculate, groupInvestors } from "/utils/selectors.js";
 
-import { roundLabels } from "/utils/actions.js";
+import { roundLabels } from "/utils/actions/documents.js";
 
 const entityId = "generate-excel";
 

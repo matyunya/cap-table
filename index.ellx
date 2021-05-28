@@ -34,7 +34,7 @@ nodes:
   investors = activeSheet.investors
   rounds = activeSheet.rounds
   calculated = calculate(rounds, investors)
-  closestRound = getClosestRoundToNow(rounds)
+  plans = store.plans
 layout:
 [,
   [,,
@@ -242,7 +242,7 @@ layout:
     {
       "node": "route"
     }
-  ],,,,,
+  ],
   [,,
     {
       "value": "Sheet changed:"
@@ -367,10 +367,10 @@ layout:
         "width": 4
       }
     }
-  ],,,,,,,,,,
+  ],,,,,,,,,
   [,,
     {
-      "node": "closestRound"
+      "node": "plans"
     }
   ]
 ]

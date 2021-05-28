@@ -10,21 +10,21 @@
   import LoginPage from "/pages/LoginPage.svelte";
   import PasswordRecoveryPage from "/pages/PasswordRecoveryPage.svelte";
   import PasswordResetPage from "/pages/PasswordResetPage.svelte";
-  import PlanPage from "/pages/PlanPage.svelte";
   import CalcPage from "/pages/CalcPage.svelte";
-  import ChartPage from "/pages/ChartPage.svelte";
   import TutorialPage from "/pages/TutorialPage.svelte";
   import FeedbackPage from "/pages/FeedbackPage.svelte";
   import RulesPage from "/pages/RulesPage.svelte";
   import PrivacyPolicyPage from "/pages/PrivacyPolicyPage.svelte";
 
   import Sheet from "/components/sheet/Sheet.svelte";
+  import Plan from "/components/plan/Plan.svelte";
   import Nav from "/components/Nav.svelte";
   import ContextMenu from "/components/ui/ContextMenu.svelte";
   import ConfirmationDialog from "/components/ui/ConfirmationDialog.svelte";
   import { store } from "/store.js";
   import _ from "/utils/intl.js";
   import CapTableListPage from "/pages/CapTableListPage.svelte";
+  import PlanListPage from "/pages/PlanListPage.svelte";
 
   let dark = false; //window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -78,10 +78,12 @@
   <DashboardPage />
 {:else if $route === "/docs"}
   <CapTableListPage />
-{:else if $route && typeof $route === "string" && $route.startsWith("/chart")}
-  <ChartPage />
 {:else if $route && typeof $route === "string" && $route.startsWith("/docs")}
   <Sheet />
+{:else if $route === "/plan"}
+  <PlanListPage />
+{:else if $route && typeof $route === "string" && $route.startsWith("/plan")}
+  <Plan />
 {:else if $route === "/profile"}
   <EditProfilePage />
 {:else if $route === "/404"}
@@ -90,8 +92,6 @@
   </div>
 {:else if $route === "/forgot"}
   <PasswordRecoveryPage />
-{:else if $route === "/plan"}
-  <PlanPage />
 {:else if $route === "/calc"}
   <CalcPage />
 {:else if $route === "/reset"}
