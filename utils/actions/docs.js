@@ -15,7 +15,6 @@ import {
   UPDATE_ROUND_DATE,
   UPDATE_JKISS_INVESTED,
   UPDATE_JKISS_STOCK_OPTIONS,
-  TOGGLE_PUBLIC,
   COPY_DOCUMENT,
   REMOVE_DOCUMENT,
   UPDATE_DOCUMENT_TITLE,
@@ -36,9 +35,9 @@ import {
   uid,
 } from "/utils/index.js";
 
-const { docId, userId, route } = require("/index.ellx");
+const { activeItemId, userId, route } = require("/index.ellx");
 
-const getDoc = (id) => select(store, () => ["documents", id || docId.get()]);
+const getDoc = (id) => select(store, () => ["documents", id || activeItemId.get()]);
 
 export const syncCurrentDoc = (...args) => syncUp(getDoc(), ...args);
 
@@ -281,34 +280,6 @@ export const roundLabels = () =>
     }),
     {}
   );
-
-function copyToClipboard(text) {
-  var textArea = document.createElement("textarea");
-  textArea.value = text;
-
-  textArea.style.top = "0";
-  textArea.style.left = "0";
-  textArea.style.position = "fixed";
-
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-
-  try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
-    console.log("Fallback: Copying text command was " + msg);
-  } catch (err) {
-    console.error("Fallback: Oops, unable to copy", err);
-  }
-
-  document.body.removeChild(textArea);
-}
-
-export const togglePublic = () => {
-  syncCurrentDoc(TOGGLE_PUBLIC);
-  copyToClipboard(window.location.href);
-};
 
 export const createDocument = ({ from } = {}) => {
   const to = uid();

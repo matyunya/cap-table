@@ -34,7 +34,7 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  const { route, unsubscribeDocs, unsubscribeProfile } = require("/index.ellx");
+  const { route, unsubscribeDocs, unsubscribeProfile, unsubscribePlans } = require("/index.ellx");
 
   onMount(() => {
     const { apply, unsubscribe, ...hl } = headlong({ classes });
@@ -56,6 +56,7 @@
   function logout() {
     $unsubscribeDocs();
     $unsubscribeProfile();
+    $unsubscribePlans();
     window.ellx.logout();
     window.ellx.router.go("/");
     store.resetStore();

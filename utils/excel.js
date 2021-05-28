@@ -209,8 +209,8 @@ function xlsxWorker() {
 
 const requestGenerate = makeWorker(xlsxWorker);
 
-export default function exportExcel(docId) {
-  const doc = store.get("documents", docId);
+export default function exportExcel(id) {
+  const doc = store.get("documents", id);
   const { investors } = doc;
   const trans = _.get();
 

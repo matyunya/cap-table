@@ -62,8 +62,8 @@ export function calculate(rounds, investors) {
   return [...roundsWithReactive.keys()].reduce(roundValues(roundsWithReactive, investors), {});
 }
 
-export function roundsCount(docId) {
-  const doc = store.get("documents", docId);
+export function roundsCount(id) {
+  const doc = store.get("documents", id);
 
   if (!doc) return 0;
 
@@ -77,8 +77,8 @@ function founderShareForTheRound(values) {
   return values.totalSharesPercent ? values.totalSharesPercent.get("FOUNDER_ID") : values.sharesPercent.get("FOUNDER_ID");
 }
 
-export function chartData(docId, docs) {
-  const doc = docs ? docs.get(docId) : store.get("documents", docId);
+export function chartData(id, docs) {
+  const doc = docs ? docs.get(id) : store.get("documents", id);
   const data = calculate(doc.rounds, doc.investors);
   const keys = [...doc.rounds.keys()];
 

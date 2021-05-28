@@ -1,5 +1,6 @@
-import { defaultPlan, store, getActivePlanRef } from "/store.js";
-import { SYNC_DOCS, serialize, deserialize } from "/utils/sync.js";
+import { store, getActivePlanRef } from "/store.js";
+import { SYNC_PLANS, serialize } from "/utils/sync.js";
+import { defaultPlan } from "/utils/mutations/plans.js";
 import { uid } from "/utils/index.js";
 import { store } from "/store.js";
 
@@ -23,25 +24,6 @@ export function connect() {
         serialize({ ...defaultPlan(), owner: userId.get() }),
         uid()
       )
-      : store.commit(SYNC_DOCS, querySnapshot);
+      : store.commit(SYNC_PLANS, querySnapshot);
   });
-}
-
-export async function getPlan(id) {
-  if (!id) return;
-
-  const doc = firebase
-    .firestore()
-    .collection("apps")
-    .doc(appId.get())
-    .collection("plans")
-    .doc(id);
-
-  const d = await doc.get();
-
-  return store.commit(
-    () =>
-      ({ set }) =>
-        set("plans", id, deserialize(d.data()))
-  );
 }

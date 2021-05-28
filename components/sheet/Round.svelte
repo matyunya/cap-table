@@ -32,7 +32,7 @@
   } from "/utils/actions/docs.js";
   import { roundMenuItems } from "/utils/menus.js";
   import _ from "/utils/intl.js";
-  const { isAnon, investorGroups } = require("/index.ellx");
+  const { investorGroups } = require("/index.ellx");
 
   export let type;
   export let name;
@@ -73,13 +73,11 @@
         }
       }}
     />
-    {#if !$isAnon}
-      <Icon
-        class="text-white bg-gray-800"
-        on:click={(e) => openContextMenu(roundMenuItems(id), e)}
-        size="20"
-      />
-    {/if}
+    <Icon
+      class="text-white bg-gray-800"
+      on:click={(e) => openContextMenu(roundMenuItems(id), e)}
+      size="20"
+    />
   </div>
   <div
     class="flex flex-row justify-evenly text-center text-xs items-center font-medium px-1"

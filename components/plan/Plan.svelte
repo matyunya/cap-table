@@ -22,16 +22,15 @@
     calculated,
     investors,
     activeSheet,
-    isAnon,
     sheetChanged,
-    docId,
+    activeItemId,
     isAuthenticated,
   } = require("/index.ellx");
 
   onMount(() =>
     sheetChanged.subscribe((v) => {
       v &&
-        v === docId.get() &&
+        v === activeItemId.get() &&
         !v.startsWith("@@io.ellx.STALE") &&
         $isAuthenticated === true &&
         updateLastViewed();
@@ -78,17 +77,15 @@
               >
                 {label}
               </Cell>
-              {#if !$isAnon}
-                <Icon
-                  class={cn({ "mt-4": i !== 0 })}
-                  on:click={(e) =>
-                    openContextMenu(
-                      investorGroupMenuItems(label, $investors, i === 0),
-                      e
-                    )}
-                  rotate="90"
-                />
-              {/if}
+              <Icon
+                class={cn({ "mt-4": i !== 0 })}
+                on:click={(e) =>
+                  openContextMenu(
+                    investorGroupMenuItems(label, $investors, i === 0),
+                    e
+                  )}
+                rotate="90"
+              />
             </div>
           {:else}
             <div class="flex cell relative">
@@ -106,13 +103,11 @@
                   updateInvestorTitle({ investorId: id, value: detail })}
               />
               <div class="w-8" />
-              {#if !$isAnon}
-                <Icon
-                  on:click={(e) =>
-                    openContextMenu(investorMenuItems(id, group, investors), e)}
-                  rotate="90"
-                />
-              {/if}
+              <Icon
+                on:click={(e) =>
+                  openContextMenu(investorMenuItems(id, group, investors), e)}
+                rotate="90"
+              />
             </div>
           {/if}
         {/each}

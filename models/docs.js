@@ -1,5 +1,6 @@
-import { defaultDocument, store, getActiveDocRef } from "/store.js";
-import { SYNC_DOCS, serialize, deserialize } from "/utils/sync.js";
+import { store, getActiveDocRef } from "/store.js";
+import { SYNC_DOCS, serialize } from "/utils/sync.js";
+import { defaultDocument } from "/utils/mutations/docs.js";
 import { uid } from "/utils/index.js";
 import { store } from "/store.js";
 
@@ -25,23 +26,4 @@ export function connect() {
         )
       : store.commit(SYNC_DOCS, querySnapshot);
   });
-}
-
-export async function getDoc(docId) {
-  if (!docId) return;
-
-  const doc = firebase
-    .firestore()
-    .collection("apps")
-    .doc(appId.get())
-    .collection("files")
-    .doc(docId);
-
-  const d = await doc.get();
-
-  return store.commit(
-    () =>
-      ({ set }) =>
-        set("documents", docId, deserialize(d.data()))
-  );
 }

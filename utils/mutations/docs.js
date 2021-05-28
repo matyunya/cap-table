@@ -6,9 +6,50 @@ import {
   calcRoundResults,
   getNewRoundDate,
   isValidRoundDate,
+  formatRoundDate,
 } from "/utils/index.js";
+import { defaultName, getDefaultTitle } from "/utils/intl.js";
 
 const { userId } = require("/index.ellx");
+
+const founderId = "FOUNDER_ID";
+
+export const defaultDocument = (title) => ({
+  title: title || defaultName("docTitle"),
+  lastViewed: null,
+  rounds: new Map([
+    [
+      "founded",
+      {
+        name: defaultName("founded"),
+        type: "founded",
+        date: formatRoundDate(),
+        sharePrice: 1000,
+        investments: new Map([
+          [founderId, { commonShares: 1000, votingShares: 0 }],
+        ]),
+      },
+    ],
+  ]),
+  investors: new Map([
+    [
+      founderId,
+      {
+        name: defaultName("founder"),
+        group: defaultName("founders"),
+        type: "founder",
+      },
+    ],
+    [
+      "INVESTOR_1",
+      { name: defaultName("partner"), group: defaultName("partners") },
+    ],
+    [
+      "INVESTOR_2",
+      { name: defaultName("employee"), group: defaultName("partners") },
+    ],
+  ]),
+});
 
 export function UPDATE_SHARE({ roundId, investorId, shares, type }) {
   return ({ update }) =>
@@ -270,28 +311,6 @@ export function UPDATE_ROUND_DATE({ roundId, date }) {
   };
 }
 
-export function TOGGLE_PUBLIC() {
-  return ({ update }) =>
-    update("access", (access = {}) => ({
-      read: { public: !(access.read || {}).public },
-    }));
-}
-
-export function SET_DOCUMENT({ id, data }) {
-  return ({ set }) => set("documents", id, data);
-}
-
-function getDefaultTitle(docs) {
-  const defaultZeroName = defaultName("docTitle");
-  const defaultNameDocsCount = [...docs.values()]
-    .map((d) => d.title)
-    .filter((t) => t.startsWith(defaultZeroName)).length;
-
-  return (
-    defaultZeroName + (defaultNameDocsCount ? defaultNameDocsCount + 1 : "")
-  );
-}
-
 export function COPY_DOCUMENT({ from, to }) {
   return ({ set, get }) => {
     const newDoc = from
@@ -299,7 +318,7 @@ export function COPY_DOCUMENT({ from, to }) {
           ...from,
           title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
         }
-      : defaultDocument(getDefaultTitle(get("documents")));
+      : defaultDocument(getDefaultTitle(get("documents"), "docTitle"));
 
     set("documents", to, {
       ...newDoc,

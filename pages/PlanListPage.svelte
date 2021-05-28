@@ -1,12 +1,12 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import _ from "/utils/intl.js";
-  import { documentIds } from "/store.js";
+  import { planIds } from "/store.js";
   import {
-    renameDocument,
-    createDocument,
-    removeDocument,
-  } from "/utils/actions/docs.js";
+    renamePlan,
+    createPlan,
+    removePlan,
+  } from "/utils/actions/plans.js";
   import { formatDate } from "/utils/index.js";
   import exportExcel from "/utils/excel.js";
 
@@ -18,7 +18,7 @@
     <h2 class="font-bold text-lg mt-6 text-left tracking-wide">
       {$_("事業計画")}
     </h2>
-    <button on:click={createDocument} class="button text-xs">
+    <button on:click={createPlan} class="button text-xs">
       {$_("新規計画を作成")}
     </button>
   </div>
@@ -26,15 +26,15 @@
   <ul
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
   >
-    {#each $documentIds as [id, title, lastViewed]}
+    {#each $planIds as [id, title, lastViewed]}
       <li
         class="relative bg-white dark:bg-gray-700 cursor-pointer w-full p-3 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow-lg hover:shadow-xl flex flex-col space-y-6 justify-between"
-        on:click={() => window.ellx.router.go(`/docs/${$userId}/${id}`)}
+        on:click={() => window.ellx.router.go(`/plans/${$userId}/${id}`)}
       >
         <div on:click|preventDefault|stopPropagation={setEditing}>
           <Cell
             class="text-left text-sm font-medium"
-            on:change={({ detail }) => renameDocument({ id, detail })}
+            on:change={({ detail }) => renamePlan({ id, detail })}
             value={title}
           />
         </div>
@@ -62,7 +62,7 @@
 
           <button
             class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 hover:ring-2 cursor-pointer  dark:ring-red-100 ring-red-600 hover:text-red-600 transition duration-200"
-            on:click|stopPropagation={() => removeDocument({ id })}
+            on:click|stopPropagation={() => removePlan({ id })}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

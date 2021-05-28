@@ -479,3 +479,63 @@ const translate = (key, lang) => {
 };
 
 export default derived(language, (s) => (key) => translate(key, s));
+
+const defaultNames = {
+  docTitle: {
+    en: "New table",
+    ja: "新しいテーブル",
+  },
+  founded: {
+    en: "Founded",
+    ja: "創立",
+  },
+  founders: {
+    en: "Founders",
+    ja: "創業メンバー",
+  },
+  partners: {
+    en: "Partners",
+    ja: "共同創業者名",
+  },
+  founder: {
+    en: "Founder name",
+    ja: "創業者名",
+  },
+  partner: {
+    en: "Partner name",
+    ja: "共同創業者名",
+  },
+  employee: {
+    en: "Employee name",
+    ja: "従業員名",
+  },
+  employees: {
+    en: "Employee name",
+    ja: "従業員",
+  },
+  planTitle: {
+    en: "New plan",
+    ja: "無題の計画"
+  }
+};
+
+export const defaultName = (n) => {
+  try {
+    return defaultNames[n][language.get()];
+  } catch (e) {
+    console.error(n, e);
+
+    return "";
+  }
+};
+
+export function getDefaultTitle(docs, key) {
+  const defaultZeroName = defaultName(key);
+  const defaultNameDocsCount = [...docs.values()]
+    .map((d) => d.title)
+    .filter((t) => t.startsWith(defaultZeroName)).length;
+
+  return (
+    defaultZeroName + (defaultNameDocsCount ? defaultNameDocsCount + 1 : "")
+  );
+}

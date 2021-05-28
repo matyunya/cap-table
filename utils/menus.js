@@ -13,7 +13,7 @@ import {
   REMOVE_GROUP,
 } from "/utils/mutations/docs.js";
 
-const { docId, rounds } = require("/index.ellx");
+const { activeItemId, rounds } = require("/index.ellx");
 
 function canAddJkiss(roundId) {
   if (rounds.get().get(roundId).type === "j-kiss") return false;
@@ -159,7 +159,7 @@ export const getDocMenuItems = () =>
     },
     {
       text: "このテーブルを複製",
-      cb: () => createDocument({ from: docId.get() }),
+      cb: () => createDocument({ from: activeItemId.get() }),
     },
-    ...getCommonMenuItems(docId.get()),
+    ...getCommonMenuItems(activeItemId.get()),
   ].filter(Boolean);

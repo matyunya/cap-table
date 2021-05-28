@@ -10,22 +10,21 @@ nodes:
   profileReady = profile.owner === userId
   userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : null
-  regStep = route.includes("signup") ? +(route.split("/")[2] || 1) : null
-  routeUserId = route.split("/")[2]
+  regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
+  routeUserId = route.split('/')[2]
   chartDocId = routeUrl.searchParams.get("chart_doc_id")
   activeDocChartData = chartData(chartDocId, docs)
   chartDoc = withStatus("activeDocChartData")
-  docId = route.split("/")[3]
+  activeItemId = route.split('/')[3]
   chartDocStatus = chartDoc()
   isAuthenticated = Boolean(userId)
-  isAnon = docId && (!userId || userId !== routeUserId)
-  $4 = isAnon && getDoc(docId)
-  activeSheet = store.documents.get(docId)
+  activeSheet = store.documents.get(activeItemId)
   unsubscribeDocs = connect(userId)
+  unsubscribePlans = connectPlans(userId)
   routeUrl = new URL("http://internet.com" + router.path)
   unsubscribeProfile = connectProfile(userId)
   route = routeUrl.pathname
-  sheetChanged = activeSheet.owner && docId
+  sheetChanged = activeSheet.owner && activeItemId
   router = ellx.router
   title = activeSheet.title
   founderShare = calcFounderShare(activeSheet)
@@ -67,7 +66,7 @@ layout:
   ],
   [,,
     {
-      "value": "Docs:"
+      "value": "Documents:"
     },,,,,,,,
     {
       "value": "Auth status:"
@@ -119,7 +118,7 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 10,
+        "height": 8,
         "width": 1
       }
     },,
@@ -171,7 +170,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "value": "Route doc ID:"
+      "value": "Active item ID:"
     },,,,
     {
       "node": "chartDoc"
@@ -179,7 +178,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "node": "docId"
+      "node": "activeItemId"
     },,,,
     {
       "node": "chartDocStatus"
@@ -187,30 +186,14 @@ layout:
   ],
   [,,,,,,,,
     {
-      "value": "// $6 = updateLastViewed(docId)"
-    }
-  ],
-  [,,,,,,,,
-    {
       "value": "Is authenticated:"
-    },,
-    {
-      "value": "Is viewing someone's doc:"
     }
   ],
   [,,,,,,,,
     {
       "node": "isAuthenticated"
-    },,
-    {
-      "node": "isAnon"
     }
-  ],
-  [,,,,,,,,,,
-    {
-      "node": "$4"
-    }
-  ],
+  ],,
   [,,
     {
       "value": "Active sheet:"
@@ -230,7 +213,10 @@ layout:
       "value": "Route:"
     }
   ],
-  [,,,,,,,,,
+  [,,,,,,,
+    {
+      "node": "unsubscribePlans"
+    },,
     {
       "node": "routeUrl"
     }
@@ -367,7 +353,12 @@ layout:
         "width": 4
       }
     }
-  ],,,,,,,,,
+  ],,,,,,,,
+  [,,
+    {
+      "value": "Plans:"
+    }
+  ],
   [,,
     {
       "node": "plans"

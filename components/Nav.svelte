@@ -11,7 +11,7 @@
   export let logout = () => {};
   export let dark;
 
-  const { isAuthenticated, docId, userId, route } = require("/index.ellx");
+  const { isAuthenticated, activeItemId, userId, route } = require("/index.ellx");
 
   function setLanguage(language) {
     if ($isAuthenticated) {
@@ -21,9 +21,9 @@
     }
   }
 
-  $: options = $documentIds.find(([id]) => $docId === id)
+  $: options = $documentIds.find(([id]) => $activeItemId === id)
     ? $documentIds
-    : [[$docId, "--"], ...$documentIds];
+    : [[$activeItemId, "--"], ...$documentIds];
 
   function routeName(r) {
     if (!r) return false;
@@ -85,7 +85,7 @@
       <Select
         classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3"
         hasEmpty={false}
-        value={$docId}
+        value={$activeItemId}
         on:change={({ target }) =>
           window.ellx.router.go(`/docs/${$userId}/${target.value}`)}
         {options}
