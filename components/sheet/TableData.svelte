@@ -8,7 +8,6 @@
   export let readOnly = false;
   export let cols;
   export let roundId;
-  export let hasTotal = true;
 </script>
 
 {#each groups as { isGroup, id }, i}
@@ -31,12 +30,10 @@
   {/each}
 {/each}
 
-{#if hasTotal}
-  {#each Object.keys(cols) as colType}
-    <div
-      class="border-y p-1 pt-3 truncate items-center text-xs text-right font-bold mt-4 border-t dark:border-gray-600"
-    >
-      {format[cols[colType].format].format(values[colType].get("total"))}
-    </div>
-  {/each}
-{/if}
+{#each Object.keys(cols) as colType}
+  <div
+    class="border-y p-1 pt-3 truncate items-center text-xs text-right font-bold mt-4 border-t dark:border-gray-600"
+  >
+    {format[cols[colType].format].format(values[colType].get("total"))}
+  </div>
+{/each}

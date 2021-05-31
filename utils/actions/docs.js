@@ -23,7 +23,6 @@ import {
   UPDATE_DISCOUNT,
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
-  UPDATE_LAST_VIEWED,
 } from "/utils/mutations/docs.js";
 
 import {
@@ -35,14 +34,12 @@ import {
   uid,
 } from "/utils/index.js";
 
-const { activeItemId, userId, route } = require("/index.ellx");
+import {
+  syncCurrentItem as syncCurrentDoc,
+  syncItem as syncDoc,
+} from "/utils/actions/generic.js";
 
-const getDoc = (id) => select(store, () => ["documents", id || activeItemId.get()]);
-
-export const syncCurrentDoc = (...args) => syncUp(getDoc(), ...args);
-
-// TODO: consider for other actions
-export const syncDoc = (id, ...args) => syncUp(getDoc(id), ...args, id);
+const { userId, route } = require("/index.ellx");
 
 export const renameDocument = ({ detail, id }) =>
   id
@@ -91,7 +88,6 @@ const updateRound =
 export const updateRoundDate = ({ roundId, value }) =>
   syncCurrentDoc(UPDATE_ROUND_DATE, { roundId, date: value });
 
-export const updateLastViewed = () => syncCurrentDoc(UPDATE_LAST_VIEWED);
 
 export const updateSharePrice = updateRound(UPDATE_SHARE_PRICE, "sharePrice");
 
@@ -308,9 +304,9 @@ export const removeDocument = async ({ id }) => {
   const ids = [...store.get("documents").keys()];
   const idx = ids.indexOf(id);
 
-  syncUp(store, REMOVE_DOCUMENT, { id }, id);
+  syncItemUp(store, REMOVE_DOCUMENT, { id }, id, "documents");
 
-  if ((route.get() || "").startsWith("/docs/")) {
+  if (route.get().startsWith("/docs/")) {
     window.ellx.router.go(`/docs/${userId.get()}/${ids[idx - 1]}`);
   }
 };

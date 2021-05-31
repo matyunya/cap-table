@@ -331,10 +331,6 @@ export function UPDATE_DOCUMENT_TITLE(value) {
   return ({ set }) => set("title", value);
 }
 
-export function UPDATE_LAST_VIEWED() {
-  return ({ set }) => set("lastViewed", Date.now());
-}
-
 export function REMOVE_DOCUMENT({ id }) {
   return ({ update }) =>
     update("documents", (d) => {

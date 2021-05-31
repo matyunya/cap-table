@@ -101,7 +101,7 @@
           「事業計画」で算出した「当期利益」の数値を「株価算定」で参照します。
         </p>
       </div>
-      <button disabled class="button">{$_("開発中")}</button>
+      <button class="button">{$_("事業計画を開く")}</button>
     </a>
     <a
       href="/calc"

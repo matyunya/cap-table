@@ -1,7 +1,6 @@
 <script>
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import _ from "/utils/intl.js";
-  import { planIds } from "/store.js";
   import {
     renamePlan,
     createPlan,
@@ -10,7 +9,7 @@
   import { formatDate } from "/utils/index.js";
   import exportExcel from "/utils/excel.js";
 
-  const { userId } = require("/index.ellx");
+  const { userId, itemIds } = require("/index.ellx");
 </script>
 
 <section class="relative text-sm flex flex-col max-w-5xl mx-auto mt-12">
@@ -26,7 +25,7 @@
   <ul
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
   >
-    {#each $planIds as [id, title, lastViewed]}
+    {#each $itemIds as [id, title, lastViewed]}
       <li
         class="relative bg-white dark:bg-gray-700 cursor-pointer w-full p-3 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow-lg hover:shadow-xl flex flex-col space-y-6 justify-between"
         on:click={() => window.ellx.router.go(`/plans/${$userId}/${id}`)}

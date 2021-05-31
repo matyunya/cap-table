@@ -13,27 +13,36 @@ nodes:
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   routeUserId = route.split('/')[2]
   chartDocId = routeUrl.searchParams.get("chart_doc_id")
-  activeDocChartData = chartData(chartDocId, docs)
+  activeDocChartData = chartDocId && chartData(chartDocId, docs)
   chartDoc = withStatus("activeDocChartData")
   activeItemId = route.split('/')[3]
   chartDocStatus = chartDoc()
   isAuthenticated = Boolean(userId)
-  activeSheet = store.documents.get(activeItemId)
+  activeSheet = getActiveItem(activeItemId, route, profileReady, plans, docs)
+  getSheetStatus = withStatus("activeSheet")
   unsubscribeDocs = connect(userId)
+  sheetStatus = getSheetStatus()
   unsubscribePlans = connectPlans(userId)
   routeUrl = new URL("http://internet.com" + router.path)
+  isPlan = route.startsWith("/plans")
+  isDoc = route.startsWith("/docs")
+  isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
   unsubscribeProfile = connectProfile(userId)
   route = routeUrl.pathname
-  sheetChanged = activeSheet.owner && activeItemId
+  sheetChanged = activeSheet && activeSheet.owner && activeItemId
   router = ellx.router
-  title = activeSheet.title
+  title = activeSheet && activeSheet.title
   founderShare = calcFounderShare(activeSheet)
-  groups = uniqueGroups(investors)
-  investorGroups = groupInvestors(groups, investors)
-  investors = activeSheet.investors
-  rounds = activeSheet.rounds
+  groups = isDoc && uniqueGroups(investors)
+  investorGroups = isDoc && groupInvestors(groups, investors)
+  investors = activeSheet ? activeSheet.investors : new Map()
+  rounds = activeSheet ? activeSheet.rounds : new Map()
   calculated = calculate(rounds, investors)
+  projects = activeSheet ? activeSheet.projects : new Map()
+  data = activeSheet ? activeSheet.data : new Map()
   plans = store.plans
+  itemIds = profileReady && getItemIds(isPlan ? plans : docs)
+  years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
 layout:
 [,
   [,,
@@ -79,7 +88,7 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "secondary": true,
-        "height": 5,
+        "height": 6,
         "width": 5
       }
     },,,,,,
@@ -197,28 +206,61 @@ layout:
   [,,
     {
       "value": "Active sheet:"
-    },,,,,
+    },,
+    {
+      "value": "Sheet status:"
+    },,,
     {
       "value": "Connect to Firebase:"
     }
   ],
   [,,
     {
-      "node": "activeSheet"
-    },,,,,
+      "node": "activeSheet",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 5,
+        "width": 1
+      }
+    },,
+    {
+      "node": "getSheetStatus"
+    },,,
     {
       "node": "unsubscribeDocs"
     },,
     {
       "value": "Route:"
+    },,,,,
+    {
+      "value": "Is plan:"
+    },
+    {
+      "value": "Is doc:"
+    },
+    {
+      "value": "Is item page:"
     }
   ],
-  [,,,,,,,
+  [,,,,
+    {
+      "node": "sheetStatus"
+    },,,
     {
       "node": "unsubscribePlans"
     },,
     {
       "node": "routeUrl"
+    },,,,,
+    {
+      "node": "isPlan"
+    },
+    {
+      "node": "isDoc"
+    },
+    {
+      "node": "isItem"
     }
   ],
   [,,,,,,,
@@ -228,7 +270,7 @@ layout:
     {
       "node": "route"
     }
-  ],
+  ],,,,,,,
   [,,
     {
       "value": "Sheet changed:"
@@ -338,7 +380,7 @@ layout:
   ],,,,,,,
   [,,
     {
-      "value": "Calculated results:"
+      "value": "Calculated doc results:"
     }
   ],,
   [,,
@@ -357,11 +399,70 @@ layout:
   [,,
     {
       "value": "Plans:"
+    },,,,,,
+    {
+      "value": "Projects:"
+    },,
+    {
+      "value": "Data:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "projects",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 2,
+        "width": 1
+      }
+    },,
+    {
+      "node": "data",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 10,
+        "width": 1
+      }
     }
   ],
   [,,
     {
-      "node": "plans"
+      "node": "plans",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 8,
+        "width": 5
+      }
+    }
+  ],,,,,,,,,
+  [,,
+    {
+      "value": "Item ids:"
+    }
+  ],
+  [,,
+    {
+      "node": "itemIds",
+      "expansion": {
+        "vertical": true,
+        "height": 6,
+        "width": 1
+      }
+    }
+  ],,,,,,,,
+  [,,
+    {
+      "value": "Years:"
+    }
+  ],
+  [,,
+    {
+      "node": "years"
     }
   ]
 ]

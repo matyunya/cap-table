@@ -466,6 +466,30 @@ const translations = {
   従業員数: {
     en: "Number of employees",
   },
+  資金調達額: {
+    en: "Funding amount",
+  },
+  株式資金調達: {
+    en: "Stock financing"
+  },
+  政府系金融機関借入: {
+    en: "Borrowing government"
+  },
+  民間金融機関借入: {
+    en: "Borrowing private"
+  },
+  自己資金: {
+    en: "Own resources"
+  },
+  その他: {
+    en: "Other"
+  },
+  主力事業: {
+    en: "Main project",
+  },
+  新規事業A: {
+    en: "Project A",
+  }
 };
 
 const translate = (key, lang) => {
@@ -516,6 +540,10 @@ const defaultNames = {
   planTitle: {
     en: "New plan",
     ja: "無題の計画"
+  },
+  project: {
+    ja: "新規事業",
+    en: "New project",
   }
 };
 

@@ -1,6 +1,8 @@
-import { createDocument, removeDocument, syncCurrentDoc } from "/utils/actions/docs.js";
+import { createDocument, removeDocument } from "/utils/actions/docs.js";
 import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
+
+import { syncCurrentItem as syncCurrentDoc } from "/utils/actions/generic.js";
 
 import { store } from "/store.js";
 
@@ -13,7 +15,15 @@ import {
   REMOVE_GROUP,
 } from "/utils/mutations/docs.js";
 
-const { activeItemId, rounds } = require("/index.ellx");
+import {
+  createProject,
+  removeProject,
+  addYear,
+  removeYear,
+  setIPO,
+} from "/utils/actions/plans.js";
+
+const { activeItemId, rounds, isDoc, isPlan, projects, years } = require("/index.ellx");
 
 function canAddJkiss(roundId) {
   if (rounds.get().get(roundId).type === "j-kiss") return false;
@@ -141,25 +151,50 @@ export const getCommonMenuItems = (id) => [
     text: "Excelでダウンロード",
     cb: () => exportExcel(id),
   },
-  {
+  isDoc.get() && {
     text: "チャートを表示",
     cb: () => window.ellx.router.go("/docs?chart_doc_id=" + id),
   },
-  store.get("documents").size > 1 && {
+  (isPlan.get() || (isDoc.get() && store.get("documents").size > 1)) && {
     text: "削除",
     cb: () => removeDocument({ id }),
   },
-];
+].filter(Boolean);
 
-export const getDocMenuItems = () =>
-  [
-    {
-      text: "新しいテーブル",
-      cb: createDocument,
-    },
-    {
-      text: "このテーブルを複製",
-      cb: () => createDocument({ from: activeItemId.get() }),
-    },
-    ...getCommonMenuItems(activeItemId.get()),
-  ].filter(Boolean);
+export const getDocMenuItems = () => [
+  {
+    text: "新しいテーブル",
+    cb: createDocument,
+  },
+  {
+    text: "このテーブルを複製",
+    cb: () => createDocument({ from: activeItemId.get() }),
+  },
+  ...getCommonMenuItems(activeItemId.get()),
+].filter(Boolean);
+
+export const getProjectMenuItems = ({ id }) => [
+  {
+    text: "新規事業を下に追加",
+    cb: () => createProject({ afterId: id }),
+  },
+  projects.get().size > 1 && {
+    text: "この事業を削除",
+    cb: () => removeProject({ id }),
+  },
+].filter(Boolean);
+
+export const getYearMenuItems = ({ year }) => [
+  year === years.get()[years.get().length - 1] && {
+    text: "次の年度を追加",
+    cb: () => addYear(),
+  },
+  year === years.get()[years.get().length - 1] && {
+    text: "この年度を削除",
+    cb: () => removeYear({ year }),
+  },
+  year !== years.get()[0] && {
+    text: "この年度でIPOする",
+    cb: () => setIPO({ year }),
+  },
+].filter(Boolean);

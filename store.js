@@ -1,8 +1,8 @@
 import bootstrap from "~matyunya/store";
-import { select, derived, produce } from "tinyx";
+import { select, produce } from "tinyx";
 import { serialize } from "/utils/sync.js";
 
-const { activeItemId, appId, route } = require("/index.ellx");
+const { activeItemId, appId, isPlan } = require("/index.ellx");
 
 export const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
 
@@ -30,6 +30,12 @@ export const getActiveDocRef = getActiveItemRef("files");
 
 export const getActivePlanRef = getActiveItemRef("plans");
 
+const getRef = id => isPlan.get()
+  ? getActivePlanRef(id)
+  : getActiveDocRef(id);
+
+const op = (ref, val) => val !== undefined ? ref.set(val) : ref.delete(val);
+
 export function syncUp(st, TRANSACTION, payload, id) {
   id = id || activeItemId.get();
   if (id === undefined) {
@@ -38,11 +44,7 @@ export function syncUp(st, TRANSACTION, payload, id) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get()));
 
-  if (route.get().startsWith("/docs")) {
-    getActiveDocRef(id).set(val); // fix this...
-  } else {
-    getActivePlanRef(id).set(val);
-  }
+  op(getRef(id), val);
 }
 
 export function syncItemUp(st, TRANSACTION, payload, id, key) {
@@ -52,25 +54,9 @@ export function syncItemUp(st, TRANSACTION, payload, id, key) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get())[key].get(id));
 
-  if (route.get().startsWith("/docs")) {
-    getActiveDocRef(id).set(val);
-  } else {
-    getActivePlanRef(id).set(val);
-  }
+  op(getRef(id), val);
 }
 
 export const language = select(store, () => ["profile", "language"]);
 
 export const userProfile = select(store, () => ["profile"]);
-
-export const documentIds = derived(store, ({ documents }) =>
-  [...documents]
-    .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
-    .sort(([, , a], [, , b]) => b - a)
-);
-
-export const planIds = derived(store, ({ plans = new Map() }) =>
-  [...plans]
-    .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
-    .sort(([, , a], [, , b]) => b - a)
-);

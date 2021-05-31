@@ -10,8 +10,8 @@
     renameInvestorGroup,
     renameInvestor,
     updateInvestorTitle,
-    updateLastViewed,
   } from "/utils/actions/docs.js";
+  import { updateLastViewed } from "/utils/actions/generic.js";
   import cn from "/utils/cn.js";
   import { investorGroupMenuItems, investorMenuItems } from "/utils/menus.js";
 
@@ -21,24 +21,13 @@
     rounds,
     calculated,
     investors,
-    activeSheet,
-    sheetChanged,
-    activeItemId,
-    isAuthenticated,
+    sheetStatus,
   } = require("/index.ellx");
 
-  onMount(() =>
-    sheetChanged.subscribe((v) => {
-      v &&
-        v === activeItemId.get() &&
-        !v.startsWith("@@io.ellx.STALE") &&
-        $isAuthenticated === true &&
-        updateLastViewed();
-    })
-  );
+  onMount(updateLastViewed);
 </script>
 
-{#if $activeSheet}
+{#if $sheetStatus === "success"}
   <div style="width: {calculateWidth($rounds) + 300}px;">
     <div
       style="width: {calculateWidth($rounds)}px;"
@@ -47,7 +36,7 @@
     >
       <div
         style="top: 0; left: 0;"
-        class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
+        class="sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
       >
         <div class="text-xs w-full p-2 text-left">
           {$_("テーブル名")}

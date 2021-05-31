@@ -1,6 +1,6 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import { language, documentIds, store } from "/store.js";
+  import { language, store } from "/store.js";
   import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
@@ -11,7 +11,16 @@
   export let logout = () => {};
   export let dark;
 
-  const { isAuthenticated, activeItemId, userId, route } = require("/index.ellx");
+  const {
+    isAuthenticated,
+    activeItemId,
+    userId,
+    route,
+    isDoc,
+    isPlan,
+    isItem,
+    itemIds,
+  } = require("/index.ellx");
 
   function setLanguage(language) {
     if ($isAuthenticated) {
@@ -21,15 +30,32 @@
     }
   }
 
-  $: options = $documentIds.find(([id]) => $activeItemId === id)
-    ? $documentIds
-    : [[$activeItemId, "--"], ...$documentIds];
+  let options = [];
+
+  $: if (Array.isArray($itemIds))
+    options = $itemIds.find(([id]) => $activeItemId === id)
+      ? $itemIds
+      : [[$activeItemId, "--"], ...$itemIds];
 
   function routeName(r) {
     if (!r) return false;
 
-    if (typeof r === "string" && r.startsWith("/docs/")) {
+    if ($route.startsWith("/docs/")) {
       return "資本政策";
+    }
+    if ($route.startsWith("/plans/")) {
+      return "事業計画";
+    }
+  }
+
+  function backRoute(r) {
+    if (!r) return "/";
+
+    if ($route.startsWith("/docs/")) {
+      return "/docs";
+    }
+    if ($route.startsWith("/plans/")) {
+      return "/plans";
     }
   }
 </script>
@@ -45,7 +71,7 @@
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
   >
-    {#if typeof $route === "string" && !$route.startsWith("/docs/")}
+    {#if !$isItem}
       <a
         href="/"
         class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded-xl p-1 transition duration-300"
@@ -62,8 +88,8 @@
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/plan"
-          class:font-bold={$route === "/plan"}
+          href="/plans"
+          class:font-bold={$route === "/plans"}
         >
           {$_("事業計画")}
         </a>
@@ -77,17 +103,19 @@
       {/if}
     {/if}
     {#if routeName($route)}
-      <a href="/docs" class="text-xs underline rounded-xl p-1">
+      <a href={backRoute($route)} class="text-xs underline rounded-xl p-1">
         ← {$_(routeName($route))}
       </a>
     {/if}
-    {#if typeof $route === "string" && $route.startsWith("/docs/")}
+    {#if $isItem}
       <Select
         classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3"
         hasEmpty={false}
         value={$activeItemId}
         on:change={({ target }) =>
-          window.ellx.router.go(`/docs/${$userId}/${target.value}`)}
+          window.ellx.router.go(
+            ($isDoc ? "/docs/" : "/plans/") + `${$userId}/${target.value}`
+          )}
         {options}
       />
       <button

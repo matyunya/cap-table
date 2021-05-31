@@ -7,12 +7,12 @@
   import shape from "d3-shape";
   import { format } from "/utils/index.js";
   import dateFormat from "date-fns/format";
-  import { documentIds } from "/store.js";
 
   const {
     activeDocChartData,
     chartDocStatus,
     chartDocId,
+    itemIds
   } = require("/index.ellx");
 
   let el;
@@ -229,7 +229,7 @@
         value={$chartDocId}
         on:change={({ target }) =>
           window.ellx.router.go(`/docs?chart_doc_id=${target.value}`)}
-        options={$documentIds}
+        options={$itemIds}
       />
       <a class="text-black dark:text-white text-lg" href="/docs">×</a>
     </div>

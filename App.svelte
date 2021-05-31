@@ -81,7 +81,7 @@
   <CapTableListPage />
 {:else if $route && typeof $route === "string" && $route.startsWith("/docs")}
   <Sheet />
-{:else if $route === "/plan"}
+{:else if $route === "/plans"}
   <PlanListPage />
 {:else if $route && typeof $route === "string" && $route.startsWith("/plan")}
   <Plan />
