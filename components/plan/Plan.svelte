@@ -10,12 +10,12 @@
   import { getProjectMenuItems } from "/utils/menus.js";
   import cn from "/utils/cn.js";
 
-  const { projects, title, years, data, sheetStatus } = require("/index.ellx");
+  const { projects, title, years, sheetStatus } = require("/index.ellx");
 
   onMount(updateLastViewed);
 </script>
 
-{#if $sheetStatus === "success" && $data && $data.get}
+{#if $sheetStatus === "success"}
   <div
     class="relative grid auto grid-cols-1 gap-x-2 grid-rows-4 cap-table text-xs m-12 text-gray-700 dark:text-gray-200 mt-12 bg-blurred z-40 p-4"
     on:click={setEditing}
@@ -37,13 +37,14 @@
       style="left: 0;"
       class="col-start-1 row-start-2 border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow p-1"
     >
-      {#each rowTypes as { id, label, hasProjects }, i}
+      {#each rowTypes as { label, hasProjects }, i}
         <div class="relative cell">
           <Cell
             editable={false}
             class={cn({
               "cell p-1 h-6 items-center text-left font-bold": true,
-              "tracking-wide text-xs mt-4": i !== 0,
+              "tracking-wide text-xs mt-6": i !== 0 && hasProjects,
+              "mt-2": i !== 0 && !hasProjects,
             })}
             value={label}
           >
@@ -73,7 +74,7 @@
 
     {#if $years && $years.length}
       {#each $years as year, i (year)}
-        <Year {data} {year} {projects} {i} />
+        <Year {year} {projects} {i} />
       {/each}
     {/if}
   </div>

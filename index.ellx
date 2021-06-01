@@ -40,8 +40,8 @@ nodes:
   rounds = activeSheet ? activeSheet.rounds : new Map()
   calculated = calculate(rounds, investors)
   projects = activeSheet ? activeSheet.projects : new Map()
-  data = activeSheet ? activeSheet.data : new Map()
   plans = store.plans
+  data = activeSheet ? activeSheet.data : new Map()
   itemIds = profileReady && getItemIds(isPlan ? plans : docs)
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
 layout:
@@ -406,7 +406,7 @@ layout:
     },,,,,,
     {
       "value": "Projects:"
-    },,
+    },,,
     {
       "value": "Data:"
     }
@@ -418,15 +418,6 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "height": 2,
-        "width": 1
-      }
-    },,
-    {
-      "node": "data",
-      "expansion": {
-        "vertical": true,
-        "labelsLeft": true,
-        "height": 10,
         "width": 1
       }
     }
@@ -441,6 +432,17 @@ layout:
         "labelsTop": true,
         "height": 8,
         "width": 5
+      }
+    },,,,,,,,,
+    {
+      "node": "data",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 6,
+        "width": 2
       }
     }
   ],,,,,,,,,

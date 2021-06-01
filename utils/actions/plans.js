@@ -1,4 +1,5 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
+import { format } from "/utils/index.js";
 import _ from "/utils/intl.js";
 import {
   syncItemUp,
@@ -26,6 +27,8 @@ import {
   syncCurrentItem as syncCurrentPlan,
   syncItem as syncPlan,
 } from "/utils/actions/generic.js";
+
+export const DEFAULT_TAX = 0.3;
 
 const { userId, route } = require("/index.ellx");
 
@@ -83,7 +86,35 @@ export const removeYear = ({ year }) => syncCurrentPlan(REMOVE_YEAR, { year });
 
 export const setIPO = ({ year }) => syncCurrentPlan(SET_IPO_YEAR, { year });
 
-export const rowTypes = [
+const rateForField = field => ({ year, data }) => {
+  const prev = fieldSum(data.get(year - 1) || {}, field);
+  if (!prev) return 0;
+
+  const cur = fieldSum(data.get(year) || {}, field);
+  if (!cur) return 0;
+
+  return (cur - prev) / prev;
+}
+
+const fillEmpty = cb => ({ year, data }) => {
+  const yearData = data.get(year);
+  if (!yearData) return 0;
+
+  return cb({
+    year,
+    data,
+    yearData: {
+      ...EMPTY,
+      ...yearData,
+    }
+  });
+}
+
+const calcProfitAndLossBeforeTax = ({ yearData: d }) => d.ordinaryIncome + d.extraordinaryProfit - d.extraordinaryLoss;
+
+const calculateTax = (p) => calcProfitAndLossBeforeTax(p) * (p.data.tax || DEFAULT_TAX);
+
+const types = [
   {
     id: "sales",
     label: "売上高",
@@ -93,6 +124,7 @@ export const rowTypes = [
     id: "salesGrowthRate",
     label: "売上高成長率",
     format: "percent",
+    calculate: rateForField("sales"),
   },
   {
     id: "costOfSales",
@@ -118,6 +150,7 @@ export const rowTypes = [
     id: "operatingProfitMargin",
     label: "営業利益率",
     format: "percent",
+    calculate: rateForField("operatingIncome"),
   },
   {
     id: "nonOperatingIncome",
@@ -142,14 +175,17 @@ export const rowTypes = [
   {
     id: "profitAndLossBeforeTax",
     label: "税引前当期損益",
+    calculate: calcProfitAndLossBeforeTax
   },
   {
     id: "corporateTaxEffectiveTaxRate",
     label: "法人税（実効税率）",
+    calculate: calculateTax,
   },
   {
     id: "netIncome",
     label: "当期利益",
+    calculate: p => calcProfitAndLossBeforeTax(p) - calculateTax(p),
   },
   {
     id: "cashAndDepositBalance",
@@ -178,6 +214,7 @@ export const rowTypes = [
   {
     id: "fundingAmount",
     label: "資金調達額"
+    // calc from raised amount per year
   },
   {
     id: "stockFinancing",
@@ -199,4 +236,49 @@ export const rowTypes = [
     id: "other",
     label: "その他"
   },
+  {
+    id: "total",
+    label: "合計",
+    calculate: ({ yearData: d }) => d.stockFinancing +
+      d.borrowingGovernment +
+      d.borrowingPrivate +
+      d.ownResources +
+      d.other + 0 // funding amount
+  }
 ];
+
+const EMPTY = Object.fromEntries(types.map(k => [k.id, 0]));
+
+export const rowTypes = types.map(e => ({
+  ...e,
+  calculate: e.calculate ? fillEmpty(e.calculate) : null,
+}));
+
+const fieldSum = (yearData, field) => Object.keys(yearData[field] || {}).reduce((acc, cur) => acc + yearData[field][cur], 0);
+
+export function getTypeValue(rowType, year, data) {
+  const yearData = data.get(year);
+  if (!yearData) return "";
+
+  if (rowType.hasProjects) {
+    return fieldSum(yearData, rowType.id);
+  }
+
+  if (rowType.calculate) {
+    return rowType.calculate({ year, data });
+  }
+
+  return yearData[rowType.id];
+}
+
+export function formatValue(fn, value) {
+  return format[fn || "number"].format(value || 0);
+}
+
+export function getProjectValue(id, year, data, projectId) {
+  const yearData = data.get(year) || {};
+
+  const parent = yearData[id];
+
+  return parent ? parent[projectId] : 0;
+}
