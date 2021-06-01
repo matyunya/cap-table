@@ -11,6 +11,7 @@ nodes:
   userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
+  language = profileReady ? profile.language : navigator.languages[0].slice(0, 2)
   routeUserId = route.split('/')[2]
   chartDocId = routeUrl.searchParams.get("chart_doc_id")
   activeDocChartData = chartDocId && chartData(chartDocId, docs)
@@ -166,7 +167,10 @@ layout:
       "value": "Active doc chart data:"
     }
   ],
-  [,,,,,,,,
+  [,,,,
+    {
+      "node": "language"
+    },,,,
     {
       "node": "routeUserId"
     },,

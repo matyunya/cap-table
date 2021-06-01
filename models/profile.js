@@ -1,6 +1,6 @@
-import { store, language, DEFAULT_LANGUAGE } from "/store.js";
+import { store } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
-const { appId, userId } = require("/index.ellx");
+const { appId, userId, language } = require("/index.ellx");
 
 function getProfileRef() {
   return firebase
@@ -18,7 +18,7 @@ export function connect() {
     querySnapshot.empty
       ? updateProfile({
           owner: userId.get(),
-          language: language.get() || DEFAULT_LANGUAGE,
+          language: language.get(),
         })
       : store.commit(SYNC_PROFILE, querySnapshot);
   });
@@ -40,5 +40,5 @@ export const loginWithGoogle =
     window.ellx.login({
       withGoogle: true,
       redirectUrl,
-      language: language.get() || DEFAULT_LANGUAGE,
+      language: language.get(),
     });

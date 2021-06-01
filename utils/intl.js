@@ -1,5 +1,6 @@
 import { derived } from "tinyx";
-import { language } from "/store.js";
+
+const { language } = require("/index.ellx");
 
 const translations = {
   "30秒で無料登録、すぐ使えます！": {

@@ -1,21 +1,17 @@
 import bootstrap from "~matyunya/store";
-import { select, produce } from "tinyx";
+import { produce } from "tinyx";
 import { serialize } from "/utils/sync.js";
 
 const { activeItemId, appId, isPlan } = require("/index.ellx");
 
-export const DEFAULT_LANGUAGE = navigator.languages[0].slice(0, 2);
-
-const defaultStore = {
+export const store = bootstrap({
   profile: {
-    language: DEFAULT_LANGUAGE,
+    language: navigator.languages[0].slice(0, 2),
     projectedInvestmentTypes: [],
   },
   documents: new Map(),
   plans: new Map(),
-};
-
-export const store = bootstrap(defaultStore);
+});
 
 function getActiveItemRef(collection) {
   return id => firebase
@@ -56,7 +52,3 @@ export function syncItemUp(st, TRANSACTION, payload, id, key) {
 
   op(getRef(id), val);
 }
-
-export const language = select(store, () => ["profile", "language"]);
-
-export const userProfile = select(store, () => ["profile"]);

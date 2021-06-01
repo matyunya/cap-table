@@ -1,6 +1,6 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import { language, store } from "/store.js";
+  import { store } from "/store.js";
   import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
   import { updateProfile } from "/models/profile.js";
@@ -17,9 +17,9 @@
     userId,
     route,
     isDoc,
-    isPlan,
     isItem,
     itemIds,
+    language,
   } = require("/index.ellx");
 
   function setLanguage(language) {

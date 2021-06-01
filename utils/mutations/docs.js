@@ -10,7 +10,7 @@ import {
 } from "/utils/index.js";
 import { defaultName, getDefaultTitle } from "/utils/intl.js";
 
-const { userId } = require("/index.ellx");
+const { userId, language } = require("/index.ellx");
 
 const founderId = "FOUNDER_ID";
 

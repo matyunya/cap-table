@@ -45,9 +45,7 @@
   import Fields from "/components/signup/Fields.svelte";
   import _ from "/utils/intl.js";
 
-  import { language, DEFAULT_LANGUAGE } from "/store.js";
-
-  const { userId, auth } = require("/index.ellx");
+  const { userId, auth, language } = require("/index.ellx");
 
   export let data = {};
   let errors = {};
@@ -62,7 +60,7 @@
         window.ellx.login.withLink({
           email: data.email,
           password: data.password,
-          language: $language || DEFAULT_LANGUAGE,
+          language: $language,
           redirectUrl: "/signup/2",
         });
         // todo: save name to ls from this page
@@ -84,7 +82,7 @@
         !v.startsWith("@@io.ellx.STALE")
       ) {
         updateProfile({
-          language: $language || DEFAULT_LANGUAGE,
+          language: $language,
           name: data.name || $auth.name || "",
         });
         window.ellx.router.go("/signup/2");

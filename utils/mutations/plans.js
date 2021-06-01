@@ -2,13 +2,14 @@ import { getDefaultTitle, defaultName } from "/utils/intl.js";
 import addYears from "date-fns/addYears";
 import { uid } from "/utils/index.js";
 
-const { userId } = require("/index.ellx");
+const { userId, language } = require("/index.ellx");
 
 export const defaultPlan = (title) => ({
   title: title || defaultName("planTitle"),
   lastViewed: null,
   // sparse map containing user input values, key year -> field -> (projectId) -> value
   data: new Map(),
+  // first year comes from the last settlement year value
   dateRange: [new Date(), addYears(new Date(), 5)].map(d => d.getFullYear()),
   projects: new Map([
     ["PR", { title: "主力事業" }],

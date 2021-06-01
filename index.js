@@ -40,6 +40,8 @@ export function getActiveItem(id, route) {
 }
 
 export function getItemIds(items) {
+  if (typeof items === "string") return [];
+
   return [...items]
     .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
     .sort(([, , a], [, , b]) => b - a)
