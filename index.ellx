@@ -44,6 +44,7 @@ nodes:
   data = activeSheet ? activeSheet.data : new Map()
   itemIds = profileReady && getItemIds(isPlan ? plans : docs)
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
+  ipo = isPlan && activeSheet && activeSheet.ipo
 layout:
 [,
   [,,
@@ -469,6 +470,16 @@ layout:
   [,,
     {
       "node": "years"
+    }
+  ],
+  [,,
+    {
+      "value": "IPO year:"
+    }
+  ],
+  [,,
+    {
+      "node": "ipo"
     }
   ]
 ]

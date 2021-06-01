@@ -189,7 +189,7 @@ export const getYearMenuItems = ({ year }) => [
     text: "次の年度を追加",
     cb: () => addYear(),
   },
-  year === years.get()[years.get().length - 1] && {
+  years.get().length > 2 && year === years.get()[years.get().length - 1] && {
     text: "この年度を削除",
     cb: () => removeYear({ year }),
   },

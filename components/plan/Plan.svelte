@@ -82,7 +82,7 @@
 
 <style>
   .cap-table {
-    grid-template-rows: 4rem 1fr;
+    grid-template-rows: 5rem 1fr;
     /* investor col width */
     grid-template-columns: 200px;
     grid-auto-columns: 1fr;

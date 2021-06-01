@@ -13,17 +13,29 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, data } = require("/index.ellx");
+  const { profile, data, ipo } = require("/index.ellx");
 
   export let year;
   export let i;
   export let projects;
+
+  function ipoDisplayValue(val) {
+    if (year === val) {
+      return "IPO";
+    }
+    if (year > val) {
+      return `N+${year - val}`;
+    }
+    if (year < val) {
+      return `N-${val - year}`;
+    }
+  }
 </script>
 
 {#if $data instanceof Map}
   <div
     style="top: 0; min-width: 0; min-height: 0"
-    class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-2 z-20 relative"
+    class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-3 z-20 relative"
   >
     <div
       class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900 relative"
@@ -33,20 +45,26 @@
         class="text-left text-gray-100 text-sm font-medium"
         value={i === 0 ? "実績" : "計画"}
       />
-      <Icon
-        class="text-white bg-gray-800"
-        on:click={(e) => openContextMenu(getYearMenuItems({ year }), e)}
-        size="20"
-      />
+      {#if i !== 0}
+        <Icon
+          class="text-white bg-gray-800"
+          on:click={(e) => openContextMenu(getYearMenuItems({ year }), e)}
+          size="20"
+        />
+      {/if}
     </div>
     <div
-      class="flex flex-row justify-evenly text-center text-xs items-center font-medium px-1"
+      class="w-full flex justify-center text-xs items-center font-medium px-1 space-x-4"
     >
       <div>{i === 0 ? "直近期末" : i + "年後"}</div>
-      <!-- TODO: NPO relative date -->
-      <div class="flex-1 h-full p-1 flex items-center justify-end truncate">
-        {year}年{$profile.settlementMonth || 3}月期
-      </div>
+      {#if $ipo && i !== 0}
+        <div>{ipoDisplayValue($ipo)}</div>
+      {/if}
+    </div>
+    <div
+      class="w-full flex justify-center text-xs items-center font-medium px-1"
+    >
+      {year}年{$profile.settlementMonth || 3}月期
     </div>
   </div>
 
