@@ -37,7 +37,7 @@
           <div class="text-xs flex justify-between items-center">
             <button
               on:click|stopPropagation={() => exportExcel(id)}
-              class="flex items-center transition duration-200 hover:text-green-800"
+              class="flex opacity-0 items-center transition duration-200 hover:text-green-800"
             >
               <div
                 class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 cursor-pointer  dark:ring-green-100 ring-green-600 hover:text-green-600"

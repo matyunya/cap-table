@@ -6,7 +6,7 @@
   import { setPlanDocId } from "/utils/actions/plans.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
-  import { getDocMenuItems } from "/utils/menus.js";
+  import { getDocMenuItems, getPlanMenuItems } from "/utils/menus.js";
   import FounderShare from "/components/FounderShare.svelte";
 
   export let logout = () => {};
@@ -124,7 +124,8 @@
       />
       <button
         class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-white hover:bg-gray-50 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
-        on:click={(e) => openContextMenu(getDocMenuItems(), e)}
+        on:click={(e) =>
+          openContextMenu($isPlan ? getPlanMenuItems() : getDocMenuItems(), e)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
