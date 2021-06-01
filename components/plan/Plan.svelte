@@ -28,7 +28,7 @@
         {$_("計画名")}
       </div>
       <Cell
-        class="w-full h-full p-2 text-left truncate"
+        class="w-full h-full p-2 text-left truncate items-center flex"
         value={$title}
         on:change={renamePlan}
       />
