@@ -17,6 +17,7 @@ import {
   ADD_YEAR,
   REMOVE_YEAR,
   SET_IPO_YEAR,
+  SET_PLAN_DOC_ID,
 } from "/utils/mutations/plans.js";
 
 import {
@@ -33,6 +34,8 @@ export const DEFAULT_TAX = 0.3;
 const { userId, route } = require("/index.ellx");
 
 export const updateCell = (params) => syncCurrentPlan(UPDATE_CELL, params);
+
+export const setPlanDocId = ({ id }) => syncCurrentPlan(SET_PLAN_DOC_ID, { id });
 
 export const renamePlan = ({ detail, id }) =>
   id

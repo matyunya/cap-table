@@ -4,13 +4,14 @@
   import { onMount } from "svelte";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import Icon from "/components/ui/Icon.svelte";
+  import Select from "/components/ui/Select.svelte";
   import _ from "/utils/intl.js";
-  import { renamePlan, renameProject, rowTypes } from "/utils/actions/plans.js";
+  import { renamePlan, renameProject, rowTypes, setPlanDocId } from "/utils/actions/plans.js";
   import { updateLastViewed } from "/utils/actions/generic.js";
   import { getProjectMenuItems } from "/utils/menus.js";
   import cn from "/utils/cn.js";
 
-  const { projects, title, years, sheetStatus } = require("/index.ellx");
+  const { projects, title, years, sheetStatus, docIds, planDocId } = require("/index.ellx");
 
   onMount(updateLastViewed);
 </script>

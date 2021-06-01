@@ -54,8 +54,6 @@ export function CREATE_PROJECT({ afterId }) {
     update("projects", (i) => {
       title = getDefaultTitle(i, "project");
 
-      console.log(i,)
-
       const ids = [...i.keys()];
       const idx = ids.indexOf(afterId) + 1;
       const newId = uid();
@@ -106,4 +104,8 @@ export function REMOVE_YEAR() {
 
 export function SET_IPO_YEAR({ year }) {
   return ({ set }) => set("ipo", year);
+}
+
+export function SET_PLAN_DOC_ID({ id }) {
+  return ({ set }) => set("docId", id);
 }
