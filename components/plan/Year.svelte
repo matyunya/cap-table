@@ -13,7 +13,7 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, data, ipo } = require("/index.ellx");
+  const { profile, data, ipo, fundingAmount } = require("/index.ellx");
 
   export let year;
   export let i;
@@ -74,7 +74,12 @@
   >
     {#each rowTypes as { id, hasProjects, format, calculate }, i}
       <Cell
-        value={getTypeValue({ id, hasProjects, calculate }, year, $data)}
+        value={getTypeValue({
+          rowType: { id, hasProjects, calculate },
+          year,
+          data: $data,
+          fundingAmount: $fundingAmount
+        })}
         editable={!hasProjects && !calculate}
         on:change={({ detail }) => updateCell({ year, value: detail, id })}
         class={cn({
@@ -85,7 +90,12 @@
       >
         {formatValue(
           format,
-          getTypeValue({ id, hasProjects, calculate }, year, $data)
+          getTypeValue({
+            rowType: { id, hasProjects, calculate },
+            year,
+            data: $data,
+            fundingAmount: $fundingAmount
+          })
         )}
       </Cell>
       {#if hasProjects}

@@ -3,7 +3,7 @@ import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
 
 import { syncCurrentItem as syncCurrentDoc } from "/utils/actions/generic.js";
-import { createPlan } from "/utils/actions/plans.js";
+import { createPlan, removePlan } from "/utils/actions/plans.js";
 
 import { store } from "/store.js";
 
@@ -27,10 +27,11 @@ import {
 const {
   activeItemId,
   rounds,
-  isDoc,
-  isPlan,
+  planDocId,
   projects,
   years,
+  docPlanId,
+  userId,
 } = require("/index.ellx");
 
 function canAddJkiss(roundId) {
@@ -168,6 +169,11 @@ export const getDocMenuItems = () =>
       text: "Excelでダウンロード",
       cb: () => exportExcel(id),
     },
+    docPlanId.get() && {
+      text: "紐づけた資本政策へ",
+      cb: () =>
+        window.ellx.router.go(`/plans/${userId.get()}/${docPlanId.get()}`),
+    },
     {
       text: "チャートを表示",
       cb: () =>
@@ -188,6 +194,11 @@ export const getPlanMenuItems = () =>
     {
       text: "この計画を複製",
       cb: () => createPlan({ from: activeItemId.get() }),
+    },
+    planDocId.get() && {
+      text: "紐づけた資本政策へ",
+      cb: () =>
+        window.ellx.router.go(`/docs/${userId.get()}/${planDocId.get()}`),
     },
     store.get().plans.size > 1 && {
       text: "削除",

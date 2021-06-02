@@ -99,13 +99,14 @@ const rateForField = field => ({ year, data }) => {
   return (cur - prev) / prev;
 }
 
-const fillEmpty = cb => ({ year, data }) => {
+const fillEmpty = cb => ({ year, data, fundingAmount }) => {
   const yearData = data.get(year);
   if (!yearData) return 0;
 
   return cb({
     year,
     data,
+    fundingAmount,
     yearData: {
       ...EMPTY,
       ...yearData,
@@ -116,6 +117,8 @@ const fillEmpty = cb => ({ year, data }) => {
 const calcProfitAndLossBeforeTax = ({ yearData: d }) => d.ordinaryIncome + d.extraordinaryProfit - d.extraordinaryLoss;
 
 const calculateTax = (p) => calcProfitAndLossBeforeTax(p) * (p.data.tax || DEFAULT_TAX);
+
+const calcFundingAmount = ({ fundingAmount, year }) => fundingAmount[year];
 
 const types = [
   {
@@ -216,8 +219,8 @@ const types = [
   },
   {
     id: "fundingAmount",
-    label: "資金調達額"
-    // calc from raised amount per year
+    label: "資金調達額",
+    calculate: calcFundingAmount,
   },
   {
     id: "stockFinancing",
@@ -242,11 +245,12 @@ const types = [
   {
     id: "total",
     label: "合計",
-    calculate: ({ yearData: d }) => d.stockFinancing +
+    calculate: ({ yearData: d, fundingAmount, year }) => d.stockFinancing +
       d.borrowingGovernment +
       d.borrowingPrivate +
       d.ownResources +
-      d.other + 0 // funding amount
+      d.other +
+      calcFundingAmount({ fundingAmount, year })
   }
 ];
 
@@ -259,7 +263,7 @@ export const rowTypes = types.map(e => ({
 
 const fieldSum = (yearData, field) => Object.keys(yearData[field] || {}).reduce((acc, cur) => acc + yearData[field][cur], 0);
 
-export function getTypeValue(rowType, year, data) {
+export function getTypeValue({ rowType, year, data, fundingAmount }) {
   const yearData = data.get(year);
   if (!yearData) return "";
 
@@ -268,7 +272,7 @@ export function getTypeValue(rowType, year, data) {
   }
 
   if (rowType.calculate) {
-    return rowType.calculate({ year, data });
+    return rowType.calculate({ year, data, fundingAmount });
   }
 
   return yearData[rowType.id];

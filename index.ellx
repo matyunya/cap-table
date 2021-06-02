@@ -30,6 +30,7 @@ nodes:
   isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
   unsubscribeProfile = connectProfile(userId)
   route = routeUrl.pathname
+  docPlanId = isDoc && getDocPlanId(plans, activeItemId)
   sheetChanged = activeSheet && activeSheet.owner && activeItemId
   router = ellx.router
   title = activeSheet && activeSheet.title
@@ -47,6 +48,9 @@ nodes:
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
   ipo = isPlan && activeSheet && activeSheet.ipo
   planDocId = isPlan && activeSheet && activeSheet.docId
+  planDoc = planDocId && docs.get(planDocId)
+  fundingAmount = planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
+  planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
 layout:
 [,
   [,,
@@ -277,7 +281,17 @@ layout:
     {
       "node": "route"
     }
-  ],,,,,,,
+  ],,,,
+  [,,
+    {
+      "value": "Doc plan id:"
+    }
+  ],
+  [,,
+    {
+      "node": "docPlanId"
+    }
+  ],,
   [,,
     {
       "value": "Sheet changed:"
@@ -498,11 +512,57 @@ layout:
   [,,
     {
       "value": "Plan doc id:"
+    },,,
+    {
+      "value": "Plan doc:"
     }
   ],
   [,,
     {
       "node": "planDocId"
+    },,,
+    {
+      "node": "planDoc",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 5,
+        "width": 1
+      }
+    }
+  ],,
+  [,,
+    {
+      "value": "Plan doc funding amount:"
+    }
+  ],
+  [,,
+    {
+      "node": "fundingAmount",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 6,
+        "width": 1
+      }
+    }
+  ],,,,
+  [,,,,,
+    {
+      "value": "Plan doc calculated:"
+    }
+  ],,
+  [,,,,,
+    {
+      "node": "planDocCalculated",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 3,
+        "width": 5
+      }
     }
   ]
 ]

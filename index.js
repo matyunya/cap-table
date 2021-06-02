@@ -10,7 +10,7 @@ export {
   uniqueGroups,
   totalShares,
   totalCommonShares,
-  fillEmptyInvestments
+  fillEmptyInvestments,
 } from "/utils/index.js";
 export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
 export { connect } from "/models/docs.js";
@@ -27,7 +27,9 @@ const { auth } = require("/index.ellx");
 
 export const authError = writable(false);
 
-Promise.resolve().then(() => auth.subscribe(v => authError.set(v instanceof Error)));
+Promise.resolve().then(() =>
+  auth.subscribe((v) => authError.set(v instanceof Error))
+);
 
 export function getActiveItem(id, route) {
   if (route.startsWith("/docs")) {
@@ -44,7 +46,27 @@ export function getItemIds(items) {
 
   return [...items]
     .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
-    .sort(([, , a], [, , b]) => b - a)
+    .sort(([, , a], [, , b]) => b - a);
 }
 
-export const getYearsRange = (start, stop) => Array.from({ length: stop - start + 1 }, (_, i) => start + i);
+export const getYearsRange = (start, stop) =>
+  Array.from({ length: stop - start + 1 }, (_, i) => start + i);
+
+export function calcFundingPerYear(years, planDoc, calculated) {
+  return Object.fromEntries(
+    years.map((year) => [
+      year,
+      [...planDoc.rounds.keys()]
+        .filter(
+          (id) => new Date(planDoc.rounds.get(id).date).getFullYear() === year
+        )
+        .reduce((acc, id) => acc + calculated[id].roundResults.newEquity, 0),
+    ])
+  );
+}
+
+export function getDocPlanId(plans, docId) {
+  const [id] = [...plans].find(([, p]) => p.docId === docId) || [];
+
+  return id;
+}
