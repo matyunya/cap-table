@@ -49,7 +49,7 @@ nodes:
   ipo = isPlan && activeSheet && activeSheet.ipo
   planDocId = isPlan && activeSheet && activeSheet.docId
   planDoc = planDocId && docs.get(planDocId)
-  fundingAmount = planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
+  fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
 layout:
 [,
