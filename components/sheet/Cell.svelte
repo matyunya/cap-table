@@ -2,7 +2,6 @@
   import { writable } from "svelte/store";
   import CellEditor from "/components/sheet/CellEditor.svelte";
   import _ from "/utils/intl.js";
-  const { isAnon } = require("/index.ellx");
 
   const editing = writable(false);
 
@@ -24,8 +23,6 @@
   export let error;
 
   let editingValue = value;
-
-  $: editable = editable && !$isAnon;
 
   const dispatch = createEventDispatcher();
 
@@ -73,7 +70,7 @@
   class:hover:ring-light-blue-400={$editing === id}
   class:hover:ring-1={$editing !== id && editable}
   class="{$$props.class ||
-    ''} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden truncate"
+    ""} ring-0 transition duration-75 ring-light-blue-500 overflow-hidden truncate"
   style={$$props.style || ""}
   title={$_(error) || value}
 >

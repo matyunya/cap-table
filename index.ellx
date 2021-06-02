@@ -11,29 +11,46 @@ nodes:
   userId = !authError ? (auth ? auth.userId : null) : null
   appId = !authError ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
+  language = profileReady ? profile.language : navigator.languages[0].slice(0, 2)
   routeUserId = route.split('/')[2]
-  chartDocId = route.split('/')[2]
-  activeDocChartData = chartData(chartDocId, docs)
+  chartDocId = routeUrl.searchParams.get("chart_doc_id")
+  activeDocChartData = chartDocId && chartData(chartDocId, docs)
   chartDoc = withStatus("activeDocChartData")
-  docId = route.split('/')[3]
+  activeItemId = route.split('/')[3]
   chartDocStatus = chartDoc()
   isAuthenticated = Boolean(userId)
-  isAnon = docId && (!userId || userId !== routeUserId)
-  $4 = isAnon && getDoc(docId)
-  activeSheet = store.documents.get(docId)
+  activeSheet = getActiveItem(activeItemId, route, profileReady, plans, docs)
+  getSheetStatus = withStatus("activeSheet")
   unsubscribeDocs = connect(userId)
+  sheetStatus = getSheetStatus()
+  unsubscribePlans = connectPlans(userId)
+  routeUrl = new URL("http://internet.com" + router.path)
+  isPlan = route.startsWith("/plans")
+  isDoc = route.startsWith("/docs")
+  isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
   unsubscribeProfile = connectProfile(userId)
-  route = router.path
-  sheetChanged = activeSheet.owner && docId
+  route = routeUrl.pathname
+  docPlanId = isDoc && getDocPlanId(plans, activeItemId)
+  sheetChanged = activeSheet && activeSheet.owner && activeItemId
   router = ellx.router
-  title = activeSheet.title
+  title = activeSheet && activeSheet.title
   founderShare = calcFounderShare(activeSheet)
-  groups = uniqueGroups(investors)
-  investorGroups = groupInvestors(groups, investors)
-  investors = activeSheet.investors
-  rounds = activeSheet.rounds
+  groups = isDoc && uniqueGroups(investors)
+  investorGroups = isDoc && groupInvestors(groups, investors)
+  investors = activeSheet ? activeSheet.investors : new Map()
+  rounds = activeSheet ? activeSheet.rounds : new Map()
   calculated = calculate(rounds, investors)
-  closestRound = getClosestRoundToNow(rounds)
+  projects = activeSheet ? activeSheet.projects : new Map()
+  plans = store.plans
+  data = activeSheet ? activeSheet.data : new Map()
+  itemIds = profileReady && isPlan ? getItemIds(plans) : docIds
+  docIds = profileReady && getItemIds(docs)
+  years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
+  ipo = isPlan && activeSheet && activeSheet.ipo
+  planDocId = isPlan && activeSheet && activeSheet.docId
+  planDoc = planDocId && docs.get(planDocId)
+  fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
+  planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
 layout:
 [,
   [,,
@@ -79,7 +96,7 @@ layout:
         "vertical": true,
         "labelsLeft": true,
         "secondary": true,
-        "height": 5,
+        "height": 6,
         "width": 5
       }
     },,,,,,
@@ -118,7 +135,7 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 10,
+        "height": 8,
         "width": 1
       }
     },,
@@ -157,7 +174,10 @@ layout:
       "value": "Active doc chart data:"
     }
   ],
-  [,,,,,,,,
+  [,,,,
+    {
+      "node": "language"
+    },,,,
     {
       "node": "routeUserId"
     },,
@@ -170,7 +190,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "value": "Route doc ID:"
+      "value": "Active item ID:"
     },,,,
     {
       "node": "chartDoc"
@@ -178,7 +198,7 @@ layout:
   ],
   [,,,,,,,,
     {
-      "node": "docId"
+      "node": "activeItemId"
     },,,,
     {
       "node": "chartDocStatus"
@@ -186,34 +206,21 @@ layout:
   ],
   [,,,,,,,,
     {
-      "value": "// $6 = updateLastViewed(docId)"
-    }
-  ],
-  [,,,,,,,,
-    {
       "value": "Is authenticated:"
-    },,
-    {
-      "value": "Is viewing someone's doc:"
     }
   ],
   [,,,,,,,,
     {
       "node": "isAuthenticated"
-    },,
-    {
-      "node": "isAnon"
     }
-  ],
-  [,,,,,,,,,,
-    {
-      "node": "$4"
-    }
-  ],
+  ],,
   [,,
     {
       "value": "Active sheet:"
-    },,,,,
+    },,
+    {
+      "value": "Sheet status:"
+    },,,
     {
       "value": "Connect to Firebase:"
     }
@@ -227,12 +234,44 @@ layout:
         "height": 5,
         "width": 1
       }
-    },,,,,
+    },,
+    {
+      "node": "getSheetStatus"
+    },,,
     {
       "node": "unsubscribeDocs"
     },,
     {
       "value": "Route:"
+    },,,,,
+    {
+      "value": "Is plan:"
+    },
+    {
+      "value": "Is doc:"
+    },
+    {
+      "value": "Is item page:"
+    }
+  ],
+  [,,,,
+    {
+      "node": "sheetStatus"
+    },,,
+    {
+      "node": "unsubscribePlans"
+    },,
+    {
+      "node": "routeUrl"
+    },,,,,
+    {
+      "node": "isPlan"
+    },
+    {
+      "node": "isDoc"
+    },
+    {
+      "node": "isItem"
     }
   ],
   [,,,,,,,
@@ -242,7 +281,17 @@ layout:
     {
       "node": "route"
     }
-  ],,,,,
+  ],,,,
+  [,,
+    {
+      "value": "Doc plan id:"
+    }
+  ],
+  [,,
+    {
+      "node": "docPlanId"
+    }
+  ],,
   [,,
     {
       "value": "Sheet changed:"
@@ -352,7 +401,7 @@ layout:
   ],,,,,,,
   [,,
     {
-      "value": "Calculated results:"
+      "value": "Calculated doc results:"
     }
   ],,
   [,,
@@ -367,10 +416,153 @@ layout:
         "width": 4
       }
     }
-  ],,,,,,,,,,
+  ],,,,,,,,
   [,,
     {
-      "node": "closestRound"
+      "value": "Plans:"
+    },,,,,,
+    {
+      "value": "Projects:"
+    },,,
+    {
+      "value": "Data:"
+    }
+  ],
+  [,,,,,,,,
+    {
+      "node": "projects",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 2,
+        "width": 1
+      }
+    }
+  ],
+  [,,
+    {
+      "node": "plans",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 8,
+        "width": 5
+      }
+    },,,,,,,,,
+    {
+      "node": "data",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 6,
+        "width": 2
+      }
+    }
+  ],,,,,,,,,
+  [,,
+    {
+      "value": "Item ids:"
+    },,,,
+    {
+      "value": "Doc ids:"
+    }
+  ],
+  [,,
+    {
+      "node": "itemIds",
+      "expansion": {
+        "vertical": true,
+        "height": 8,
+        "width": 1
+      }
+    },,,,
+    {
+      "node": "docIds",
+      "expansion": {
+        "vertical": true,
+        "height": 10,
+        "width": 1
+      }
+    }
+  ],,,,,,,,
+  [,,
+    {
+      "value": "Years:"
+    }
+  ],
+  [,,
+    {
+      "node": "years"
+    }
+  ],
+  [,,
+    {
+      "value": "IPO year:"
+    }
+  ],
+  [,,
+    {
+      "node": "ipo"
+    }
+  ],
+  [,,
+    {
+      "value": "Plan doc id:"
+    },,,
+    {
+      "value": "Plan doc:"
+    }
+  ],
+  [,,
+    {
+      "node": "planDocId"
+    },,,
+    {
+      "node": "planDoc",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 5,
+        "width": 1
+      }
+    }
+  ],,
+  [,,
+    {
+      "value": "Plan doc funding amount:"
+    }
+  ],
+  [,,
+    {
+      "node": "fundingAmount",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "height": 6,
+        "width": 1
+      }
+    }
+  ],,,,
+  [,,,,,
+    {
+      "value": "Plan doc calculated:"
+    }
+  ],,
+  [,,,,,
+    {
+      "node": "planDocCalculated",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 3,
+        "width": 5
+      }
     }
   ]
 ]

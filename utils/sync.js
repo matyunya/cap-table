@@ -17,6 +17,7 @@ export function serialize(value) {
 }
 
 function deserializeEntry([key, value]) {
+  if (typeof key === "number") return [key, deserialize(value)];
   if (key.startsWith("Map$"))
     return [key.slice(4), new Map(value.map(fromKV).map(deserializeEntry))];
   if (key.startsWith("Set$"))
@@ -35,14 +36,23 @@ export function deserialize(snapshot) {
   return obj;
 }
 
-export function SYNC_DOCS(querySnapshot) {
-  return ({ set, remove }) => {
-    for (let { type, doc } of querySnapshot.docChanges()) {
-      if (type === "removed") remove("documents", doc.id);
-      else set("documents", doc.id, deserialize(doc.data()));
-    }
-  };
+function syncRootItem(name) {
+  return (querySnapshot) => {
+    return ({ set, remove }) => {
+      for (let { type, doc } of querySnapshot.docChanges()) {
+        if (type === "removed") {
+          remove(name, doc.id);
+        } else {
+          set(name, doc.id, deserialize(doc.data()));
+        }
+      }
+    };
+  }
 }
+
+export const SYNC_DOCS = syncRootItem("documents");
+
+export const SYNC_PLANS = syncRootItem("plans");
 
 export function SYNC_PROFILE(querySnapshot) {
   return ({ set, remove }) => {

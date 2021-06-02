@@ -27,7 +27,7 @@
   class:ring-0={!error}
   class:ring-1={error}
   class:dark:text-gray-200={!error}
-  class="dark:bg-gray-800 {classes}"
+  class="dark:bg-gray-800 pr-4 {classes}"
   placeholder={$_(placeholder)}
 >
   {#each withEmpty as [val, text]}

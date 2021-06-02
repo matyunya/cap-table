@@ -87,7 +87,7 @@
       <button class="button">{$_("資本政策を開く")}</button>
     </a>
     <a
-      href="/plan"
+      href="/plans"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
       <Step n="2" />
@@ -101,7 +101,7 @@
           「事業計画」で算出した「当期利益」の数値を「株価算定」で参照します。
         </p>
       </div>
-      <button class="button">{$_("ツールを開く")}</button>
+      <button class="button">{$_("事業計画を開く")}</button>
     </a>
     <a
       href="/calc"
@@ -118,7 +118,7 @@
           上場時の基準利益や、事業ステージごとの割引率が株価にも影響します。​
         </p>
       </div>
-      <button class="button">{$_("ツールを開く")}</button>
+      <button disabled class="button">{$_("開発中")}</button>
     </a>
   </div>
 </main>

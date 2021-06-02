@@ -1,16 +1,30 @@
 <script>
   import Select from "/components/ui/Select.svelte";
-  import { language, documentIds, SET_LANGUAGE, store } from "/store.js";
+  import { store } from "/store.js";
+  import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
+  import { setPlanDocId } from "/utils/actions/plans.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
-  import { getDocMenuItems } from "/utils/menus.js";
+  import { getDocMenuItems, getPlanMenuItems } from "/utils/menus.js";
   import FounderShare from "/components/FounderShare.svelte";
 
   export let logout = () => {};
   export let dark;
 
-  const { isAuthenticated, docId, userId, route } = require("/index.ellx");
+  const {
+    isAuthenticated,
+    activeItemId,
+    userId,
+    route,
+    isDoc,
+    isItem,
+    itemIds,
+    language,
+    planDocId,
+    docIds,
+    isPlan,
+  } = require("/index.ellx");
 
   function setLanguage(language) {
     if ($isAuthenticated) {
@@ -20,15 +34,32 @@
     }
   }
 
-  $: options = $documentIds.find(([id]) => $docId === id)
-    ? $documentIds
-    : [[$docId, "--"], ...$documentIds];
+  let options = [];
+
+  $: if (Array.isArray($itemIds))
+    options = $itemIds.find(([id]) => $activeItemId === id)
+      ? $itemIds
+      : [[$activeItemId, "--"], ...$itemIds];
 
   function routeName(r) {
     if (!r) return false;
 
-    if (typeof r === "string" && r.startsWith("/docs/")) {
+    if ($route.startsWith("/docs/")) {
       return "資本政策";
+    }
+    if ($route.startsWith("/plans/")) {
+      return "事業計画";
+    }
+  }
+
+  function backRoute(r) {
+    if (!r) return "/";
+
+    if ($route.startsWith("/docs/")) {
+      return "/docs";
+    }
+    if ($route.startsWith("/plans/")) {
+      return "/plans";
     }
   }
 </script>
@@ -44,7 +75,7 @@
   <div
     class="flex items-center h-full justify-start text-sm sm:text-xs font-medium z-30 pt-2"
   >
-    {#if typeof $route === "string" && !$route.startsWith("/docs/")}
+    {#if !$isItem}
       <a
         href="/"
         class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded-xl p-1 transition duration-300"
@@ -61,8 +92,8 @@
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/plan"
-          class:font-bold={$route === "/plan"}
+          href="/plans"
+          class:font-bold={$route === "/plans"}
         >
           {$_("事業計画")}
         </a>
@@ -76,22 +107,25 @@
       {/if}
     {/if}
     {#if routeName($route)}
-      <a href="/docs" class="text-xs underline rounded-xl p-1">
+      <a href={backRoute($route)} class="text-xs underline rounded-xl p-1">
         ← {$_(routeName($route))}
       </a>
     {/if}
-    {#if typeof $route === "string" && $route.startsWith("/docs/")}
+    {#if $isItem}
       <Select
         classes="ml-6 mr-3 focus:ring-2 w-48 truncate transition p-1 duration-200 bg-transparent text-xs shadow focus:outline-none rounded-xl mr-3"
         hasEmpty={false}
-        value={$docId}
+        value={$activeItemId}
         on:change={({ target }) =>
-          window.ellx.router.go(`/docs/${$userId}/${target.value}`)}
+          window.ellx.router.go(
+            ($isDoc ? "/docs/" : "/plans/") + `${$userId}/${target.value}`
+          )}
         {options}
       />
       <button
-        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-100 hover:bg-gray-50 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
-        on:click={(e) => openContextMenu(getDocMenuItems(), e)}
+        class="text-xs h-6 w-6 flex items-center justify-center rounded-full ring-1 mx-3 hover:ring-2 cursor-pointer text-xs dark:ring-gray-100 ring-gray-600 p-1 shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-white hover:bg-gray-50 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200"
+        on:click={(e) =>
+          openContextMenu($isPlan ? getPlanMenuItems() : getDocMenuItems(), e)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -105,6 +139,18 @@
           />
         </svg>
       </button>
+      {#if $isPlan && Array.isArray($docIds)}
+        <div class="flex space-x-4 items-center ml-6">
+          <div class="text-xs">紐づける資本政策</div>
+          <Select
+            classes="focus:ring-2 w-48 truncate transition p-1 duration-200 text-xs shadow focus:outline-none rounded-xl bg-white dark:bg-black"
+            hasEmpty
+            value={$planDocId}
+            on:change={({ target }) => setPlanDocId({ id: target.value })}
+            options={$docIds}
+          />
+        </div>
+      {/if}
     {/if}
     <FounderShare />
   </div>
@@ -145,7 +191,7 @@
                 cb: () => window.ellx.router.go("/reset"),
               },
               {
-                text: $language === "ja" ? "English" : "ja",
+                text: $language === "ja" ? "English" : "日本語",
                 cb: () => setLanguage($language === "ja" ? "en" : "ja"),
               },
               {

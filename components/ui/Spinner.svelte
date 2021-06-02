@@ -38,9 +38,9 @@
   }
 
   onMount(() => {
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext("2d");
     tick().then(() => {
-      ctx.fillStyle = window.getComputedStyle(container).getPropertyValue('color');
+      ctx.fillStyle = window.getComputedStyle(container).getPropertyValue("color");
       id = requestAnimationFrame(draw);
     });
 

@@ -44,7 +44,7 @@
       <div
         in:scale={transitionProps}
         class="{$$props.class ||
-          ''} items-center z-50 shadow-lg bg-white dark:bg-gray-400 p-4"
+          ""} items-center z-50 shadow-lg bg-white dark:bg-gray-400 p-4"
       >
         <slot />
       </div>

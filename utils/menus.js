@@ -1,6 +1,11 @@
-import { createDocument, removeDocument, syncCurrentDoc } from "./actions.js";
+import { createDocument, removeDocument } from "/utils/actions/docs.js";
 import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
+
+import { syncCurrentItem as syncCurrentDoc } from "/utils/actions/generic.js";
+import { createPlan, removePlan } from "/utils/actions/plans.js";
+
+import { store } from "/store.js";
 
 import {
   ADD_INVESTOR,
@@ -9,10 +14,25 @@ import {
   ADD_SPLIT_ROUND,
   REMOVE_ROUND,
   REMOVE_GROUP,
-  store,
-} from "/store.js";
+} from "/utils/mutations/docs.js";
 
-const { docId, rounds } = require("/index.ellx");
+import {
+  createProject,
+  removeProject,
+  addYear,
+  removeYear,
+  setIPO,
+} from "/utils/actions/plans.js";
+
+const {
+  activeItemId,
+  rounds,
+  planDocId,
+  projects,
+  years,
+  docPlanId,
+  userId,
+} = require("/index.ellx");
 
 function canAddJkiss(roundId) {
   if (rounds.get().get(roundId).type === "j-kiss") return false;
@@ -135,38 +155,82 @@ export const roundMenuItems = (id) =>
       : false,
   ].filter(Boolean);
 
-export const getCommonMenuItems = (id) => [
-  {
-    text: "Excelでダウンロード",
-    cb: () => exportExcel(id),
-  },
-  {
-    text: "チャートを表示",
-    cb: () => window.ellx.router.go("/chart/" + id),
-  },
-  store.get("documents").size > 1 && {
-    text: "削除", // todo confirmation
-    cb: () => removeDocument({ id }),
-  },
-];
-
 export const getDocMenuItems = () =>
   [
     {
       text: "新しいテーブル",
       cb: createDocument,
     },
-    // {
-    //   text: store.get("documents", docId.get(), "access", "read", "public") ? "共有をキャンセル" : "共有する",
-    //   cb: togglePublic,
-    // },
     {
       text: "このテーブルを複製",
-      cb: () => createDocument({ from: docId.get() }),
+      cb: () => createDocument({ from: activeItemId.get() }),
     },
-    ...getCommonMenuItems(docId.get()),
-    // {
-    //   text: "リセット",
-    //   cb: resetDocument,
-    // },
+    {
+      text: "Excelでダウンロード",
+      cb: () => exportExcel(id),
+    },
+    docPlanId.get() && {
+      text: "紐づけた資本政策へ",
+      cb: () =>
+        window.ellx.router.go(`/plans/${userId.get()}/${docPlanId.get()}`),
+    },
+    {
+      text: "チャートを表示",
+      cb: () =>
+        window.ellx.router.go("/docs?chart_doc_id=" + activeItemId.get()),
+    },
+    store.get().documents.size > 1 && {
+      text: "削除",
+      cb: () => removeDocument({ id: activeItemId.get() }),
+    },
+  ].filter(Boolean);
+
+export const getPlanMenuItems = () =>
+  [
+    {
+      text: "新しい計画",
+      cb: createPlan,
+    },
+    {
+      text: "この計画を複製",
+      cb: () => createPlan({ from: activeItemId.get() }),
+    },
+    planDocId.get() && {
+      text: "紐づけた資本政策へ",
+      cb: () =>
+        window.ellx.router.go(`/docs/${userId.get()}/${planDocId.get()}`),
+    },
+    store.get().plans.size > 1 && {
+      text: "削除",
+      cb: () => removePlan({ id: activeItemId.get() }),
+    },
+  ].filter(Boolean);
+
+export const getProjectMenuItems = ({ id }) =>
+  [
+    {
+      text: "新規事業を下に追加",
+      cb: () => createProject({ afterId: id }),
+    },
+    projects.get().size > 1 && {
+      text: "この事業を削除",
+      cb: () => removeProject({ id }),
+    },
+  ].filter(Boolean);
+
+export const getYearMenuItems = ({ year }) =>
+  [
+    year === years.get()[years.get().length - 1] && {
+      text: "次の年度を追加",
+      cb: () => addYear(),
+    },
+    years.get().length > 2 &&
+      year === years.get()[years.get().length - 1] && {
+        text: "この年度を削除",
+        cb: () => removeYear({ year }),
+      },
+    year !== years.get()[0] && {
+      text: "この年度でIPOする",
+      cb: () => setIPO({ year }),
+    },
   ].filter(Boolean);

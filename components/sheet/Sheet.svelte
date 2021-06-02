@@ -10,8 +10,8 @@
     renameInvestorGroup,
     renameInvestor,
     updateInvestorTitle,
-    updateLastViewed,
-  } from "/utils/actions.js";
+  } from "/utils/actions/docs.js";
+  import { updateLastViewed } from "/utils/actions/generic.js";
   import cn from "/utils/cn.js";
   import { investorGroupMenuItems, investorMenuItems } from "/utils/menus.js";
 
@@ -21,25 +21,13 @@
     rounds,
     calculated,
     investors,
-    activeSheet,
-    isAnon,
-    sheetChanged,
-    docId,
-    isAuthenticated,
+    sheetStatus,
   } = require("/index.ellx");
 
-  onMount(() =>
-    sheetChanged.subscribe((v) => {
-      v &&
-        v === docId.get() &&
-        !v.startsWith("@@io.ellx.STALE") &&
-        $isAuthenticated === true &&
-        updateLastViewed();
-    })
-  );
+  onMount(updateLastViewed);
 </script>
 
-{#if $activeSheet}
+{#if $sheetStatus === "success"}
   <div style="width: {calculateWidth($rounds) + 300}px;">
     <div
       style="width: {calculateWidth($rounds)}px;"
@@ -48,13 +36,13 @@
     >
       <div
         style="top: 0; left: 0;"
-        class="text-center sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
+        class="sticky border dark:border-gray-700 z-30 bg-white dark:bg-gray-800 flex flex-col items-center justify-center text-sm shadow"
       >
-        <div class="text-xs p-1 pb-2 w-full px-2 text-left">
+        <div class="text-xs w-full p-2 text-left">
           {$_("テーブル名")}
         </div>
         <Cell
-          class="w-full h-full flex items-center justify-center font-mono"
+          class="w-full h-full p-2 text-left truncate"
           value={$title}
           on:change={renameDocument}
         />
@@ -78,17 +66,15 @@
               >
                 {label}
               </Cell>
-              {#if !$isAnon}
-                <Icon
-                  class={cn({ "mt-4": i !== 0 })}
-                  on:click={(e) =>
-                    openContextMenu(
-                      investorGroupMenuItems(label, $investors, i === 0),
-                      e
-                    )}
-                  rotate="90"
-                />
-              {/if}
+              <Icon
+                class={cn({ "mt-4": i !== 0 })}
+                on:click={(e) =>
+                  openContextMenu(
+                    investorGroupMenuItems(label, $investors, i === 0),
+                    e
+                  )}
+                rotate="90"
+              />
             </div>
           {:else}
             <div class="flex cell relative">
@@ -106,13 +92,11 @@
                   updateInvestorTitle({ investorId: id, value: detail })}
               />
               <div class="w-8" />
-              {#if !$isAnon}
-                <Icon
-                  on:click={(e) =>
-                    openContextMenu(investorMenuItems(id, group, investors), e)}
-                  rotate="90"
-                />
-              {/if}
+              <Icon
+                on:click={(e) =>
+                  openContextMenu(investorMenuItems(id, group, investors), e)}
+                rotate="90"
+              />
             </div>
           {/if}
         {/each}

@@ -1,5 +1,6 @@
 import { derived } from "tinyx";
-import { language } from "/store.js";
+
+const { language } = require("/index.ellx");
 
 const translations = {
   "30秒で無料登録、すぐ使えます！": {
@@ -172,9 +173,9 @@ const translations = {
     en: "Please check your email.",
   },
   "エラーが発生しました。恐れ入りますが、リフレッシュしてもう一度発信してみてください。":
-    {
-      en: "Unexpected error. Please refresh the page.",
-    },
+  {
+    en: "Unexpected error. Please refresh the page.",
+  },
   新しいテーブル: {
     en: "Create new table",
   },
@@ -335,9 +336,9 @@ const translations = {
     en: "Submit",
   },
   "弊社サービスにご興味をお持ちいただきまして、ありがとうございます。以下よりお問い合わせください。":
-    {
-      en: "Thank you for using Capital Dash. We'd love to hear from you!",
-    },
+  {
+    en: "Thank you for using Capital Dash. We'd love to hear from you!",
+  },
   資本政策シミュレーター: {
     en: "Cap table simulator",
   },
@@ -374,9 +375,9 @@ const translations = {
   [`はじめに・・・<br />
         本ツールでは、簡単３ステップで、資金調達に必要な準備（資本政策表作成、株価算定）ができます。<br />
         時間とチャンスを無駄にしないように、投資家に会う前にしっかりと理論武装しましょう。`]:
-    {
-      en: "lead text",
-    },
+  {
+    en: "lead text",
+  },
   お問い合わせ内容を入力する: {
     en: "Your message",
   },
@@ -403,6 +404,93 @@ const translations = {
   アカウントをお持ちの方は: {
     en: "Already have an account?",
   },
+  売上高: {
+    en: "Sales",
+  },
+  売上高成長率: {
+    en: "Sales growth rate",
+  },
+  売上原価: {
+    en: "Cost of sales",
+  },
+  売上総利益: {
+    en: "Gross profit",
+  },
+  販売費及び: {
+    en: "Selling expenses and",
+  },
+  一般管理費: {
+    en: "General and administrative expenses",
+  },
+  営業利益: {
+    en: "Operating income",
+  },
+  営業利益率: {
+    en: "Operating profit margin",
+  },
+  営業外収入: {
+    en: "Non-operating income",
+  },
+  営業外費用: {
+    en: "Non-operating expenses",
+  },
+  経常利益: {
+    en: "Ordinary income",
+  },
+  特別利益: {
+    en: "Extraordinary profit",
+  },
+  特別損失: {
+    en: "Extraordinary loss",
+  },
+  税引前当期損益: {
+    en: "Profit and loss before tax",
+  },
+  "法人税（実効税率）": {
+    en: "Corporate tax (effective tax rate)",
+  },
+  当期利益: {
+    en: "Net income",
+  },
+  現預金残高: {
+    en: "Cash and deposit balance",
+  },
+  設備投資額: {
+    en: "Capital investment amount",
+  },
+  運転資金: {
+    en: "Working capital",
+  },
+  減価償却額: {
+    en: "Depreciation amount",
+  },
+  従業員数: {
+    en: "Number of employees",
+  },
+  資金調達額: {
+    en: "Funding amount",
+  },
+  株式資金調達: {
+    en: "Stock financing"
+  },
+  政府系金融機関借入: {
+    en: "Borrowing government"
+  },
+  民間金融機関借入: {
+    en: "Borrowing private"
+  },
+  自己資金: {
+    en: "Own resources"
+  },
+  その他: {
+    en: "Other"
+  },
+  主力事業: {
+    en: "Main project",
+  },
+  新規事業A: {
+    en: "Project A",
+  }
 };
 
 const translate = (key, lang) => {
@@ -416,3 +504,67 @@ const translate = (key, lang) => {
 };
 
 export default derived(language, (s) => (key) => translate(key, s));
+
+const defaultNames = {
+  docTitle: {
+    en: "New table",
+    ja: "新しいテーブル",
+  },
+  founded: {
+    en: "Founded",
+    ja: "創立",
+  },
+  founders: {
+    en: "Founders",
+    ja: "創業メンバー",
+  },
+  partners: {
+    en: "Partners",
+    ja: "共同創業者名",
+  },
+  founder: {
+    en: "Founder name",
+    ja: "創業者名",
+  },
+  partner: {
+    en: "Partner name",
+    ja: "共同創業者名",
+  },
+  employee: {
+    en: "Employee name",
+    ja: "従業員名",
+  },
+  employees: {
+    en: "Employee name",
+    ja: "従業員",
+  },
+  planTitle: {
+    en: "New plan",
+    ja: "無題の計画"
+  },
+  project: {
+    ja: "新規事業",
+    en: "New project",
+  }
+};
+
+export const defaultName = (n) => {
+  try {
+    return defaultNames[n][language.get()];
+  } catch (e) {
+    console.error(n, e);
+
+    return "";
+  }
+};
+
+export function getDefaultTitle(docs, key) {
+  const defaultZeroName = defaultName(key);
+  const defaultNameDocsCount = [...docs.values()]
+    .map((d) => d.title)
+    .filter((t) => t.startsWith(defaultZeroName)).length;
+
+  return (
+    defaultZeroName + (defaultNameDocsCount ? defaultNameDocsCount + 1 : "")
+  );
+}

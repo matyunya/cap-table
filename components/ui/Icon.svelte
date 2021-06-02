@@ -8,7 +8,7 @@
 <div style={$$props.style || ""} on:click class:absolute class={wrapperClasses}>
   <svg
     class="{$$props.class ||
-      ''} rounded-full shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200 cursor-pointer icon z-40"
+      ""} rounded-full shadow-lg hover:shadow-xl dark:bg-light-blue-100 bg-gray-300 hover:bg-gray-200 dark:bg-light-blue-900  hover:text-black hover:dark:text-gray-100 hover:dark:bg-light-blue-700 transition duration-200 cursor-pointer icon z-40"
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
