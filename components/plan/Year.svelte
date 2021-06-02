@@ -78,7 +78,7 @@
           rowType: { id, hasProjects, calculate },
           year,
           data: $data,
-          fundingAmount: $fundingAmount
+          fundingAmount: $fundingAmount || {}
         })}
         editable={!hasProjects && !calculate}
         on:change={({ detail }) => updateCell({ year, value: detail, id })}
@@ -94,7 +94,7 @@
             rowType: { id, hasProjects, calculate },
             year,
             data: $data,
-            fundingAmount: $fundingAmount
+            fundingAmount: $fundingAmount || {}
           })
         )}
       </Cell>
