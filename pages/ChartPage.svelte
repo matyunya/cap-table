@@ -12,16 +12,16 @@
     activeDocChartData,
     chartDocStatus,
     chartDocId,
-    itemIds
+    itemIds,
   } = require("/index.ellx");
 
-  let el;
+  let el, tooltipEl, tip;
 
   $: if (el && $activeDocChartData && $chartDocStatus === "success") draw();
 
-  const margin = { top: 80, right: 0, bottom: 50, left: 100 };
+  const margin = { top: 80, right: 0, bottom: 55, left: 100 };
   const width = 1500;
-  const height = 800;
+  const height = 760;
 
   const fmt = new Intl.NumberFormat("ja-JP", {
     notation: "compact",
@@ -66,7 +66,7 @@
 
     const y = scale
       .scaleLog()
-      .domain(array.extent($activeDocChartData, (d) => +d.postMoney))
+      .domain(array.extent($activeDocChartData, (d) => +d.newEquity))
       .range([height - margin.bottom, margin.top]);
 
     const yPercent = scale
@@ -76,7 +76,7 @@
 
     const r = scale
       .scaleLinear()
-      .domain(array.extent($activeDocChartData, (d) => +d.postMoney))
+      .domain(array.extent($activeDocChartData, (d) => +d.newEquity))
       .range([5, 30]);
 
     const rPercent = scale
@@ -145,7 +145,7 @@
           .line()
           .curve(shape.curveStep)
           .x((d, i) => x(i))
-          .y((d) => y(d.postMoney))
+          .y((d) => y(d.newEquity))
       );
 
     const dotEvaluationNode = chart
@@ -155,17 +155,36 @@
 
     dotEvaluationNode
       .append("circle")
-      .attr("r", (d, i) => (i === 0 ? 0 : r(d.postMoney)))
+      .attr("r", (d, i) => (i === 0 ? 0 : r(d.newEquity)))
       .attr("fill", "#0285c7")
+      .attr("class", "cursor-pointer")
       .attr("cx", (d, i) => x(i))
-      .attr("cy", (d) => y(d.postMoney));
+      .attr("cy", (d) => y(d.newEquity))
+      .on("mouseover", function (d, i) {
+        tip = {
+          value: fmt.format(i.postMoney) + "円",
+          pos: [d.clientX, d.clientY],
+        };
+      })
+      .on("mouseout", function (d, i) {
+        setTimeout(() => (tip = false), 400);
+      });
 
     dotEvaluationNode
       .append("text")
-      .attr("class", "label blue")
+      .attr("class", "label blue cursor-pointer")
       .attr("x", (d, i) => x(i) - 25)
-      .attr("y", (d) => y(d.postMoney) - 10 - r(d.postMoney))
-      .text((d, i) => (i === 0 ? "" : fmt.format(d.postMoney) + "円"));
+      .attr("y", (d) => y(d.newEquity) - 10 - r(d.newEquity))
+      .text((d, i) => (i === 0 ? "" : fmt.format(d.newEquity) + "円"))
+      .on("mouseover", function (d, i) {
+        tip = {
+          value: fmt.format(i.postMoney) + "円",
+          pos: [d.clientX, d.clientY],
+        };
+      })
+      .on("mouseout", function (d, i) {
+        setTimeout(() => (tip = false), 400);
+      });
 
     const dotShareNode = chart
       .selectAll("dot")
@@ -201,7 +220,7 @@
       .attr("class", "post-money-label")
       .attr("x", 100)
       .attr("y", height)
-      .text("時価総額");
+      .text("調達金額");
 
     firstLabelNode
       .append("text")
@@ -217,9 +236,19 @@
 
 {#if $chartDocId}
   <div
+    class:opacity-0={!tip}
+    class:opacity-100={tip}
+    style="left: {tip && tip.pos[0]}px; top: {tip && tip.pos[1]}px"
+    bind:this={tooltipEl}
+    class="fixed bg-white shadow-xl rounded-lg p-2 flex items-center z-50 transition duration-100 text-xs"
+  >
+    {tip ? "時価総額: " + tip.value : ""}
+  </div>
+
+  <div
     id="chart"
     style="min-height: 460px"
-    class="my-4 p-4 dark:bg-gray-900 bg-white shadow-lg rounded-lg z-50 w-full"
+    class="my-4 p-4 dark:bg-gray-900 bg-white shadow-lg rounded-lg z-40 w-full"
     bind:this={el}
   >
     <div class="flex items-center justify-between">

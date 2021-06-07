@@ -89,7 +89,10 @@ export function chartData(id, docs) {
     postMoney: doc.rounds.get(id).type === "j-kiss"
       ? data[keys[i - 1]].roundResults.postMoney
       : data[id].roundResults.postMoney,
-    date: new Date(doc.rounds.get(id).date),
+    newEquity: doc.rounds.get(id).type === "j-kiss"
+      ? data[keys[i - 1]].roundResults.newEquity
+      : data[id].roundResults.newEquity,
+    date: doc.rounds.get(id).date,
   }));
 
   return res;

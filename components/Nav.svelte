@@ -3,7 +3,6 @@
   import { store } from "/store.js";
   import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
-  import { setPlanDocId } from "/utils/actions/plans.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import { getDocMenuItems, getPlanMenuItems } from "/utils/menus.js";
@@ -21,8 +20,6 @@
     isItem,
     itemIds,
     language,
-    planDocId,
-    docIds,
     isPlan,
   } = require("/index.ellx");
 
@@ -139,18 +136,6 @@
           />
         </svg>
       </button>
-      {#if $isPlan && Array.isArray($docIds)}
-        <div class="flex space-x-4 items-center ml-6">
-          <div class="text-xs">紐づける資本政策</div>
-          <Select
-            classes="focus:ring-2 w-48 truncate transition p-1 duration-200 text-xs shadow focus:outline-none rounded-xl bg-white dark:bg-black"
-            hasEmpty
-            value={$planDocId}
-            on:change={({ target }) => setPlanDocId({ id: target.value })}
-            options={$docIds}
-          />
-        </div>
-      {/if}
     {/if}
     <FounderShare />
   </div>
