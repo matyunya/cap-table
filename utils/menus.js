@@ -170,7 +170,7 @@ export const getDocMenuItems = () =>
       cb: () => exportExcel(id),
     },
     docPlanId.get() && {
-      text: "紐づけた資本政策へ",
+      text: "紐づけた事業計画へ",
       cb: () =>
         window.ellx.router.go(`/plans/${userId.get()}/${docPlanId.get()}`),
     },
