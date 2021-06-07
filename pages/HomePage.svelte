@@ -7,6 +7,7 @@
   import Step3 from "/icons/step3.svelte";
   import Free from "/icons/free.svelte";
   import Edge from "/icons/edge.svelte";
+  import Logo from "/icons/logo.svelte";
   import Chrome from "/icons/chrome.svelte";
   import Firefox from "/icons/firefox.svelte";
   import Ie from "/icons/ie.svelte";
@@ -82,7 +83,7 @@
     class="px-4 mt-12 max-w-5xl mx-auto flex flex-col items-center space-y-4"
   >
     <div
-      class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-6 mb-8 text-sm"
+      class="w-full mx-auto relative grid grid-cols-3 grid-auto-rows gap-6 mb-8 text-xs"
     >
       <div
         class="relative shadow-lg h-full py-8 px-4 rounded-xl flex flex-col justify-between items-center bg-white dark:bg-gray-700"
@@ -284,9 +285,10 @@
 
   <footer class="px-4 mt-16 opacity-75 max-w-5xl mx-auto text-xs text-center">
     <hr />
-    <div class="py-12">
-      企業情報<br /> ©Capital Dash All Rights Reserved.
-    </div>
+    <a href="https://cap-drive.jp/">
+      <Logo class="w-48 mx-auto pt-12 mb-4" />
+    </a>
+    <div class="pb-12">©Capital Dash All Rights Reserved.</div>
   </footer>
 </main>
 
