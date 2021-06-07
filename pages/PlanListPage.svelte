@@ -5,7 +5,11 @@
   import { formatDate } from "/utils/index.js";
   import exportExcel from "/utils/excel.js";
 
-  const { userId, itemIds } = require("/index.ellx");
+  const { userId, itemIds, docs } = require("/index.ellx");
+
+  function docName(id) {
+    return ($docs.get(id) || {}).title;
+  }
 </script>
 
 <section class="relative text-sm flex flex-col max-w-5xl mx-auto mt-12">
@@ -22,7 +26,7 @@
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
   >
     {#if typeof $itemIds !== "string"}
-      {#each $itemIds as [id, title, lastViewed]}
+      {#each $itemIds as [id, title, lastViewed, { docId }]}
         <li
           class="relative bg-white dark:bg-gray-700 cursor-pointer w-full p-3 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow-lg hover:shadow-xl flex flex-col space-y-6 justify-between"
           on:click={() => window.ellx.router.go(`/plans/${$userId}/${id}`)}
@@ -76,6 +80,10 @@
             {$_("最終閲覧")}
             {formatDate(lastViewed)}
           </span>
+          <div class="p-2 border-t text-xs flex flex-col">
+            <div class="text-gray-600">紐付いた資本政策</div>
+            <div class="mt-2 truncate" class:font-bold={docId}>{docName(docId) || "未選択"}</div>
+          </div>
         </li>
       {/each}
     {/if}

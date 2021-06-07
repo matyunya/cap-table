@@ -45,7 +45,7 @@ export function getItemIds(items) {
   if (typeof items === "string") return [];
 
   return [...items]
-    .map(([id, { title, lastViewed }]) => [id, title, lastViewed])
+    .map(([id, { title, lastViewed, ...item }]) => [id, title, lastViewed, item])
     .sort(([, , a], [, , b]) => b - a);
 }
 

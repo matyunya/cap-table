@@ -209,7 +209,7 @@ layout:
       "value": "Is authenticated:"
     }
   ],
-  [,,,,,,,,
+  [,,,,,,,
     {
       "node": "isAuthenticated"
     }
