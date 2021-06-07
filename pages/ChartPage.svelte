@@ -157,7 +157,21 @@
       .append("circle")
       .attr("r", (d, i) => (i === 0 ? 0 : r(d.newEquity)))
       .attr("fill", "#0285c7")
-      .attr("class", "cursor-pointer")
+      .attr("cx", (d, i) => x(i))
+      .attr("cy", (d) => y(d.newEquity))
+
+    dotEvaluationNode
+      .append("text")
+      .attr("class", "label blue")
+      .attr("x", (d, i) => x(i) - 25)
+      .attr("y", (d) => y(d.newEquity) - 10 - r(d.newEquity))
+      .text((d, i) => (i === 0 ? "" : fmt.format(d.newEquity) + "円"))
+
+    dotEvaluationNode
+      .append("circle")
+      .attr("class", "cursor-pointer opacity-0")
+      .attr("r", (d, i) => 20 + r(d.newEquity))
+      .attr("fill", "red")
       .attr("cx", (d, i) => x(i))
       .attr("cy", (d) => y(d.newEquity))
       .on("mouseover", function (d, i) {
@@ -167,23 +181,7 @@
         };
       })
       .on("mouseout", function (d, i) {
-        setTimeout(() => (tip = false), 400);
-      });
-
-    dotEvaluationNode
-      .append("text")
-      .attr("class", "label blue cursor-pointer")
-      .attr("x", (d, i) => x(i) - 25)
-      .attr("y", (d) => y(d.newEquity) - 10 - r(d.newEquity))
-      .text((d, i) => (i === 0 ? "" : fmt.format(d.newEquity) + "円"))
-      .on("mouseover", function (d, i) {
-        tip = {
-          value: fmt.format(i.postMoney) + "円",
-          pos: [d.clientX, d.clientY],
-        };
-      })
-      .on("mouseout", function (d, i) {
-        setTimeout(() => (tip = false), 400);
+        setTimeout(() => tip = false, 400);
       });
 
     const dotShareNode = chart
