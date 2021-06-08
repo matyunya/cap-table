@@ -1,10 +1,7 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
 import { format } from "/utils/index.js";
 import _ from "/utils/intl.js";
-import {
-  syncItemUp,
-  store,
-} from "/store.js";
+import { syncItemUp, store } from "/store.js";
 
 import {
   COPY_PLAN,
@@ -20,9 +17,7 @@ import {
   SET_PLAN_DOC_ID,
 } from "/utils/mutations/plans.js";
 
-import {
-  uid,
-} from "/utils/index.js";
+import { uid } from "/utils/index.js";
 
 import {
   syncCurrentItem as syncCurrentPlan,
@@ -35,7 +30,8 @@ const { userId, route } = require("/index.ellx");
 
 export const updateCell = (params) => syncCurrentPlan(UPDATE_CELL, params);
 
-export const setPlanDocId = ({ id }) => syncCurrentPlan(SET_PLAN_DOC_ID, { id });
+export const setPlanDocId = ({ id }) =>
+  syncCurrentPlan(SET_PLAN_DOC_ID, { id });
 
 export const renamePlan = ({ detail, id }) =>
   id
@@ -53,7 +49,7 @@ export const createPlan = ({ from } = {}) => {
     COPY_PLAN,
     { from: store.get("plans", from), to },
     to,
-    "plans",
+    "plans"
   );
 
   window.ellx.router.go(`/plans/${userId.get()}/${to}`);
@@ -79,9 +75,11 @@ export const removePlan = async ({ id }) => {
   }
 };
 
-export const createProject = ({ afterId }) => syncCurrentPlan(CREATE_PROJECT, { afterId });
+export const createProject = ({ afterId }) =>
+  syncCurrentPlan(CREATE_PROJECT, { afterId });
 
-export const removeProject = ({ id }) => syncCurrentPlan(REMOVE_PROJECT, { id });
+export const removeProject = ({ id }) =>
+  syncCurrentPlan(REMOVE_PROJECT, { id });
 
 export const addYear = () => syncCurrentPlan(ADD_YEAR);
 
@@ -89,34 +87,40 @@ export const removeYear = ({ year }) => syncCurrentPlan(REMOVE_YEAR, { year });
 
 export const setIPO = ({ year }) => syncCurrentPlan(SET_IPO_YEAR, { year });
 
-const rateForField = field => ({ year, data }) => {
-  const prev = fieldSum(data.get(year - 1) || {}, field);
-  if (!prev) return 0;
+const rateForField =
+  (field) =>
+  ({ year, data }) => {
+    const prev = fieldSum(data.get(year - 1) || {}, field);
+    if (!prev) return 0;
 
-  const cur = fieldSum(data.get(year) || {}, field);
-  if (!cur) return 0;
+    const cur = fieldSum(data.get(year) || {}, field);
+    if (!cur) return 0;
 
-  return (cur - prev) / prev;
-}
+    return (cur - prev) / prev;
+  };
 
-const fillEmpty = cb => ({ year, data, fundingAmount }) => {
-  const yearData = data.get(year);
-  if (!yearData) return 0;
+const fillEmpty =
+  (cb) =>
+  ({ year, data, fundingAmount }) => {
+    const yearData = data.get(year);
+    if (!yearData) return 0;
 
-  return cb({
-    year,
-    data,
-    fundingAmount,
-    yearData: {
-      ...EMPTY,
-      ...yearData,
-    }
-  });
-}
+    return cb({
+      year,
+      data,
+      fundingAmount,
+      yearData: {
+        ...EMPTY,
+        ...yearData,
+      },
+    });
+  };
 
-const calcProfitAndLossBeforeTax = ({ yearData: d }) => d.ordinaryIncome + d.extraordinaryProfit - d.extraordinaryLoss;
+const calcProfitAndLossBeforeTax = ({ yearData: d }) =>
+  d.ordinaryIncome + d.extraordinaryProfit - d.extraordinaryLoss;
 
-const calculateTax = (p) => calcProfitAndLossBeforeTax(p) * (p.data.tax || DEFAULT_TAX);
+const calculateTax = (p) =>
+  calcProfitAndLossBeforeTax(p) * (p.data.tax || DEFAULT_TAX);
 
 const calcFundingAmount = ({ fundingAmount, year }) => fundingAmount[year];
 
@@ -181,7 +185,7 @@ const types = [
   {
     id: "profitAndLossBeforeTax",
     label: "税引前当期損益",
-    calculate: calcProfitAndLossBeforeTax
+    calculate: calcProfitAndLossBeforeTax,
   },
   {
     id: "corporateTaxEffectiveTaxRate",
@@ -191,7 +195,7 @@ const types = [
   {
     id: "netIncome",
     label: "当期利益",
-    calculate: p => calcProfitAndLossBeforeTax(p) - calculateTax(p),
+    calculate: (p) => calcProfitAndLossBeforeTax(p) - calculateTax(p),
   },
   {
     id: "cashAndDepositBalance",
@@ -220,48 +224,48 @@ const types = [
   {
     id: "fundingAmount",
     label: "資金調達額",
-    calculate: calcFundingAmount,
-  },
-  {
-    id: "stockFinancing",
-    label: "株式資金調達"
-  },
-  {
-    id: "borrowingGovernment",
-    label: "政府系金融機関借入"
-  },
-  {
-    id: "borrowingPrivate",
-    label: "民間金融機関借入"
-  },
-  {
-    id: "ownResources",
-    label: "自己資金"
-  },
-  {
-    id: "other",
-    label: "その他"
-  },
-  {
-    id: "total",
-    label: "合計",
-    calculate: ({ yearData: d, fundingAmount, year }) => d.stockFinancing +
+    calculate: ({ yearData: d, fundingAmount, year }) =>
       d.borrowingGovernment +
       d.borrowingPrivate +
       d.ownResources +
       d.other +
-      calcFundingAmount({ fundingAmount, year })
-  }
+      calcFundingAmount({ fundingAmount, year }),
+  },
+  {
+    id: "stockFinancing",
+    label: "株式資金調達",
+    calculate: calcFundingAmount,
+  },
+  {
+    id: "borrowingGovernment",
+    label: "政府系金融機関借入",
+  },
+  {
+    id: "borrowingPrivate",
+    label: "民間金融機関借入",
+  },
+  {
+    id: "ownResources",
+    label: "自己資金",
+  },
+  {
+    id: "other",
+    label: "その他",
+  },
 ];
 
-const EMPTY = Object.fromEntries(types.map(k => [k.id, 0]));
+const EMPTY = Object.fromEntries(types.map((k) => [k.id, 0]));
 
-export const rowTypes = types.map(e => ({
+export const rowTypes = types.map((e) => ({
   ...e,
   calculate: e.calculate ? fillEmpty(e.calculate) : null,
 }));
 
-const fieldSum = (yearData, field) => Object.keys(yearData[field] || {}).reduce((acc, cur) => acc + yearData[field][cur], 0);
+const fieldSum = (yearData, field) =>
+  Object.keys(yearData[field] || {}).reduce(
+    (acc, cur) => acc + yearData[field][cur],
+    0
+  );
 
 export function getTypeValue({ rowType, year, data, fundingAmount }) {
   const yearData = data.get(year);

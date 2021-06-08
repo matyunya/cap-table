@@ -7,6 +7,7 @@
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import { getDocMenuItems, getPlanMenuItems } from "/utils/menus.js";
   import FounderShare from "/components/FounderShare.svelte";
+  import LogoDash from "/icons/logo-dash.svelte";
 
   export let logout = () => {};
   export let dark;
@@ -75,9 +76,9 @@
     {#if !$isItem}
       <a
         href="/"
-        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded-xl p-1 transition duration-300"
+        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 ring-blue-800 hover:ring-1 rounded-xl p-1 transition duration-300"
       >
-        Capital Dash
+        <LogoDash class="w-32" />
       </a>
       {#if $isAuthenticated && typeof $route === "string" && !$route.startsWith("/signup")}
         <a

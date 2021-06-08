@@ -18,6 +18,10 @@
       stroke-linejoin: round;
       stroke-miterlimit: 10;
     }
+    .mode-dark .dddd {
+      fill: white;
+      stroke: white;
+    }
   </style>
 
   <g>

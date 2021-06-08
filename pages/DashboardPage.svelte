@@ -5,6 +5,7 @@
 </script>
 
 <script>
+  import LogoDash from "/icons/logo-dash.svelte";
   import { fly } from "svelte/transition";
   import _ from "/utils/intl.js";
   import Step from "/components/ui/Step.svelte";
@@ -34,14 +35,12 @@
 <main
   class="relative block text-sm flex max-w-5xl mx-auto pt-12 flex flex-col px-4 min-h-screen mt-12"
 >
-  {#if $profile && $profile.loaded && !("hideWelcome" in $profile) && $showWelcome}
+  {#if true || ($profile && $profile.loaded && !("hideWelcome" in $profile) && $showWelcome)}
     <div
       out:fly|local
       class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-8 rounded-xl w-full flex flex-col justify-between space-x-4 items-center bg-white dark:bg-gray-700"
     >
-      <h2 class="text-3xl font-medium text-center w-full mb-8">
-        Capital Dashへようこそ
-      </h2>
+      <LogoDash class="max-w-sm mx-auto px-8 my-10" />
       <p class="mb-2">登録いただきありがとうございます。</p>
       <p class="max-w-xl">
         初めてご利用いただく方や、途中で疑問を持たれた方のために「ご利用ガイド」をご用意しました。
@@ -58,8 +57,8 @@
     </div>
   {/if}
 
-  <div class="mt-16 mb-12 w-full">
-    <h2 class="text-lg font-bold mb-2">{$_("株価算定までの3ステップ")}</h2>
+  <div class="my-12 w-full">
+    <h2 class="text-lg font-bold mb-6">{$_("株価算定までの3ステップ")}</h2>
     <div>
       {$_(
         "説得力のある株価算定をスムーズに行うためには、基本的に３つのツールを順番にご利用いただきます。"

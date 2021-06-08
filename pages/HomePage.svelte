@@ -7,7 +7,8 @@
   import Step3 from "/icons/step3.svelte";
   import Free from "/icons/free.svelte";
   import Edge from "/icons/edge.svelte";
-  import Logo from "/icons/logo.svelte";
+  import LogoDrive from "/icons/logo.svelte";
+  import LogoDash from "/icons/logo-dash.svelte";
   import Chrome from "/icons/chrome.svelte";
   import Firefox from "/icons/firefox.svelte";
   import Ie from "/icons/ie.svelte";
@@ -34,7 +35,7 @@
     <div class="grid grid-cols-7 gap-6">
       <div class="flex flex-col col-span-4 space-y-2 items-center">
         <div class="text-base">スタートアップ起業家向け 資金調達支援ツール</div>
-        <h1 class="text-6xl font-bold mb-6">capital dash</h1>
+        <LogoDash class="max-w-sm mx-auto" />
         <div class="font-bold text-lg">
           資本政策表の作成と株価算定を高速で簡単に
         </div>
@@ -235,7 +236,7 @@
   </section>
 
   <section
-    class="p-4 mt-16 max-w-5xl mx-auto flex justify-between flex-row items-center rounded-xl shadow-lg bg-white"
+    class="p-4 mt-16 max-w-5xl mx-auto flex justify-between flex-row items-center rounded-xl shadow-lg bg-white dark:bg-gray-800"
   >
     <div class="font-bold text-xs">推奨ブラウザ</div>
     <div class="flex space-x-2 items-center p-4">
@@ -286,7 +287,7 @@
   <footer class="px-4 mt-16 opacity-75 max-w-5xl mx-auto text-xs text-center">
     <hr />
     <a href="https://cap-drive.jp/">
-      <Logo class="w-48 mx-auto pt-12 mb-4" />
+      <LogoDrive class="w-48 mx-auto pt-12 mb-4" />
     </a>
     <div class="pb-12">©Capital Dash All Rights Reserved.</div>
   </footer>
