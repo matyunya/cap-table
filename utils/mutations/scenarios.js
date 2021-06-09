@@ -6,8 +6,8 @@ export const defaultScenario = (title) => ({
   title: title || defaultName("scenarioTitle"),
   // sparse map containing user input values, key -> value
   data: new Map([
-    ["ipoDiscount", 0.2],
-    ["hurdleRate", 0.8],
+    ["ipoDiscount", 20],
+    ["hurdleRate", 80],
   ]),
 });
 

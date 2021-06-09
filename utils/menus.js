@@ -8,6 +8,7 @@ import exportExcel from "/utils/excel.js";
 
 import { syncCurrentItem as syncCurrentDoc } from "/utils/actions/generic.js";
 import { createPlan, removePlan } from "/utils/actions/plans.js";
+import { createScenario, removeScenario } from "/utils/actions/scenarios.js";
 
 import { store } from "/store.js";
 
@@ -32,6 +33,7 @@ const {
   rounds,
   planDocId,
   projects,
+  scenarios,
   years,
   docPlanId,
   userId,
@@ -239,4 +241,14 @@ export const getYearMenuItems = ({ year }) =>
   ].filter(Boolean);
 
 // TODO
-export const getScenarioMenuItems = () => [];
+export const getScenarioMenuItems = ({ id }) =>
+  [
+    {
+      text: "新規シナリオを追加",
+      cb: () => createScenario(),
+    },
+    scenarios.get().size > 1 && {
+      text: "このシナリオを削除",
+      cb: () => removeScenario({ id }),
+    },
+  ].filter(Boolean);

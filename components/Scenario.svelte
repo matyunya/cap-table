@@ -13,7 +13,7 @@
   } from "/utils/actions/scenarios.js";
   import { getScenarioMenuItems } from "/utils/menus.js";
 
-  const { scenarios } = require("/index.ellx")
+  const { scenarios } = require("/index.ellx");
 
   export let id;
   export let title;
@@ -23,6 +23,12 @@
     if (!opts || !opts.length) return [];
 
     return [["", "選択してください"], ...opts];
+  }
+
+  function getData(id) {
+    if (!($scenarios instanceof Map)) return new Map();
+
+    return ($scenarios.get(id) || {}).data;
   }
 </script>
 
@@ -54,11 +60,12 @@
     <Cell
       value={getTypeValue({
         rowType: { id: key, calculate },
-        data: $scenarios.get(id).data,
+        data: getData(id),
       })}
       editable={!calculate}
       options={withEmpty(options)}
-      on:change={({ detail, target }) => updateCell(id, { value: detail || target.value, key })}
+      on:change={({ detail, target }) =>
+        updateCell(id, { value: detail || target.value, key })}
       class={cn({
         "border-y truncate p-1 h-6 items-center text-xs font-medium": true,
         "text-right": format !== "identity",
@@ -69,7 +76,7 @@
         format,
         getTypeValue({
           rowType: { id: key, calculate },
-          data: $scenarios.get(id).data,
+          data: getData(id),
         })
       )}
     </Cell>
