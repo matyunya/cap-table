@@ -193,7 +193,9 @@ const types = [
   {
     id: "netIncome",
     label: "当期利益",
-    calculate: (p) => calcProfitAndLossBeforeTax(p) - calculateTax(p),
+    calculate: (p) => {
+      return calcProfitAndLossBeforeTax(p) - calculateTax(p);
+    },
   },
   {
     id: "cashAndDepositBalance",

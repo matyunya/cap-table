@@ -12,6 +12,8 @@ import {
 } from "/utils/mutations/scenarios.js";
 import { uid } from "/utils/index.js";
 import { syncItem } from "/utils/actions/generic.js";
+import { rowTypes as planRowTypes } from "/utils/actions/plans.js";
+import { calcFundingPerYear, calculate } from "/utils/selectors.js";
 
 const { planIds, plans, docs } = require("/index.ellx");
 
@@ -55,9 +57,60 @@ const CURRENT_STAGE_OPTIONS = [
   "PMF済",
   "N+1",
   "N+2",
-].map(i => [i, i]);
+].map((i) => [i, i]);
 
-const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"].map(i => [i, i]);
+const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"].map((i) => [i, i]);
+
+const getPlan = (data) => {
+  const planId = data.planId;
+  if (!planId) return null;
+  return plans.get().get(planId);
+};
+
+const getDoc = (data) => {
+  const plan = getPlan(data);
+  if (!plan) return null;
+  return docs.get().get(plan.docId);
+};
+
+const getIpoDate = ({ data }) => {
+  const doc = getDoc(data);
+  if (!doc || !doc.ipoRoundId) return null;
+
+  return doc.rounds.get(doc.ipoRoundId).date;
+};
+
+const calcNetIncome = ({ data }) => {
+  const ipoDate = getIpoDate({ data });
+  if (!ipoDate) return 0;
+
+  const year = new Date(ipoDate).getFullYear();
+
+  console.log(getPlan(data).data, year, "QWEQWE");
+
+  return planRowTypes
+    .find((i) => i.id === "netIncome")
+    .calculate({
+      year,
+      data: getPlan(data).data,
+      fundingAmount: calcFundingPerYear([year], getDoc(data)),
+    });
+};
+
+const calcIpoRoundSharesAmount = ({ data }) => {
+  const doc = getDoc(data);
+  if (!doc || !doc.ipoRoundId) return 0;
+
+  return calculate(doc.rounds, doc.investors)[
+    doc.ipoRoundId
+  ].values.totalSharesAmount.get("total");
+};
+
+const calcProjectValue = (p) =>
+  calcNetIncome(p) * p.data.per * (1 - p.data.ipoDiscount / 100);
+
+const calcIpoSharePrice = (p) =>
+  (calcProjectValue(p) / calcIpoRoundSharesAmount(p)) * 1000;
 
 const types = [
   {
@@ -69,19 +122,13 @@ const types = [
     label: "資本政策（事業計画に紐づいた）",
     id: "docTitle",
     format: "identity",
-    calculate: ({ data }) => {
-      const planId = data.get("planId");
-      if (!planId) return "-";
-      const plan = plans.get().get(planId);
-      if (!plan) return "-";
-
-      return (docs.get().get(plan.docId) || {}).title || "-"; // TODO: left align
-    }
+    calculate: ({ data }) => (getDoc(data) || {}).title,
   },
   {
     label: "上場予定年月",
-    id: "ipoYear",
-    calculate: ({ ipoYear }) => ipoYear,
+    id: "ipoDate",
+    calculate: getIpoDate,
+    format: "identity",
   },
   {
     label: "今回ラウンド",
@@ -96,10 +143,11 @@ const types = [
   {
     label: "（A）基準期の純利益",
     id: "netIncome",
-    calculate: ({ plan }) => plan.netIncome || 0,
+    calculate: calcNetIncome,
   },
   {
     label: "（B）IPO時点での適用PER",
+    id: "per",
   },
   {
     label: "（C）IPOディスカウント",
@@ -109,13 +157,17 @@ const types = [
   {
     label: "（D）企業価値",
     id: "projectValue",
-    calculate: (i) => 0, // TODO: excel
+    calculate: calcProjectValue,
   },
   {
     label: "（E）発行済株式数",
+    id: "ipoRoundSharesAmount",
+    calculate: calcIpoRoundSharesAmount,
   },
   {
     label: "（F）IPO時株価",
+    id: "ipoSharePrice",
+    calculate: calcIpoSharePrice,
   },
   {
     label: "（G）適用IRR（ハードルレート）",
@@ -124,16 +176,42 @@ const types = [
   },
   {
     label: "（H）現在株価(理論値）",
-    calculate: (i) => 0, // TODO: excel
+    format: "currency",
+    calculate: (p) =>
+      getIpoDate(p)
+        ? xnpv(
+            p.data.hurdleRate / 100,
+            [0, calcIpoSharePrice(p)],
+            [new Date(), getIpoDate(p)]
+          )
+        : 0,
   },
 ];
 
-const fillEmpty = (cb) => (args) => {
-  return cb({
-    ...args,
-    ...EMPTY(types),
-  });
+const getDiffDays = (date1, date2) => {
+  return Math.ceil(
+    Math.abs(new Date(date2) - new Date(date1)) / (1000 * 60 * 60 * 24)
+  );
 };
+
+function xnpv(rate, values, dates) {
+  return values.reduce(
+    (acc, cur, i) =>
+      acc + cur / Math.pow(1 + rate, getDiffDays(dates[0], dates[i]) / 365),
+    0
+  );
+}
+
+const fillEmpty =
+  (cb) =>
+  ({ data }) => {
+    return cb({
+      data: {
+        ...EMPTY(types),
+        ...Object.fromEntries(data),
+      },
+    });
+  };
 
 export const rowTypes = types.map((e) => ({
   ...e,
@@ -142,7 +220,7 @@ export const rowTypes = types.map((e) => ({
 
 export function getTypeValue({ rowType, data }) {
   if (rowType.calculate) {
-    return rowType.calculate({ data, plan: {} });
+    return rowType.calculate({ data });
   }
 
   return data.get(rowType.id);

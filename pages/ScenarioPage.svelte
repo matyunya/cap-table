@@ -52,7 +52,7 @@
     grid-template-rows: 2rem 1fr;
     /* investor col width */
     grid-template-columns: 200px;
-    grid-auto-columns: minmax(auto, 150px);
+    grid-auto-columns: minmax(auto, 200px);
     width: auto;
   }
 

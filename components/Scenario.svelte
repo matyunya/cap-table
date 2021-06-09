@@ -60,7 +60,8 @@
       options={withEmpty(options)}
       on:change={({ detail, target }) => updateCell(id, { value: detail || target.value, key })}
       class={cn({
-        "border-y truncate p-1 h-6 items-center text-xs text-right font-medium": true,
+        "border-y truncate p-1 h-6 items-center text-xs font-medium": true,
+        "text-right": format !== "identity",
         "mt-2": i !== 0,
       })}
     >

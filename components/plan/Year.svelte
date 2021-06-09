@@ -13,7 +13,7 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, data, fundingAmount } = require("/index.ellx");
+  const { profile, planData, fundingAmount } = require("/index.ellx");
 
   export let year;
   export let i;
@@ -33,7 +33,7 @@
   }
 </script>
 
-{#if $data instanceof Map}
+{#if $planData instanceof Map}
   <div
     style="top: 0; min-width: 0; min-height: 0"
     class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-3 z-20 relative"
@@ -78,7 +78,7 @@
         value={getTypeValue({
           rowType: { id, hasProjects, calculate },
           year,
-          data: $data,
+          data: $planData,
           fundingAmount: $fundingAmount || {}
         })}
         editable={!hasProjects && !calculate}
@@ -94,7 +94,7 @@
           getTypeValue({
             rowType: { id, hasProjects, calculate },
             year,
-            data: $data,
+            data: $planData,
             fundingAmount: $fundingAmount || {}
           })
         )}
@@ -103,11 +103,11 @@
         {#each [...$projects.keys()] as projectId}
           <Cell
             class="border-y truncate p-1 h-6 items-center text-xs text-right font-medium"
-            value={getProjectValue(id, year, $data, projectId)}
+            value={getProjectValue(id, year, $planData, projectId)}
             on:change={({ detail }) =>
               updateCell({ year, value: detail, id, projectId })}
           >
-            {formatValue(format, getProjectValue(id, year, $data, projectId))}
+            {formatValue(format, getProjectValue(id, year, $planData, projectId))}
           </Cell>
         {/each}
       {/if}

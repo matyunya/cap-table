@@ -12,12 +12,16 @@ export {
   totalCommonShares,
   fillEmptyInvestments,
 } from "/utils/index.js";
-export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
+export {
+  calculate,
+  groupInvestors,
+  chartData,
+  calcFundingPerYear,
+} from "/utils/selectors.js";
 export { default as connect } from "/models/docs.js";
 export { default as connectProfile } from "/models/profile.js";
 export { default as connectPlans } from "/models/plans.js";
 export { default as connectScenarios } from "/models/scenarios.js";
-
 import { store } from "/store.js";
 export { default as withStatus } from "/utils/withStatus.js";
 
@@ -61,19 +65,6 @@ export function getItemIds(items) {
 
 export const getYearsRange = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
-
-export function calcFundingPerYear(years, planDoc, calculated) {
-  return Object.fromEntries(
-    years.map((year) => [
-      year,
-      [...planDoc.rounds.keys()]
-        .filter(
-          (id) => new Date(planDoc.rounds.get(id).date).getFullYear() === year
-        )
-        .reduce((acc, id) => acc + calculated[id].roundResults.newEquity, 0),
-    ])
-  );
-}
 
 export function getDocPlanId(plans, docId) {
   const [id] = [...plans].find(([, p]) => p.docId === docId) || [];

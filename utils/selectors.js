@@ -107,3 +107,18 @@ export function getIpoYear(docId, docs) {
 
   return new Date(round.date).getFullYear();
 }
+
+export function calcFundingPerYear(years, doc) {
+  const calculated = calculate(doc.rounds, doc.investors);
+
+  return Object.fromEntries(
+    years.map((year) => [
+      year,
+      [...doc.rounds.keys()]
+        .filter(
+          (id) => new Date(doc.rounds.get(id).date).getFullYear() === year
+        )
+        .reduce((acc, id) => acc + calculated[id].roundResults.newEquity, 0),
+    ])
+  );
+}

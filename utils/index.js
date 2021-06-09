@@ -200,7 +200,7 @@ export const format = {
     currency: "JPY",
   }),
   identity: {
-    format: (i) => i,
+    format: (i) => i || "-",
   },
 };
 

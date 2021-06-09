@@ -45,7 +45,7 @@ nodes:
   calculated = calculate(rounds, investors)
   projects = activeSheet ? activeSheet.projects : new Map()
   plans = store.plans
-  data = activeSheet ? activeSheet.data : new Map()
+  planData = activeSheet ? activeSheet.data : new Map()
   itemIds = profileReady && getItemIds(store[activeEntity])
   docIds = profileReady && getItemIds(docs)
   planIds = profileReady && getItemIds(plans)
@@ -453,7 +453,7 @@ layout:
       "value": "Projects:"
     },,,
     {
-      "value": "Data:"
+      "value": "Plan data:"
     }
   ],
   [,,,,,,,,
@@ -480,7 +480,7 @@ layout:
       }
     },,,,,,,,,
     {
-      "node": "data",
+      "node": "planData",
       "expansion": {
         "vertical": false,
         "labelsTop": true,
