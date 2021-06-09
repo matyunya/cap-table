@@ -86,8 +86,6 @@ const calcNetIncome = ({ data }) => {
 
   const year = new Date(ipoDate).getFullYear();
 
-  console.log(getPlan(data).data, year, "QWEQWE");
-
   return planRowTypes
     .find((i) => i.id === "netIncome")
     .calculate({
