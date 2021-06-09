@@ -25,10 +25,10 @@
     return [["", "選択してください"], ...opts];
   }
 
-  function getData(id) {
-    if (!($scenarios instanceof Map)) return new Map();
+  function getData(id, val) {
+    if (!(val instanceof Map)) return new Map();
 
-    return ($scenarios.get(id) || {}).data;
+    return (val.get(id) || {}).data;
   }
 </script>
 
@@ -60,7 +60,7 @@
     <Cell
       value={getTypeValue({
         rowType: { id: key, calculate },
-        data: getData(id),
+        data: getData(id, $scenarios),
       })}
       editable={!calculate}
       options={withEmpty(options)}
@@ -76,7 +76,7 @@
         format,
         getTypeValue({
           rowType: { id: key, calculate },
-          data: getData(id),
+          data: getData(id, $scenarios),
         })
       )}
     </Cell>
