@@ -102,10 +102,6 @@ export function REMOVE_YEAR() {
   return ({ update }) => update("dateRange", ([start, end]) => [start, end - 1]);
 }
 
-export function SET_IPO_YEAR({ year }) {
-  return ({ set }) => set("ipo", year);
-}
-
 export function SET_PLAN_DOC_ID({ id }) {
   return ({ set }) => set("docId", id);
 }

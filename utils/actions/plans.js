@@ -1,5 +1,5 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
-import { format } from "/utils/index.js";
+import { format, EMPTY } from "/utils/index.js";
 import _ from "/utils/intl.js";
 import { store } from "/store.js";
 import { syncItemUp } from "/models/generic.js";
@@ -14,7 +14,6 @@ import {
   UPDATE_CELL,
   ADD_YEAR,
   REMOVE_YEAR,
-  SET_IPO_YEAR,
   SET_PLAN_DOC_ID,
 } from "/utils/mutations/plans.js";
 
@@ -86,8 +85,6 @@ export const addYear = () => syncCurrentPlan(ADD_YEAR);
 
 export const removeYear = ({ year }) => syncCurrentPlan(REMOVE_YEAR, { year });
 
-export const setIPO = ({ year }) => syncCurrentPlan(SET_IPO_YEAR, { year });
-
 const rateForField =
   (field) =>
   ({ year, data }) => {
@@ -111,7 +108,7 @@ const fillEmpty =
       data,
       fundingAmount,
       yearData: {
-        ...EMPTY,
+        ...EMPTY(types),
         ...yearData,
       },
     });
@@ -254,8 +251,6 @@ const types = [
     label: "その他",
   },
 ];
-
-const EMPTY = Object.fromEntries(types.map((k) => [k.id, 0]));
 
 export const rowTypes = types.map((e) => ({
   ...e,

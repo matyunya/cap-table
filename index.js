@@ -50,7 +50,12 @@ export function getItemIds(items) {
   if (typeof items === "string") return [];
 
   return [...items]
-    .map(([id, { title, lastViewed, ...item }]) => [id, title, lastViewed, item])
+    .map(([id, { title, lastViewed, ...item }]) => [
+      id,
+      title,
+      lastViewed,
+      item,
+    ])
     .sort(([, , a], [, , b]) => b - a);
 }
 
@@ -74,4 +79,13 @@ export function getDocPlanId(plans, docId) {
   const [id] = [...plans].find(([, p]) => p.docId === docId) || [];
 
   return id;
+}
+
+export function getFoundedDates(docs) {
+  return Object.fromEntries(
+    [...docs.keys()].map((key) => [
+      key,
+      docs.get(key).rounds.get("founded").date,
+    ])
+  );
 }

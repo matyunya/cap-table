@@ -36,7 +36,7 @@ const getRef = (id, name) => ENTITIES_REFS[name](id);
 const op = (ref, val) => (val !== undefined ? ref.set(val) : ref.delete(val));
 
 export function syncUp(st, TRANSACTION, payload, id) {
-  id = id || activeItemId.get();
+  id = id || activeItemId.get(); // error-prone, fix later
   if (id === undefined) {
     throw new Error("Trying to sync undefined item");
   }

@@ -2,7 +2,7 @@ import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
 import _ from "/utils/intl.js";
 import { store } from "/store.js";
 import { syncItemUp } from "/models/generic.js";
-
+import { format, EMPTY } from "/utils/index.js";
 import {
   COPY_SCENARIO,
   REMOVE_SCENARIO,
@@ -10,25 +10,18 @@ import {
   UPDATE_CELL,
   SET_SCENARIO_PLAN_ID,
 } from "/utils/mutations/scenarios.js";
-
 import { uid } from "/utils/index.js";
+import { syncItem } from "/utils/actions/generic.js";
 
-import {
-  syncCurrentItem as syncCurrentScenario,
-  syncItem as syncScenario,
-} from "/utils/actions/generic.js";
+const { docIds } = require("/index.ellx");
 
-const { userId, route } = require("/index.ellx");
+export const updateCell = (id, params) => syncItem(id, UPDATE_CELL, params);
 
-export const updateCell = (params) => syncCurrentScenario(UPDATE_CELL, params);
-
-export const setScenarioPlanId = ({ id }) =>
-  syncCurrentScenario(SET_SCENARIO_PLAN_ID, { id });
+export const setScenarioPlanId = (id, params) =>
+  syncItem(id, SET_SCENARIO_PLAN_ID, params);
 
 export const renameScenario = ({ detail, id }) =>
-  id
-    ? syncScenario(id, UPDATE_SCENARIO_TITLE, detail)
-    : syncCurrentScenario(UPDATE_SCENARIO_TITLE, detail);
+  syncItem(id, UPDATE_SCENARIO_TITLE, detail);
 
 export const createScenario = ({ from } = {}) => {
   const to = uid();
@@ -52,40 +45,71 @@ export const removeScenario = async ({ id }) => {
 
   if (!ok) return;
 
-  const ids = [...store.get("scenarios").keys()];
-  const idx = ids.indexOf(id);
-
   syncItemUp(store, REMOVE_SCENARIO, { id }, id, "scenarios");
-
-  if (route.get().startsWith("/scenarios/")) {
-    window.ellx.router.go(`/scenarios/${userId.get()}/${ids[idx - 1]}`);
-  }
 };
 
-export const rowTypes = [
+const CURRENT_STAGE_OPTIONS = [
+  "創業",
+  "プロトタイプ完成",
+  "プロダクトローンチ済",
+  "PMF済",
+  "N+1",
+  "N+2",
+];
+
+const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"];
+
+const fillEmpty = (cb) => (args) => {
+  return cb({
+    ...args,
+    ...EMPTY(types),
+  });
+};
+
+export const types = [
   {
     label: "事業計画",
+    id: "planId",
+    options: ({ planIds }) => planIds,
+  },
+  {
+    label: "資本政策（事業計画に紐づいた）",
+    id: "docTitle",
+    format: "identity",
+    calculate: ({ planId }) =>
+      (docIds.get().find(([id]) => id === planId) || {}).title || "-",
   },
   {
     label: "上場予定年月",
+    id: "ipoYear",
+    calculate: ({ ipoYear }) => ipoYear,
   },
   {
     label: "今回ラウンド",
+    id: "currentStage",
+    options: CURRENT_STAGE_OPTIONS,
   },
   {
     label: "基準期の選択",
+    id: "basicPeriod",
+    options: BASIC_PERIOD_OPTIONS,
   },
   {
     label: "（A）基準期の純利益",
+    id: "netIncome",
+    calculate: ({ plan }) => plan.netIncome || 0,
   },
   {
     label: "（B）IPO時点での適用PER",
   },
   {
     label: "（C）IPOディスカウント",
+    id: "ipoDiscount",
   },
   {
     label: "（D）企業価値",
+    id: "projectValue",
+    calculate: (i) => 0, // TODO: excel
   },
   {
     label: "（E）発行済株式数",
@@ -95,11 +119,27 @@ export const rowTypes = [
   },
   {
     label: "（G）適用IRR（ハードルレート）",
+    id: "hurdleRate",
   },
   {
     label: "（H）現在株価(理論値）",
   },
 ];
 
-export const getTypeValue = (i) => 0;
-export const formatValue = (i) => 0;
+export const rowTypes = types.map((e) => ({
+  ...e,
+  calculate: e.calculate ? fillEmpty(e.calculate) : null,
+}));
+
+// TODO: pass plan
+export function getTypeValue({ rowType, data }) {
+  if (rowType.calculate) {
+    return rowType.calculate({ data, plan: {} });
+  }
+
+  return data[rowType.id];
+}
+
+export function formatValue(fn, value) {
+  return format[fn || "number"].format(value || 0);
+}

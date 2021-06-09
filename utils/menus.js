@@ -1,4 +1,8 @@
-import { createDocument, removeDocument } from "/utils/actions/docs.js";
+import {
+  createDocument,
+  removeDocument,
+  setIpoRoundId,
+} from "/utils/actions/docs.js";
 import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
 
@@ -21,7 +25,6 @@ import {
   removeProject,
   addYear,
   removeYear,
-  setIPO,
 } from "/utils/actions/plans.js";
 
 const {
@@ -136,6 +139,10 @@ export const roundMenuItems = (id) =>
           },
         }
       : false,
+    id !== "founded" && {
+      text: "このラウンドでIPO",
+      cb: () => setIpoRoundId({ roundId: id }),
+    },
     canAddSplit(id)
       ? {
           text: "株式分割ラウンド作成",
@@ -229,12 +236,7 @@ export const getYearMenuItems = ({ year }) =>
         text: "この年度を削除",
         cb: () => removeYear({ year }),
       },
-    year !== years.get()[0] && {
-      text: "この年度でIPOする",
-      cb: () => setIPO({ year }),
-    },
   ].filter(Boolean);
-
 
 // TODO
 export const getScenarioMenuItems = () => [];

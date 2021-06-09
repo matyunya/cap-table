@@ -9,6 +9,7 @@
     updateCell,
     getTypeValue,
     formatValue,
+    renameScenario,
   } from "/utils/actions/scenarios.js";
   import { getScenarioMenuItems } from "/utils/menus.js";
 
@@ -24,9 +25,9 @@
     class="flex flex-row justify-between px-2 items-center bg-gray-600 dark:bg-gray-900 relative w-full h-full"
   >
     <Cell
-      editable={false}
       class="text-left text-gray-100 text-sm font-medium"
       value={title}
+      on:change={({ detail }) => renameScenario({ id, detail })}
     />
     <Icon
       class="text-white bg-gray-800"
@@ -40,14 +41,14 @@
   style="min-width: 0; min-height: 0;"
   class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm flex flex-col"
 >
-  {#each rowTypes as { id, format, calculate }, i}
+  {#each rowTypes as { id: key, format, calculate }, i}
     <Cell
       value={getTypeValue({
-        rowType: { id, calculate },
+        rowType: { id: key, calculate },
         data: {},
       })}
       editable={!calculate}
-      on:change={({ detail }) => updateCell({ value: detail, id })}
+      on:change={({ detail }) => updateCell(id, { value: detail, key })}
       class={cn({
         "border-y truncate p-1 h-6 items-center text-xs text-right font-medium": true,
         "mt-2": i !== 0,
@@ -56,7 +57,7 @@
       {formatValue(
         format,
         getTypeValue({
-          rowType: { id, calculate },
+          rowType: { id: key, calculate },
           data: {},
         })
       )}

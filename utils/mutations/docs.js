@@ -344,3 +344,11 @@ export function REMOVE_DOCUMENT({ id }) {
       return updated;
     });
 }
+
+export function SET_IPO_ROUND_ID({ roundId }) {
+  return ({ set }) => {
+    if (roundId === "founded") throw new Error("Cannot make founded round IPO");
+
+    return set("ipoRoundId", roundId);
+  }
+}

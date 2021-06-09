@@ -13,11 +13,12 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, data, ipo, fundingAmount } = require("/index.ellx");
+  const { profile, data, fundingAmount } = require("/index.ellx");
 
   export let year;
   export let i;
   export let projects;
+  export let ipo;
 
   function ipoDisplayValue(val) {
     if (year === val) {
@@ -57,8 +58,8 @@
       class="w-full flex justify-center text-xs items-center font-medium px-1 space-x-4"
     >
       <div>{i === 0 ? "直近期末" : i + "年後"}</div>
-      {#if $ipo && i !== 0}
-        <div>{ipoDisplayValue($ipo)}</div>
+      {#if ipo && i !== 0}
+        <div>{ipoDisplayValue(ipo)}</div>
       {/if}
     </div>
     <div

@@ -3,7 +3,6 @@
   import Scenario from "/components/Scenario.svelte";
   import _ from "/utils/intl.js";
   import {
-    renameScenario,
     createScenario,
     removeScenario,
     rowTypes

@@ -9,16 +9,13 @@ const {
   activeItemId,
   isAuthenticated,
   sheetChanged,
-  activeEntity
+  activeEntity,
 } = require("/index.ellx");
 
-const getItem = (id) =>
-  select(store, () => [
-    activeEntity.get(),
-    id || activeItemId.get(),
-  ]);
+const getItem = (id) => select(store, () => [activeEntity.get(), id]);
 
-export const syncCurrentItem = (...args) => syncUp(getItem(), ...args);
+export const syncCurrentItem = (...args) =>
+  syncUp(getItem(activeItemId.get()), ...args);
 
 export const syncItem = (id, ...args) => syncUp(getItem(id), ...args, id);
 

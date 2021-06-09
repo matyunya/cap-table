@@ -5,7 +5,10 @@ const { userId, language } = require("/index.ellx");
 export const defaultScenario = (title) => ({
   title: title || defaultName("scenarioTitle"),
   // sparse map containing user input values, key -> value
-  data: new Map(),
+  data: new Map([
+    ["ipoDiscount", 0.2],
+    ["hurdleRate", 0.8],
+  ]),
   planId: null,
 });
 
@@ -17,9 +20,9 @@ export function COPY_SCENARIO({ from, to }) {
   return ({ set, get }) => {
     const newPlan = from
       ? {
-        ...from,
-        title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
-      }
+          ...from,
+          title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
+        }
       : defaultScenario(getDefaultTitle(get("scenarios"), "scenarioTitle"));
 
     set("scenarios", to, {

@@ -97,3 +97,13 @@ export function chartData(id, docs) {
 
   return res;
 }
+
+export function getIpoYear(docId, docs) {
+  const doc = docs.get(docId);
+  if (!doc) return null;
+
+  const round = doc.rounds.get(doc.ipoRoundId);
+  if (!round) return null;
+
+  return new Date(round.date).getFullYear();
+}

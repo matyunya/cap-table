@@ -71,6 +71,8 @@ export const getFutureRounds = (rounds, id) => {
   return new Map([...rounds].slice(idx + 1));
 };
 
+export const EMPTY = (types) => Object.fromEntries(types.map((k) => [k.id, 0]));
+
 export const getPreviousRound = (rounds, id) =>
   getAtIndex(rounds, [...rounds.keys()].indexOf(id) - 1);
 
@@ -183,7 +185,6 @@ export function formatDate(d) {
   return fmtDate(new Date(d), isToday(new Date(d)) ? "HH:mm" : "MM/dd HH:mm");
 }
 
-
 export const format = {
   number: new Intl.NumberFormat("ja-JA"),
   percent: new Intl.NumberFormat("ja-JA", {
@@ -195,6 +196,9 @@ export const format = {
     style: "currency",
     currency: "JPY",
   }),
+  identity: {
+    format: (i) => i,
+  },
 };
 
 export const allGroups = (investors) =>

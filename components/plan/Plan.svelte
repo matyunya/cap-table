@@ -5,6 +5,7 @@
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import Icon from "/components/ui/Icon.svelte";
   import Select from "/components/ui/Select.svelte";
+  import { getIpoYear } from "/utils/selectors.js";
   import _ from "/utils/intl.js";
   import {
     renamePlan,
@@ -22,6 +23,7 @@
     years,
     sheetStatus,
     docIds,
+    docs,
     planDocId,
   } = require("/index.ellx");
 
@@ -105,7 +107,7 @@
 
       {#if $years && $years.length}
         {#each $years as year, i (year)}
-          <Year {year} {projects} {i} />
+          <Year ipo={getIpoYear($planDocId, $docs)} {year} {projects} {i} />
         {/each}
       {/if}
     </div>

@@ -55,6 +55,7 @@ nodes:
   fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
   scenarios = store.scenarios
+  foundedDates = getFoundedDates(docs)
 layout:
 [,
   [,,
@@ -607,6 +608,16 @@ layout:
         "height": 1,
         "width": 5
       }
+    }
+  ],,,
+  [,,
+    {
+      "value": "Founded dates:"
+    }
+  ],
+  [,,
+    {
+      "node": "foundedDates"
     }
   ]
 ]
