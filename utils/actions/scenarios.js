@@ -217,6 +217,8 @@ export const rowTypes = types.map((e) => ({
 }));
 
 export function getTypeValue({ rowType, data }) {
+  if (!data || !data.get) return null;
+
   if (rowType.calculate) {
     return rowType.calculate({ data });
   }
