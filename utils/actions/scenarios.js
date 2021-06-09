@@ -8,7 +8,7 @@ import {
   REMOVE_SCENARIO,
   UPDATE_SCENARIO_TITLE,
   UPDATE_CELL,
-  SET_SCENARIO_SCENARIO_ID,
+  SET_SCENARIO_PLAN_ID,
 } from "/utils/mutations/scenarios.js";
 
 import { uid } from "/utils/index.js";
@@ -18,14 +18,12 @@ import {
   syncItem as syncScenario,
 } from "/utils/actions/generic.js";
 
-export const DEFAULT_TAX = 0.3;
-
 const { userId, route } = require("/index.ellx");
 
 export const updateCell = (params) => syncCurrentScenario(UPDATE_CELL, params);
 
 export const setScenarioPlanId = ({ id }) =>
-  syncCurrentScenario(SET_SCENARIO_SCENARIO_ID, { id });
+  syncCurrentScenario(SET_SCENARIO_PLAN_ID, { id });
 
 export const renameScenario = ({ detail, id }) =>
   id
@@ -63,3 +61,45 @@ export const removeScenario = async ({ id }) => {
     window.ellx.router.go(`/scenarios/${userId.get()}/${ids[idx - 1]}`);
   }
 };
+
+export const rowTypes = [
+  {
+    label: "事業計画",
+  },
+  {
+    label: "上場予定年月",
+  },
+  {
+    label: "今回ラウンド",
+  },
+  {
+    label: "基準期の選択",
+  },
+  {
+    label: "（A）基準期の純利益",
+  },
+  {
+    label: "（B）IPO時点での適用PER",
+  },
+  {
+    label: "（C）IPOディスカウント",
+  },
+  {
+    label: "（D）企業価値",
+  },
+  {
+    label: "（E）発行済株式数",
+  },
+  {
+    label: "（F）IPO時株価",
+  },
+  {
+    label: "（G）適用IRR（ハードルレート）",
+  },
+  {
+    label: "（H）現在株価(理論値）",
+  },
+];
+
+export const getTypeValue = (i) => 0;
+export const formatValue = (i) => 0;

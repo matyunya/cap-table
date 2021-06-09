@@ -3,7 +3,6 @@
   import _ from "/utils/intl.js";
   import { renamePlan, createPlan, removePlan } from "/utils/actions/plans.js";
   import { formatDate } from "/utils/index.js";
-  import exportExcel from "/utils/excel.js";
 
   const { userId, itemIds, docs } = require("/index.ellx");
 
@@ -40,27 +39,7 @@
           </div>
           <div class="text-xs flex justify-between items-center">
             <button
-              on:click|stopPropagation={() => exportExcel(id)}
-              class="flex opacity-0 items-center transition duration-200 hover:text-green-800"
-            >
-              <div
-                class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 cursor-pointer  dark:ring-green-100 ring-green-600 hover:text-green-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M16 11h5l-9 10-9-10h5v-11h8v11zm3 8v3h-14v-3h-2v5h18v-5h-2z"
-                  />
-                </svg>
-              </div>
-              <div>Excel</div>
-            </button>
-
-            <button
+              class:opacity-0={$itemIds.length < 2}
               class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 hover:ring-2 cursor-pointer  dark:ring-red-100 ring-red-600 hover:text-red-600 transition duration-200"
               on:click|stopPropagation={() => removePlan({ id })}
             >

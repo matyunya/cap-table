@@ -31,7 +31,7 @@ const ENTITIES_REFS = {
   scenarios: getActiveItemRef("scenarios"),
 };
 
-const getRef = (id) => ENTITIES_REFS[activeEntity.get()](id);
+const getRef = (id, name) => ENTITIES_REFS[name](id);
 
 const op = (ref, val) => (val !== undefined ? ref.set(val) : ref.delete(val));
 
@@ -43,7 +43,7 @@ export function syncUp(st, TRANSACTION, payload, id) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get()));
 
-  op(getRef(id), val);
+  op(getRef(id, activeEntity.get()), val);
 }
 
 export function syncItemUp(st, TRANSACTION, payload, id, key) {
@@ -53,7 +53,7 @@ export function syncItemUp(st, TRANSACTION, payload, id, key) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get())[key].get(id));
 
-  op(getRef(id), val);
+  op(getRef(id, activeEntity.get()), val);
 }
 
 export function getCollection(name) {
@@ -75,7 +75,7 @@ export default function createConnect({
 
     return getCollection(name).onSnapshot((querySnapshot) => {
       querySnapshot.empty
-        ? getActiveItemRef(name).set(
+        ? getRef(null, name).set(
             serialize({ ...getDefaultItem(), owner: userId.get() }),
             uid()
           )

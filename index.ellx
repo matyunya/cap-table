@@ -54,6 +54,7 @@ nodes:
   planDoc = planDocId && docs.get(planDocId)
   fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
+  scenarios = store.scenarios
 layout:
 [,
   [,,
@@ -586,6 +587,24 @@ layout:
         "secondary": true,
         "labelsLeft": true,
         "height": 3,
+        "width": 5
+      }
+    }
+  ],,,,,
+  [,,
+    {
+      "value": "Scenarios:"
+    }
+  ],,
+  [,,
+    {
+      "node": "scenarios",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 1,
         "width": 5
       }
     }

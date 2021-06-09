@@ -40,6 +40,9 @@ export function getActiveItem(id, route) {
   if (route.startsWith("/plans")) {
     return store.get().plans.get(id);
   }
+  if (route.startsWith("/scenarios")) {
+    return store.get().scenarios;
+  }
   return false;
 }
 

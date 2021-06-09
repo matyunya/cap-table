@@ -234,3 +234,7 @@ export const getYearMenuItems = ({ year }) =>
       cb: () => setIPO({ year }),
     },
   ].filter(Boolean);
+
+
+// TODO
+export const getScenarioMenuItems = () => [];
