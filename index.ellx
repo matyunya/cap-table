@@ -48,6 +48,7 @@ nodes:
   data = activeSheet ? activeSheet.data : new Map()
   itemIds = profileReady && getItemIds(store[activeEntity])
   docIds = profileReady && getItemIds(docs)
+  planIds = profileReady && getItemIds(plans)
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
   ipo = isPlan && activeSheet && activeSheet.ipo
   planDocId = isPlan && activeSheet && activeSheet.docId
@@ -496,6 +497,9 @@ layout:
     },,,,
     {
       "value": "Doc ids:"
+    },,,
+    {
+      "value": "Plan ids:"
     }
   ],
   [,,
@@ -514,6 +518,9 @@ layout:
         "height": 10,
         "width": 1
       }
+    },,,
+    {
+      "node": "planIds"
     }
   ],,,,,,,,
   [,,

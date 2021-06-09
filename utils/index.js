@@ -192,6 +192,9 @@ export const format = {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   }),
+  nominalPercent: {
+    format: (i) => i + "%",
+  },
   currency: new Intl.NumberFormat("ja-JA", {
     style: "currency",
     currency: "JPY",

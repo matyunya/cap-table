@@ -13,8 +13,17 @@
   } from "/utils/actions/scenarios.js";
   import { getScenarioMenuItems } from "/utils/menus.js";
 
+  const { scenarios } = require("/index.ellx")
+
   export let id;
   export let title;
+
+  function withEmpty(opts) {
+    if (typeof opts === "function") opts = opts();
+    if (!opts || !opts.length) return [];
+
+    return [["", "選択してください"], ...opts];
+  }
 </script>
 
 <div
@@ -41,14 +50,15 @@
   style="min-width: 0; min-height: 0;"
   class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm flex flex-col"
 >
-  {#each rowTypes as { id: key, format, calculate }, i}
+  {#each rowTypes as { id: key, format, calculate, options }, i}
     <Cell
       value={getTypeValue({
         rowType: { id: key, calculate },
-        data: {},
+        data: $scenarios.get(id).data,
       })}
       editable={!calculate}
-      on:change={({ detail }) => updateCell(id, { value: detail, key })}
+      options={withEmpty(options)}
+      on:change={({ detail, target }) => updateCell(id, { value: detail || target.value, key })}
       class={cn({
         "border-y truncate p-1 h-6 items-center text-xs text-right font-medium": true,
         "mt-2": i !== 0,
@@ -58,7 +68,7 @@
         format,
         getTypeValue({
           rowType: { id: key, calculate },
-          data: {},
+          data: $scenarios.get(id).data,
         })
       )}
     </Cell>

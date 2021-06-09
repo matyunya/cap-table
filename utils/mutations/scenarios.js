@@ -9,11 +9,10 @@ export const defaultScenario = (title) => ({
     ["ipoDiscount", 0.2],
     ["hurdleRate", 0.8],
   ]),
-  planId: null,
 });
 
 export function UPDATE_CELL({ key, value }) {
-  return ({ set }) => set("data", key, Number(value));
+  return ({ set }) => set("data", key, value);
 }
 
 export function COPY_SCENARIO({ from, to }) {

@@ -13,7 +13,7 @@ import {
 import { uid } from "/utils/index.js";
 import { syncItem } from "/utils/actions/generic.js";
 
-const { docIds } = require("/index.ellx");
+const { planIds, plans, docs } = require("/index.ellx");
 
 export const updateCell = (id, params) => syncItem(id, UPDATE_CELL, params);
 
@@ -55,29 +55,28 @@ const CURRENT_STAGE_OPTIONS = [
   "PMF済",
   "N+1",
   "N+2",
-];
+].map(i => [i, i]);
 
-const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"];
+const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"].map(i => [i, i]);
 
-const fillEmpty = (cb) => (args) => {
-  return cb({
-    ...args,
-    ...EMPTY(types),
-  });
-};
-
-export const types = [
+const types = [
   {
     label: "事業計画",
     id: "planId",
-    options: ({ planIds }) => planIds,
+    options: () => planIds.get(),
   },
   {
     label: "資本政策（事業計画に紐づいた）",
     id: "docTitle",
     format: "identity",
-    calculate: ({ planId }) =>
-      (docIds.get().find(([id]) => id === planId) || {}).title || "-",
+    calculate: ({ data }) => {
+      const planId = data.get("planId");
+      if (!planId) return "-";
+      const plan = plans.get().get(planId);
+      if (!plan) return "-";
+
+      return (docs.get().get(plan.docId) || {}).title || "-"; // TODO: left align
+    }
   },
   {
     label: "上場予定年月",
@@ -105,6 +104,7 @@ export const types = [
   {
     label: "（C）IPOディスカウント",
     id: "ipoDiscount",
+    format: "nominalPercent",
   },
   {
     label: "（D）企業価値",
@@ -120,24 +120,32 @@ export const types = [
   {
     label: "（G）適用IRR（ハードルレート）",
     id: "hurdleRate",
+    format: "nominalPercent",
   },
   {
     label: "（H）現在株価(理論値）",
+    calculate: (i) => 0, // TODO: excel
   },
 ];
+
+const fillEmpty = (cb) => (args) => {
+  return cb({
+    ...args,
+    ...EMPTY(types),
+  });
+};
 
 export const rowTypes = types.map((e) => ({
   ...e,
   calculate: e.calculate ? fillEmpty(e.calculate) : null,
 }));
 
-// TODO: pass plan
 export function getTypeValue({ rowType, data }) {
   if (rowType.calculate) {
     return rowType.calculate({ data, plan: {} });
   }
 
-  return data[rowType.id];
+  return data.get(rowType.id);
 }
 
 export function formatValue(fn, value) {
