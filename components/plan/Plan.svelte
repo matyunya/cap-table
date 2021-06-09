@@ -107,7 +107,13 @@
 
       {#if $years && $years.length}
         {#each $years as year, i (year)}
-          <Year ipo={getIpoYear($planDocId, $docs)} {year} {projects} {i} />
+          <Year
+            last={i === $years.length - 1}
+            ipo={getIpoYear($planDocId, $docs)}
+            {year}
+            {projects}
+            {i}
+          />
         {/each}
       {/if}
     </div>

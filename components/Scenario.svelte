@@ -39,7 +39,7 @@
       on:change={({ detail }) => renameScenario({ id, detail })}
     />
     <Icon
-      class="text-white bg-gray-800"
+      dark
       on:click={(e) => openContextMenu(getScenarioMenuItems({ id }), e)}
       size="20"
     />

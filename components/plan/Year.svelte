@@ -19,6 +19,7 @@
   export let i;
   export let projects;
   export let ipo;
+  export let last;
 
   function ipoDisplayValue(val) {
     if (year === val) {
@@ -46,9 +47,9 @@
         class="text-left text-gray-100 text-sm font-medium"
         value={i === 0 ? "実績" : "計画"}
       />
-      {#if i !== 0}
+      {#if last}
         <Icon
-          class="text-white bg-gray-800"
+          dark
           on:click={(e) => openContextMenu(getYearMenuItems({ year }), e)}
           size="20"
         />

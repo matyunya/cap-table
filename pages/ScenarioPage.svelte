@@ -5,7 +5,7 @@
   import {
     createScenario,
     removeScenario,
-    rowTypes
+    rowTypes,
   } from "/utils/actions/scenarios.js";
   import cn from "/utils/cn.js";
 
@@ -29,15 +29,17 @@
       <div style="top: 0; left: 0;" />
       <div
         style="left: 0;"
-        class="col-start-1 row-start-2 flex flex-1 flex-col border dark:border-gray-700 bg-white dark:bg-gray-800 shadow p-1"
+        class="col-start-1 row-start-2 flex flex-1 flex-col border dark:border-gray-700 bg-white dark:bg-gray-800 p-1"
       >
         {#each rowTypes as { label }}
           <Cell
             editable={false}
             class={cn({
               "mt-2 cell p-1 h-6 items-center text-left font-bold": true,
-            })}>{label}</Cell
+            })}
           >
+            {label}
+          </Cell>
         {/each}
       </div>
       {#each $itemIds as [id, title]}

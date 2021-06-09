@@ -74,7 +74,7 @@
       }}
     />
     <Icon
-      class="text-white bg-gray-800"
+      dark
       on:click={(e) => openContextMenu(roundMenuItems(id), e)}
       size="20"
     />
