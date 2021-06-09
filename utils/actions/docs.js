@@ -1,11 +1,10 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
-import { select } from "tinyx";
 import _ from "/utils/intl.js";
 import {
-  syncUp,
-  syncItemUp,
   store,
 } from "/store.js";
+
+import { syncItemUp } from "/models/generic.js";
 
 import {
   UPDATE_SHARE,

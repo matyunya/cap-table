@@ -1,20 +1,13 @@
 import { store } from "/store.js";
 import { SYNC_PROFILE } from "/utils/sync.js";
+import { getCollection } from "/models/generic.js";
+
 const { appId, userId, language } = require("/index.ellx");
 
-function getProfileRef() {
-  return firebase
-    .firestore()
-    .collection("apps")
-    .doc(appId.get())
-    .collection("profiles")
-    .where("owner", "==", userId.get());
-}
-
-export function connect() {
+export default function connect() {
   if (!userId.get()) return;
 
-  return getProfileRef().onSnapshot((querySnapshot) => {
+  return getCollection("profiles").onSnapshot((querySnapshot) => {
     querySnapshot.empty
       ? updateProfile({
           owner: userId.get(),

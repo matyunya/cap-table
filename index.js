@@ -13,9 +13,11 @@ export {
   fillEmptyInvestments,
 } from "/utils/index.js";
 export { calculate, groupInvestors, chartData } from "/utils/selectors.js";
-export { connect } from "/models/docs.js";
-export { connect as connectProfile } from "/models/profile.js";
-export { connect as connectPlans } from "/models/plans.js";
+export { default as connect } from "/models/docs.js";
+export { default as connectProfile } from "/models/profile.js";
+export { default as connectPlans } from "/models/plans.js";
+export { default as connectScenarios } from "/models/scenarios.js";
+
 import { store } from "/store.js";
 export { default as withStatus } from "/utils/withStatus.js";
 

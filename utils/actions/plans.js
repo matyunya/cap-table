@@ -1,7 +1,8 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
 import { format } from "/utils/index.js";
 import _ from "/utils/intl.js";
-import { syncItemUp, store } from "/store.js";
+import { store } from "/store.js";
+import { syncItemUp } from "/models/generic.js";
 
 import {
   COPY_PLAN,

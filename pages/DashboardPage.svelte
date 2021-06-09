@@ -103,7 +103,7 @@
       <button class="button">{$_("事業計画を開く")}</button>
     </a>
     <a
-      href="/calc"
+      href="/scenarios"
       class="relative cursor-pointer shadow-lg h-full py-8 px-4 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-400 dark:ring-gray-200 flex flex-col justify-between items-center bg-white dark:bg-gray-700"
     >
       <Step n="3" />

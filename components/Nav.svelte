@@ -84,21 +84,27 @@
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/docs"
-          class:font-bold={$route === "/docs"}
+          class:text-black={$route === "/docs"}
+          class:dark:text-white={$route === "/docs"}
+          class:underline={$route === "/docs"}
         >
           {$_("資本政策")}
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/plans"
-          class:font-bold={$route === "/plans"}
+          class:text-black={$route === "/plans"}
+          class:dark:text-white={$route === "/plans"}
+          class:underline={$route === "/plans"}
         >
           {$_("事業計画")}
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/calc"
-          class:font-bold={$route === "/calc"}
+          href="/scenarios"
+          class:text-black={$route === "/scenarios"}
+          class:dark:text-white={$route === "/scenarios"}
+          class:underline={$route === "/scenarios"}
         >
           {$_("株価算定")}
         </a>

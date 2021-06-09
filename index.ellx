@@ -30,7 +30,10 @@ nodes:
   isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
   unsubscribeProfile = connectProfile(userId)
   route = routeUrl.pathname
+  unsubscribeScenarios = connectScenarios(userId)
+  isScenario = route.startsWith("/scenarios")
   docPlanId = isDoc && getDocPlanId(plans, activeItemId)
+  activeEntity = isPlan ? "plans" : (isDoc ? "documents" : "scenarios")
   sheetChanged = activeSheet && activeSheet.owner && activeItemId
   router = ellx.router
   title = activeSheet && activeSheet.title
@@ -43,7 +46,7 @@ nodes:
   projects = activeSheet ? activeSheet.projects : new Map()
   plans = store.plans
   data = activeSheet ? activeSheet.data : new Map()
-  itemIds = profileReady && isPlan ? getItemIds(plans) : docIds
+  itemIds = profileReady && getItemIds(store[activeEntity])
   docIds = profileReady && getItemIds(docs)
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
   ipo = isPlan && activeSheet && activeSheet.ipo
@@ -66,11 +69,11 @@ layout:
         "labelsLeft": true,
         "secondary": false,
         "labelsTop": false,
-        "height": 2,
+        "height": 4,
         "width": 1
       }
     }
-  ],
+  ],,,,
   [,,,,,,,,
     {
       "value": "Call login:"
@@ -84,7 +87,7 @@ layout:
   [,,
     {
       "value": "Documents:"
-    },,,,,,,,
+    },,,,,,
     {
       "value": "Auth status:"
     }
@@ -163,7 +166,10 @@ layout:
       "node": "regStep"
     }
   ],,
-  [,,,,,,,,
+  [,,,,
+    {
+      "value": "Language:"
+    },,,,
     {
       "value": "Route user ID:"
     },,
@@ -281,15 +287,34 @@ layout:
     {
       "node": "route"
     }
-  ],,,,
+  ],
+  [,,,,,,,
+    {
+      "node": "unsubscribeScenarios"
+    },,,,,,,
+    {
+      "value": "Is scenario:"
+    }
+  ],
+  [,,,,,,,,,,,,,,
+    {
+      "node": "isScenario"
+    }
+  ],,
   [,,
     {
       "value": "Doc plan id:"
+    },,,,,,,,,,,,
+    {
+      "value": "Active entity:"
     }
   ],
   [,,
     {
       "node": "docPlanId"
+    },,,,,,,,,,,,
+    {
+      "node": "activeEntity"
     }
   ],,
   [,,
