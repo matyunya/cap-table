@@ -35,7 +35,7 @@
 <main
   class="relative block text-sm flex max-w-5xl mx-auto pt-12 flex flex-col px-4 min-h-screen mt-12"
 >
-  {#if true || ($profile && $profile.loaded && !("hideWelcome" in $profile) && $showWelcome)}
+  {#if ($profile && $profile.loaded && !("hideWelcome" in $profile) && $showWelcome)}
     <div
       out:fly|local
       class="mb-8 border border-gray-400 shadow-lg dark:border-gray-200 p-8 rounded-xl w-full flex flex-col justify-between space-x-4 items-center bg-white dark:bg-gray-700"

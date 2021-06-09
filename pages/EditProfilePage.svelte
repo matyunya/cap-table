@@ -3,7 +3,6 @@
   import { fields as userFields } from "/components/signup/Step1.svelte";
   import { fields as companyFields } from "/components/signup/Step2.svelte";
   import { fields as planFields } from "/components/signup/Step3.svelte";
-  import Spinner from "/components/ui/Spinner.svelte";
   import _ from "/utils/intl.js";
   import Fields from "/components/signup/Fields.svelte";
   import Wrapper from "/components/signup/Wrapper.svelte";
