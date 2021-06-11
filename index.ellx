@@ -31,6 +31,7 @@ nodes:
   unsubscribeProfile = connectProfile(userId)
   route = routeUrl.pathname
   unsubscribeScenarios = connectScenarios(userId)
+  unsubscribeBenchmarks = connectBenchmarks(userId)
   isScenario = route.startsWith("/scenarios")
   docPlanId = isDoc && getDocPlanId(plans, activeItemId)
   activeEntity = isPlan ? "plans" : (isDoc ? "documents" : "scenarios")
@@ -57,6 +58,8 @@ nodes:
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
   scenarios = store.scenarios
   foundedDates = getFoundedDates(docs)
+  benchmarks = store.benchmarks
+  benchmarkIds = profileReady && getItemIds(benchmarks)
 layout:
 [,
   [,,
@@ -299,7 +302,10 @@ layout:
       "value": "Is scenario:"
     }
   ],
-  [,,,,,,,,,,,,,,
+  [,,,,,,,
+    {
+      "node": "unsubscribeBenchmarks"
+    },,,,,,,
     {
       "node": "isScenario"
     }
@@ -625,6 +631,30 @@ layout:
   [,,
     {
       "node": "foundedDates"
+    }
+  ],,,
+  [,,
+    {
+      "value": "Benchmarks:"
+    },,,,
+    {
+      "value": "Benchmark ids:"
+    }
+  ],,
+  [,,
+    {
+      "node": "benchmarks",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 2,
+        "width": 4
+      }
+    },,,,
+    {
+      "node": "benchmarkIds"
     }
   ]
 ]

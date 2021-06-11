@@ -2,12 +2,8 @@
   import Cell, { setEditing } from "/components/sheet/Cell.svelte";
   import Scenario from "/components/Scenario.svelte";
   import _ from "/utils/intl.js";
-  import {
-    createScenario,
-    removeScenario,
-    rowTypes,
-  } from "/utils/actions/scenarios.js";
-  import cn from "/utils/cn.js";
+  import { rowTypes } from "/utils/actions/scenarios.js";
+  import Benchmarks from "/components/Benchmarks.svelte";
 
   const { itemIds, sheetStatus } = require("/index.ellx");
 </script>
@@ -23,7 +19,7 @@
 {#if $sheetStatus === "success"}
   <div class="m-12">
     <div
-      class="relative grid auto grid-cols-1 gap-2 grid-rows-2 cap-table text-xs text-gray-700 dark:text-gray-200 mt-6 bg-blurred z-40"
+      class="calc relative grid grid-flow-col grid-cols-1 gap-2 grid-rows-2 cap-table text-xs text-gray-700 dark:text-gray-200 mt-6 bg-blurred z-40"
       on:click={setEditing}
     >
       <div style="top: 0; left: 0;" />
@@ -32,12 +28,7 @@
         class="col-start-1 row-start-2 flex flex-1 flex-col border dark:border-gray-700 bg-white dark:bg-gray-800 p-1"
       >
         {#each rowTypes as { label }}
-          <Cell
-            editable={false}
-            class={cn({
-              "mt-2 cell p-1 h-6 items-center text-left font-bold": true,
-            })}
-          >
+          <Cell class="mt-2 cell p-1 h-6 items-center text-left font-bold">
             {label}
           </Cell>
         {/each}
@@ -49,8 +40,10 @@
   </div>
 {/if}
 
+<Benchmarks />
+
 <style>
-  .grid {
+  .calc {
     grid-template-rows: 2rem 1fr;
     /* investor col width */
     grid-template-columns: 200px;
@@ -58,14 +51,9 @@
     width: auto;
   }
 
-  .auto {
-    grid-auto-flow: column;
-  }
-
   :global(.cell:hover .icon) {
     opacity: 1;
   }
-
   :global(.cell .icon) {
     opacity: 0;
   }

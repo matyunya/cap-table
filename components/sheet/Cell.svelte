@@ -22,6 +22,7 @@
   export let editorClasses = "";
   export let error;
   export let options = [];
+  export let placeholder = "";
 
   let editingValue = value;
 
@@ -77,7 +78,13 @@
     title={$_(error) || value}
   >
     {#if $editing !== id}
-      <slot>{value}</slot>
+      <slot>
+        {#if value}
+          {value}
+        {:else if placeholder}
+          <span class="text-gray-500 pointer-events-none">{placeholder}</span>
+        {/if}
+      </slot>
     {:else}
       <CellEditor
         class={editorClasses}

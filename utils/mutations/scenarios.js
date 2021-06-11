@@ -17,7 +17,7 @@ export function UPDATE_CELL({ key, value }) {
 
 export function COPY_SCENARIO({ from, to }) {
   return ({ set, get }) => {
-    const newPlan = from
+    const newScenario = from
       ? {
           ...from,
           title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
@@ -25,7 +25,7 @@ export function COPY_SCENARIO({ from, to }) {
       : defaultScenario(getDefaultTitle(get("scenarios"), "scenarioTitle"));
 
     set("scenarios", to, {
-      ...newPlan,
+      ...newScenario,
       owner: userId.get(),
     });
   };

@@ -4,6 +4,7 @@
   import Icon from "/components/ui/Icon.svelte";
   import _ from "/utils/intl.js";
   import cn from "/utils/cn.js";
+  import { withEmpty } from "/utils/selectors.js";
   import {
     rowTypes,
     updateCell,
@@ -17,13 +18,6 @@
 
   export let id;
   export let title;
-
-  function withEmpty(opts) {
-    if (typeof opts === "function") opts = opts();
-    if (!opts || !opts.length) return [];
-
-    return [["", "選択してください"], ...opts];
-  }
 
   function getData(id, val) {
     if (!(val instanceof Map)) return new Map();

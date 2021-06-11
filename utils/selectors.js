@@ -122,3 +122,10 @@ export function calcFundingPerYear(years, doc) {
     ])
   );
 }
+
+export function withEmpty(opts) {
+  if (typeof opts === "function") opts = opts();
+  if (!opts || !opts.length) return [];
+
+  return [["", "選択してください"], ...opts];
+}

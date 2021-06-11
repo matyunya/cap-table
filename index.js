@@ -22,6 +22,7 @@ export { default as connect } from "/models/docs.js";
 export { default as connectProfile } from "/models/profile.js";
 export { default as connectPlans } from "/models/plans.js";
 export { default as connectScenarios } from "/models/scenarios.js";
+export { default as connectBenchmarks } from "/models/benchmarks.js";
 import { store } from "/store.js";
 export { default as withStatus } from "/utils/withStatus.js";
 

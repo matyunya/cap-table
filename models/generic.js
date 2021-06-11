@@ -29,13 +29,14 @@ const ENTITIES_REFS = {
   plans: getActiveItemRef("plans"),
   documents: getActiveItemRef("files"),
   scenarios: getActiveItemRef("scenarios"),
+  benchmarks: getActiveItemRef("benchmarks"),
 };
 
 const getRef = (id, name) => ENTITIES_REFS[name](id);
 
 const op = (ref, val) => (val !== undefined ? ref.set(val) : ref.delete(val));
 
-export function syncUp(st, TRANSACTION, payload, id) {
+export function syncUp(st, TRANSACTION, payload, id, entity) {
   id = id || activeItemId.get(); // error-prone, fix later
   if (id === undefined) {
     throw new Error("Trying to sync undefined item");
@@ -43,17 +44,17 @@ export function syncUp(st, TRANSACTION, payload, id) {
   const reducer = produce(TRANSACTION(payload));
   const val = serialize(reducer(st.get()));
 
-  op(getRef(id, activeEntity.get()), val);
+  op(getRef(id, entity || activeEntity.get()), val);
 }
 
-export function syncItemUp(st, TRANSACTION, payload, id, key) {
+export function syncItemUp(st, TRANSACTION, payload, id, entity) {
   if (id === undefined) {
     throw new Error("Trying to sync undefined doc");
   }
   const reducer = produce(TRANSACTION(payload));
-  const val = serialize(reducer(st.get())[key].get(id));
+  const val = serialize(reducer(st.get())[entity].get(id));
 
-  op(getRef(id, activeEntity.get()), val);
+  op(getRef(id, entity), val);
 }
 
 export function getCollection(name) {
@@ -74,12 +75,15 @@ export default function createConnect({
     if (isAuthenticated.get() !== true) return;
 
     return getCollection(name).onSnapshot((querySnapshot) => {
-      querySnapshot.empty
-        ? getRef(null, name).set(
-            serialize({ ...getDefaultItem(), owner: userId.get() }),
-            uid()
-          )
-        : store.commit(syncMutation, querySnapshot);
+      if (querySnapshot.empty) {
+        const id = uid();
+        getRef(id, name).set(
+          serialize({ ...getDefaultItem(), owner: userId.get() }),
+          id
+        );
+      } else {
+        store.commit(syncMutation, querySnapshot);
+      }
     });
   };
 }

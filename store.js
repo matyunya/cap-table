@@ -8,5 +8,6 @@ export const store = bootstrap({
   documents: new Map(),
   plans: new Map(),
   scenarios: new Map(),
+  benchmarks: new Map(),
 });
 
