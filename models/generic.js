@@ -25,14 +25,10 @@ export const getActiveDocRef = getActiveItemRef("files");
 
 export const getActivePlanRef = getActiveItemRef("plans");
 
-const ENTITIES_REFS = {
-  plans: getActiveItemRef("plans"),
-  documents: getActiveItemRef("files"),
-  scenarios: getActiveItemRef("scenarios"),
-  benchmarks: getActiveItemRef("benchmarks"),
+const getRef = (id, name) => {
+  if (name === "documents") return getActiveItemRef("files")(id);
+  return getActiveItemRef(name)(id);
 };
-
-const getRef = (id, name) => ENTITIES_REFS[name](id);
 
 const op = (ref, val) => (val !== undefined ? ref.set(val) : ref.delete(val));
 
