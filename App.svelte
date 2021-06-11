@@ -40,6 +40,7 @@
     unsubscribeProfile,
     unsubscribePlans,
     unsubscribeScenarios,
+    unsubscribeBenchmarks,
   } = require("/index.ellx");
 
   onMount(() => {
@@ -64,6 +65,7 @@
     $unsubscribeProfile();
     $unsubscribePlans();
     $unsubscribeScenarios();
+    $unsubscribeBenchmarks();
     window.ellx.logout();
     window.ellx.router.go("/");
     store.resetStore();
