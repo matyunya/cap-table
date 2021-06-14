@@ -117,7 +117,7 @@
           上場時の基準利益や、事業ステージごとの割引率が株価にも影響します。​
         </p>
       </div>
-      <button disabled class="button">{$_("開発中")}</button>
+      <button class="button">{$_("株価算定を開く")}</button>
     </a>
   </div>
 </main>
