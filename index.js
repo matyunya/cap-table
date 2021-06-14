@@ -3,6 +3,8 @@ import App from "./App.svelte";
 import { writable } from "tinyx";
 import "/index.css";
 
+import { store } from "/store.js";
+
 export { roundTypes } from "/utils/actions/docs.js";
 export {
   uid,
@@ -23,8 +25,8 @@ export { default as connectProfile } from "/models/profile.js";
 export { default as connectPlans } from "/models/plans.js";
 export { default as connectScenarios } from "/models/scenarios.js";
 export { default as connectBenchmarks } from "/models/benchmarks.js";
-import { store } from "/store.js";
 export { default as withStatus } from "/utils/withStatus.js";
+export { DEFAULT_TAX_RATE } from "/utils/mutations/plans.js";
 
 export { store };
 

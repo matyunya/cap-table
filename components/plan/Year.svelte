@@ -13,7 +13,7 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, planData, fundingAmount } = require("/index.ellx");
+  const { profile, planData, fundingAmount, taxRate } = require("/index.ellx");
 
   export let year;
   export let i;
@@ -74,13 +74,14 @@
     style="min-width: 0; min-height: 0;"
     class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm flex flex-col"
   >
-    {#each rowTypes as { id, hasProjects, format, calculate }, i}
+    {#each rowTypes as { id, hasProjects, format, calculate, calculateSingle }, i}
       <Cell
         value={getTypeValue({
           rowType: { id, hasProjects, calculate },
           year,
           data: $planData,
-          fundingAmount: $fundingAmount || {}
+          fundingAmount: $fundingAmount || {},
+          taxRate: $taxRate,
         })}
         editable={!hasProjects && !calculate}
         on:change={({ detail }) => updateCell({ year, value: detail, id })}
@@ -96,19 +97,21 @@
             rowType: { id, hasProjects, calculate },
             year,
             data: $planData,
-            fundingAmount: $fundingAmount || {}
+            fundingAmount: $fundingAmount || {},
+            taxRate: $taxRate,
           })
         )}
       </Cell>
       {#if hasProjects}
         {#each [...$projects.keys()] as projectId}
           <Cell
+            editable={!calculateSingle}
             class="border-y truncate p-1 h-6 items-center text-xs text-right font-medium"
-            value={getProjectValue(id, year, $planData, projectId)}
+            value={getProjectValue(id, year, $planData, projectId, calculateSingle)}
             on:change={({ detail }) =>
               updateCell({ year, value: detail, id, projectId })}
           >
-            {formatValue(format, getProjectValue(id, year, $planData, projectId))}
+            {formatValue(format, getProjectValue(id, year, $planData, projectId, calculateSingle))}
           </Cell>
         {/each}
       {/if}

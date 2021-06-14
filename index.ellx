@@ -56,8 +56,9 @@ nodes:
   planDoc = planDocId && docs.get(planDocId)
   fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
+  taxRate = activeSheet.taxRate || DEFAULT_TAX_RATE
   scenarios = store.scenarios
-  foundedDates = getFoundedDates(docs)
+  foundedDates = profileReady && getFoundedDates(docs)
   benchmarks = store.benchmarks
   benchmarkIds = profileReady && getItemIds(benchmarks)
 layout:
@@ -243,7 +244,7 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 5,
+        "height": 7,
         "width": 1
       }
     },,
@@ -309,7 +310,7 @@ layout:
     {
       "node": "isScenario"
     }
-  ],,
+  ],,,,,
   [,,
     {
       "value": "Doc plan id:"
@@ -604,7 +605,17 @@ layout:
         "width": 5
       }
     }
-  ],,,,,
+  ],
+  [,,
+    {
+      "value": "Plan doc tax rate:"
+    }
+  ],
+  [,,
+    {
+      "node": "taxRate"
+    }
+  ],,,
   [,,
     {
       "value": "Scenarios:"

@@ -12,10 +12,12 @@
     renameProject,
     rowTypes,
     setPlanDocId,
+    updateTaxRate,
   } from "/utils/actions/plans.js";
   import { updateLastViewed } from "/utils/actions/generic.js";
   import { getProjectMenuItems } from "/utils/menus.js";
   import cn from "/utils/cn.js";
+  import { format } from "/utils/index.js";
 
   const {
     projects,
@@ -25,6 +27,7 @@
     docIds,
     docs,
     planDocId,
+    taxRate,
   } = require("/index.ellx");
 
   onMount(updateLastViewed);
@@ -70,19 +73,32 @@
         style="left: 0;"
         class="col-start-1 row-start-2 border dark:border-gray-700 flex flex-1 flex-col bg-white dark:bg-gray-800 shadow p-1"
       >
-        {#each rowTypes as { label, hasProjects }, i}
-          <div class="relative cell">
+        {#each rowTypes as { label, hasProjects, id }, i}
+          <div
+            class="relative cell"
+            class:flex={id === "corporateTaxEffectiveTaxRate"}
+          >
             <Cell
               editable={false}
               class={cn({
                 "cell p-1 h-6 items-center text-left font-bold": true,
                 "tracking-wide text-xs mt-6": i !== 0 && hasProjects,
                 "mt-2": i !== 0 && !hasProjects,
+                "w-1/2": id === "corporateTaxEffectiveTaxRate",
               })}
               value={label}
             >
               {label}
             </Cell>
+            {#if id === "corporateTaxEffectiveTaxRate"}
+              <Cell
+                class="cell p-1 h-6 items-center text-left font-bold w-1/2 mt-2"
+                value={$taxRate}
+                on:change={({ detail }) => updateTaxRate({ value: detail })}
+              >
+                {format.nominalPercent.format($taxRate)}
+              </Cell>
+            {/if}
           </div>
           {#if hasProjects}
             {#each [...$projects] as [projectId, { title }]}

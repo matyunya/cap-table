@@ -15,6 +15,7 @@ import {
   ADD_YEAR,
   REMOVE_YEAR,
   SET_PLAN_DOC_ID,
+  UPDATE_TAX_RATE,
 } from "/utils/mutations/plans.js";
 
 import { uid } from "/utils/index.js";
@@ -24,14 +25,15 @@ import {
   syncItem as syncPlan,
 } from "/utils/actions/generic.js";
 
-export const DEFAULT_TAX = 0.3;
-
 const { userId, route } = require("/index.ellx");
 
 export const updateCell = (params) => syncCurrentPlan(UPDATE_CELL, params);
 
 export const setPlanDocId = ({ id }) =>
   syncCurrentPlan(SET_PLAN_DOC_ID, { id });
+
+export const updateTaxRate = ({ value }) =>
+  syncCurrentPlan(UPDATE_TAX_RATE, { value });
 
 export const renamePlan = ({ detail, id }) =>
   id
@@ -99,14 +101,14 @@ const rateForField =
 
 const fillEmpty =
   (cb) =>
-  ({ year, data, fundingAmount }) => {
+  ({ year, data, ...extra }) => {
     const yearData = data.get(year);
     if (!yearData) return 0;
 
     return cb({
       year,
       data,
-      fundingAmount,
+      ...extra, // tax rate, funding amount, externals calc should react to
       yearData: {
         ...EMPTY(types),
         ...yearData,
@@ -114,13 +116,33 @@ const fillEmpty =
     });
   };
 
-const calcProfitAndLossBeforeTax = ({ yearData: d }) =>
-  d.ordinaryIncome + d.extraordinaryProfit - d.extraordinaryLoss;
-
-const calculateTax = (p) =>
-  calcProfitAndLossBeforeTax(p) * (p.data.tax || DEFAULT_TAX);
+const calculateTax = (p) => (calcProfitAndLossBeforeTax(p) * p.taxRate) / 100;
 
 const calcFundingAmount = ({ fundingAmount, year }) => fundingAmount[year];
+
+const calcSingleGrossProfit = ({ yearData: d, projectId }) =>
+  (d.sales[projectId] || 0) - (d.costOfSales[projectId] || 0);
+
+const calcSingleOperatingIncome = (p) =>
+  calcSingleGrossProfit(p) -
+  (p.yearData.expenses[p.yearData.sales[p.projectId]] || 0);
+
+const sum = (obj) => Object.keys(obj).reduce((acc, key) => acc + obj[key], 0);
+
+const calcGrossProfit = ({ yearData: d }) => sum(d.sales) - sum(d.costOfSales);
+
+const calcOperatingIncome = (p) =>
+  calcGrossProfit(p) - sum(p.yearData.expenses);
+
+const calcOrdinaryIncome = (p) =>
+  calcOperatingIncome(p) +
+  p.yearData.nonOperatingIncome -
+  p.yearData.nonOperatingExpenses;
+
+const calcProfitAndLossBeforeTax = (p) =>
+  calcOrdinaryIncome(p) +
+  p.yearData.extraordinaryProfit -
+  p.yearData.extraordinaryLoss;
 
 const types = [
   {
@@ -143,6 +165,8 @@ const types = [
     id: "grossProfit",
     label: "売上総利益",
     hasProjects: true,
+    calculateSingle: calcSingleGrossProfit,
+    calculate: calcGrossProfit,
   },
   {
     id: "expenses",
@@ -153,12 +177,14 @@ const types = [
     id: "operatingIncome",
     label: "営業利益",
     hasProjects: true,
+    calculateSingle: calcSingleOperatingIncome,
+    calculate: calcOperatingIncome,
   },
   {
     id: "operatingProfitMargin",
     label: "営業利益率",
     format: "percent",
-    calculate: rateForField("operatingIncome"),
+    calculate: (p) => calcOperatingIncome(p) / sum(p.yearData.sales),
   },
   {
     id: "nonOperatingIncome",
@@ -171,6 +197,7 @@ const types = [
   {
     id: "ordinaryIncome",
     label: "経常利益",
+    calculate: calcOrdinaryIncome,
   },
   {
     id: "extraordinaryProfit",
@@ -193,9 +220,7 @@ const types = [
   {
     id: "netIncome",
     label: "当期利益",
-    calculate: (p) => {
-      return calcProfitAndLossBeforeTax(p) - calculateTax(p);
-    },
+    calculate: (p) => calcProfitAndLossBeforeTax(p) - calculateTax(p),
   },
   {
     id: "cashAndDepositBalance",
@@ -257,6 +282,7 @@ const types = [
 export const rowTypes = types.map((e) => ({
   ...e,
   calculate: e.calculate ? fillEmpty(e.calculate) : null,
+  calculateSingle: e.calculateSingle ? fillEmpty(e.calculateSingle) : null,
 }));
 
 const fieldSum = (yearData, field) =>
@@ -265,16 +291,16 @@ const fieldSum = (yearData, field) =>
     0
   );
 
-export function getTypeValue({ rowType, year, data, fundingAmount }) {
+export function getTypeValue({ rowType, year, data, ...extra }) {
   const yearData = data.get(year);
   if (!yearData) return "";
 
-  if (rowType.hasProjects) {
-    return fieldSum(yearData, rowType.id);
+  if (rowType.calculate) {
+    return rowType.calculate({ year, data, ...extra });
   }
 
-  if (rowType.calculate) {
-    return rowType.calculate({ year, data, fundingAmount });
+  if (rowType.hasProjects) {
+    return fieldSum(yearData, rowType.id);
   }
 
   return yearData[rowType.id];
@@ -284,10 +310,14 @@ export function formatValue(fn, value) {
   return format[fn || "number"].format(value || 0);
 }
 
-export function getProjectValue(id, year, data, projectId) {
+export function getProjectValue(id, year, data, projectId, calculate) {
   const yearData = data.get(year) || {};
 
   const parent = yearData[id];
+
+  if (calculate) {
+    return calculate({ year, data, projectId });
+  }
 
   return parent ? parent[projectId] : 0;
 }
