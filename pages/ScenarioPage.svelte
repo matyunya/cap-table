@@ -27,8 +27,11 @@
         style="left: 0;"
         class="col-start-1 row-start-2 flex flex-1 flex-col border dark:border-gray-700 bg-white dark:bg-gray-800 p-1"
       >
-        {#each rowTypes as { label }}
-          <Cell class="mt-2 cell p-1 h-6 items-center text-left font-bold">
+        {#each rowTypes as { label }, i}
+          <Cell
+            editable={false}
+            class="cell p-1 h-6 items-center text-left font-bold {i !== 0 ? "mt-2" : ""}"
+          >
             {label}
           </Cell>
         {/each}

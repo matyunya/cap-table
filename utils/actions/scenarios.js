@@ -59,7 +59,9 @@ const CURRENT_STAGE_OPTIONS = [
   "N+2",
 ].map((i) => [i, i]);
 
-const BASIC_PERIOD_OPTIONS = ["IPO", "N+1", "N+2"].map((i) => [i, i]);
+const BASIC_PERIODS = ["IPO", "N+1", "N+2"];
+
+const BASIC_PERIOD_OPTIONS = BASIC_PERIODS.map((i) => [i, i]);
 
 const getPlan = (data) => {
   const planId = data.planId;
@@ -82,9 +84,11 @@ const getIpoDate = ({ data }) => {
 
 const calcNetIncome = ({ data }) => {
   const ipoDate = getIpoDate({ data });
+
   if (!ipoDate) return 0;
 
-  const year = new Date(ipoDate).getFullYear();
+  const year =
+    new Date(ipoDate).getFullYear() + BASIC_PERIODS.indexOf(data.basicPeriod);
 
   return planRowTypes
     .find((i) => i.id === "netIncome")

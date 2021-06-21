@@ -16,6 +16,8 @@ import {
   REMOVE_YEAR,
   SET_PLAN_DOC_ID,
   UPDATE_TAX_RATE,
+
+  DEFAULT_TAX_RATE,
 } from "/utils/mutations/plans.js";
 
 import { uid } from "/utils/index.js";
@@ -116,7 +118,8 @@ const fillEmpty =
     });
   };
 
-const calculateTax = (p) => (calcProfitAndLossBeforeTax(p) * p.taxRate) / 100;
+const calculateTax = (p) =>
+  Math.max((calcProfitAndLossBeforeTax(p) * (p.taxRate ?? DEFAULT_TAX_RATE)) / 100, 0);
 
 const calcFundingAmount = ({ fundingAmount, year }) => fundingAmount[year];
 
@@ -220,7 +223,9 @@ const types = [
   {
     id: "netIncome",
     label: "当期利益",
-    calculate: (p) => calcProfitAndLossBeforeTax(p) - calculateTax(p),
+    calculate: (p) => {
+      return calcProfitAndLossBeforeTax(p) - calculateTax(p);
+    },
   },
   {
     id: "cashAndDepositBalance",
