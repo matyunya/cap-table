@@ -6,7 +6,7 @@ nodes:
   getAuth = tryLogin && withStatus("auth")
   auth = tryLogin && ellx.auth
   authStatus = tryLogin && getAuth()
-  authReady = auth && !(auth instanceof Error)
+  authReady = try(Boolean(auth), false)
   profile = store.profile
   profileReady = profile.owner === userId
   userId = authReady ? auth.userId : null
