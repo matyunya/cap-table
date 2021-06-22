@@ -126,9 +126,9 @@ const calcFundingAmount = ({ fundingAmount, year }) => fundingAmount[year];
 const calcSingleGrossProfit = ({ yearData: d, projectId }) =>
   (d.sales[projectId] || 0) - (d.costOfSales[projectId] || 0);
 
-const calcSingleOperatingIncome = (p) =>
-  calcSingleGrossProfit(p) -
-  (p.yearData.expenses[p.yearData.sales[p.projectId]] || 0);
+const calcSingleOperatingIncome = (p) => calcSingleGrossProfit(p) -
+  (p.yearData.expenses[p.projectId] || 0);
+
 
 const sum = (obj) => Object.keys(obj).reduce((acc, key) => acc + obj[key], 0);
 

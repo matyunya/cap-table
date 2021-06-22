@@ -14,10 +14,9 @@
       {$_("株価算定（類似業種批准方式）")}
     </h2>
   </div>
-</section>
+
 
 {#if $sheetStatus === "success"}
-  <div class="m-12">
     <div
       class="calc relative grid grid-flow-col grid-cols-1 gap-2 grid-rows-2 cap-table text-xs text-gray-700 dark:text-gray-200 mt-6 bg-blurred z-40"
       on:click={setEditing}
@@ -40,10 +39,10 @@
         <Scenario {id} {title} />
       {/each}
     </div>
-  </div>
+    <Benchmarks />
 {/if}
 
-<Benchmarks />
+</section>
 
 <style>
   .calc {

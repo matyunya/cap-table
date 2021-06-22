@@ -145,6 +145,7 @@ const types = [
   {
     label: "（A）基準期の純利益",
     id: "netIncome",
+    format: "currency",
     calculate: calcNetIncome,
   },
   {
@@ -159,6 +160,7 @@ const types = [
   {
     label: "（D）企業価値",
     id: "projectValue",
+    format: "currency",
     calculate: calcProjectValue,
   },
   {
@@ -169,6 +171,7 @@ const types = [
   {
     label: "（F）IPO時株価",
     id: "ipoSharePrice",
+    format: "currency",
     calculate: calcIpoSharePrice,
   },
   {

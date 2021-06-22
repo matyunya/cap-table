@@ -6,10 +6,11 @@ nodes:
   getAuth = tryLogin && withStatus("auth")
   auth = tryLogin && ellx.auth
   authStatus = tryLogin && getAuth()
+  authReady = auth && !(auth instanceof Error)
   profile = store.profile
   profileReady = profile.owner === userId
-  userId = !authError ? (auth ? auth.userId : null) : null
-  appId = !authError ? auth.appId : null
+  userId = authReady ? auth.userId : null
+  appId = authReady ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   language = profileReady ? profile.language : navigator.languages[0].slice(0, 2)
   routeUserId = route.split('/')[2]
@@ -21,17 +22,17 @@ nodes:
   isAuthenticated = Boolean(userId)
   activeSheet = getActiveItem(activeItemId, route, profileReady, plans, docs)
   getSheetStatus = withStatus("activeSheet")
-  unsubscribeDocs = connect(userId)
+  unsubscribeDocs = authReady && connect(userId)
   sheetStatus = getSheetStatus()
-  unsubscribePlans = connectPlans(userId)
+  unsubscribePlans = authReady && connectPlans(userId)
   routeUrl = new URL("http://internet.com" + router.path)
   isPlan = route.startsWith("/plans")
   isDoc = route.startsWith("/docs")
   isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
-  unsubscribeProfile = connectProfile(userId)
+  unsubscribeProfile = authReady && connectProfile(userId)
   route = routeUrl.pathname
-  unsubscribeScenarios = connectScenarios(userId)
-  unsubscribeBenchmarks = connectBenchmarks(userId)
+  unsubscribeScenarios = authReady && connectScenarios(userId)
+  unsubscribeBenchmarks = authReady && connectBenchmarks(userId)
   isScenario = route.startsWith("/scenarios")
   docPlanId = isDoc && getDocPlanId(plans, activeItemId)
   activeEntity = isPlan ? "plans" : (isDoc ? "documents" : "scenarios")
@@ -130,7 +131,17 @@ layout:
     {
       "node": "authStatus"
     }
-  ],,,,,
+  ],
+  [,,,,,,,,,,,,
+    {
+      "value": "Auth ready:"
+    }
+  ],
+  [,,,,,,,,,,,,
+    {
+      "node": "authReady"
+    }
+  ],,,
   [,
     {
       "value": "Profile:"
@@ -222,7 +233,7 @@ layout:
       "value": "Is authenticated:"
     }
   ],
-  [,,,,,,,
+  [,,,,,,,,
     {
       "node": "isAuthenticated"
     }

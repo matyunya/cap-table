@@ -1,6 +1,5 @@
 import ellxify from "~ellx-hub/lib/utils/svelte.js";
 import App from "./App.svelte";
-import { writable } from "tinyx";
 import "/index.css";
 
 import { store } from "/store.js";
@@ -28,17 +27,10 @@ export { default as connectBenchmarks } from "/models/benchmarks.js";
 export { default as withStatus } from "/utils/withStatus.js";
 export { DEFAULT_TAX_RATE } from "/utils/mutations/plans.js";
 
+
 export { store };
 
 export const app = ellxify(App);
-
-const { auth } = require("/index.ellx");
-
-export const authError = writable(false);
-
-Promise.resolve().then(() =>
-  auth.subscribe((v) => authError.set(v instanceof Error))
-);
 
 export function getActiveItem(id, route) {
   if (route.startsWith("/docs")) {
