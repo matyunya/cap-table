@@ -1,5 +1,6 @@
 <script>
   import _ from "/utils/intl.js";
+  import { withEmpty } from "/utils/selectors.js";
   import Label from "/components/ui/Label.svelte";
   export let label;
   export let placeholder;
@@ -12,7 +13,7 @@
   export let classes =
     "focus:ring-2 transition duration-200 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded-xl text-sm shadow focus:outline-none focus:shadow-outline w-full";
 
-  $: withEmpty = hasEmpty ? [["", "選択してください"], ...options] : options;
+  $: optionsWithEmpty = hasEmpty ? withEmpty(options) : options;
 </script>
 
 {#if label}
@@ -30,7 +31,7 @@
   class="dark:bg-gray-800 pr-4 {classes}"
   placeholder={$_(placeholder)}
 >
-  {#each withEmpty as [val, text]}
+  {#each optionsWithEmpty as [val, text]}
     <option value={val}>
       {$_(text)}
     </option>

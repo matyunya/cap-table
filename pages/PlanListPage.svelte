@@ -3,9 +3,12 @@
   import _ from "/utils/intl.js";
   import { renamePlan, createPlan, removePlan } from "/utils/actions/plans.js";
   import { formatDate } from "/utils/index.js";
-  import exportExcel from "/utils/excel.js";
 
-  const { userId, itemIds } = require("/index.ellx");
+  const { userId, itemIds, docs } = require("/index.ellx");
+
+  function docName(id) {
+    return ($docs.get(id) || {}).title;
+  }
 </script>
 
 <section class="relative text-sm flex flex-col max-w-5xl mx-auto mt-12">
@@ -22,7 +25,7 @@
     class="w-full mx-auto relative grid grid-cols-4 grid-auto-rows gap-8 mt-12"
   >
     {#if typeof $itemIds !== "string"}
-      {#each $itemIds as [id, title, lastViewed]}
+      {#each $itemIds as [id, title, lastViewed, { docId }]}
         <li
           class="relative bg-white dark:bg-gray-700 cursor-pointer w-full p-3 rounded-xl hover:ring-2 ring-1 transition duration-150 ring-gray-200 shadow-lg hover:shadow-xl flex flex-col space-y-6 justify-between"
           on:click={() => window.ellx.router.go(`/plans/${$userId}/${id}`)}
@@ -36,27 +39,7 @@
           </div>
           <div class="text-xs flex justify-between items-center">
             <button
-              on:click|stopPropagation={() => exportExcel(id)}
-              class="flex opacity-0 items-center transition duration-200 hover:text-green-800"
-            >
-              <div
-                class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 cursor-pointer  dark:ring-green-100 ring-green-600 hover:text-green-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M16 11h5l-9 10-9-10h5v-11h8v11zm3 8v3h-14v-3h-2v5h18v-5h-2z"
-                  />
-                </svg>
-              </div>
-              <div>Excel</div>
-            </button>
-
-            <button
+              class:opacity-0={$itemIds.length < 2}
               class="text-xs h-5 w-5 flex items-center justify-center rounded-full ring-0 p-1 hover:ring-2 cursor-pointer  dark:ring-red-100 ring-red-600 hover:text-red-600 transition duration-200"
               on:click|stopPropagation={() => removePlan({ id })}
             >
@@ -76,6 +59,10 @@
             {$_("最終閲覧")}
             {formatDate(lastViewed)}
           </span>
+          <div class="p-2 border-t text-xs flex flex-col">
+            <div class="text-gray-600">紐付いた資本政策</div>
+            <div class="mt-2 truncate" class:font-bold={docId}>{docName(docId) || "未選択"}</div>
+          </div>
         </li>
       {/each}
     {/if}

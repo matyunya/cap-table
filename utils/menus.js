@@ -1,9 +1,14 @@
-import { createDocument, removeDocument } from "/utils/actions/docs.js";
+import {
+  createDocument,
+  removeDocument,
+  setIpoRoundId,
+} from "/utils/actions/docs.js";
 import { uid, lastInvestorIdInGroup } from "./index.js";
 import exportExcel from "/utils/excel.js";
 
 import { syncCurrentItem as syncCurrentDoc } from "/utils/actions/generic.js";
 import { createPlan, removePlan } from "/utils/actions/plans.js";
+import { createScenario, removeScenario } from "/utils/actions/scenarios.js";
 
 import { store } from "/store.js";
 
@@ -21,7 +26,6 @@ import {
   removeProject,
   addYear,
   removeYear,
-  setIPO,
 } from "/utils/actions/plans.js";
 
 const {
@@ -29,6 +33,7 @@ const {
   rounds,
   planDocId,
   projects,
+  scenarios,
   years,
   docPlanId,
   userId,
@@ -136,6 +141,10 @@ export const roundMenuItems = (id) =>
           },
         }
       : false,
+    id !== "founded" && {
+      text: "このラウンドでIPO",
+      cb: () => setIpoRoundId({ roundId: id }),
+    },
     canAddSplit(id)
       ? {
           text: "株式分割ラウンド作成",
@@ -170,7 +179,7 @@ export const getDocMenuItems = () =>
       cb: () => exportExcel(id),
     },
     docPlanId.get() && {
-      text: "紐づけた資本政策へ",
+      text: "紐づけた事業計画へ",
       cb: () =>
         window.ellx.router.go(`/plans/${userId.get()}/${docPlanId.get()}`),
     },
@@ -229,8 +238,17 @@ export const getYearMenuItems = ({ year }) =>
         text: "この年度を削除",
         cb: () => removeYear({ year }),
       },
-    year !== years.get()[0] && {
-      text: "この年度でIPOする",
-      cb: () => setIPO({ year }),
+  ].filter(Boolean);
+
+// TODO
+export const getScenarioMenuItems = ({ id }) =>
+  [
+    {
+      text: "新規シナリオを追加",
+      cb: () => createScenario(),
+    },
+    scenarios.get().size > 1 && {
+      text: "このシナリオを削除",
+      cb: () => removeScenario({ id }),
     },
   ].filter(Boolean);

@@ -3,11 +3,11 @@
   import { store } from "/store.js";
   import { SET_LANGUAGE } from "/utils/mutations/profile.js";
   import _ from "/utils/intl.js";
-  import { setPlanDocId } from "/utils/actions/plans.js";
   import { updateProfile } from "/models/profile.js";
   import { openContextMenu } from "/components/ui/ContextMenu.svelte";
   import { getDocMenuItems, getPlanMenuItems } from "/utils/menus.js";
   import FounderShare from "/components/FounderShare.svelte";
+  import LogoDash from "/icons/logo-dash.svelte";
 
   export let logout = () => {};
   export let dark;
@@ -21,8 +21,6 @@
     isItem,
     itemIds,
     language,
-    planDocId,
-    docIds,
     isPlan,
   } = require("/index.ellx");
 
@@ -78,29 +76,35 @@
     {#if !$isItem}
       <a
         href="/"
-        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 dark:ring-white ring-black hover:ring-1 rounded-xl p-1 transition duration-300"
+        class="font-bold tracking-wide text-base mr-4 text-black dark:text-white ring-0 ring-blue-800 hover:ring-1 rounded-xl p-1 transition duration-300"
       >
-        Capital Dash
+        <LogoDash class="w-32" />
       </a>
       {#if $isAuthenticated && typeof $route === "string" && !$route.startsWith("/signup")}
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/docs"
-          class:font-bold={$route === "/docs"}
+          class:text-black={$route === "/docs"}
+          class:dark:text-white={$route === "/docs"}
+          class:underline={$route === "/docs"}
         >
           {$_("資本政策")}
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
           href="/plans"
-          class:font-bold={$route === "/plans"}
+          class:text-black={$route === "/plans"}
+          class:dark:text-white={$route === "/plans"}
+          class:underline={$route === "/plans"}
         >
           {$_("事業計画")}
         </a>
         <a
           class="mx-2 hover:text-black hover:dark:text-white hover:underline transition duration-150"
-          href="/calc"
-          class:font-bold={$route === "/calc"}
+          href="/scenarios"
+          class:text-black={$route === "/scenarios"}
+          class:dark:text-white={$route === "/scenarios"}
+          class:underline={$route === "/scenarios"}
         >
           {$_("株価算定")}
         </a>
@@ -139,18 +143,6 @@
           />
         </svg>
       </button>
-      {#if $isPlan && Array.isArray($docIds)}
-        <div class="flex space-x-4 items-center ml-6">
-          <div class="text-xs">紐づける資本政策</div>
-          <Select
-            classes="focus:ring-2 w-48 truncate transition p-1 duration-200 text-xs shadow focus:outline-none rounded-xl bg-white dark:bg-black"
-            hasEmpty
-            value={$planDocId}
-            on:change={({ target }) => setPlanDocId({ id: target.value })}
-            options={$docIds}
-          />
-        </div>
-      {/if}
     {/if}
     <FounderShare />
   </div>

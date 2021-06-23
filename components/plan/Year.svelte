@@ -13,11 +13,13 @@
   } from "/utils/actions/plans.js";
   import { getYearMenuItems } from "/utils/menus.js";
 
-  const { profile, data, ipo, fundingAmount } = require("/index.ellx");
+  const { profile, planData, fundingAmount, taxRate } = require("/index.ellx");
 
   export let year;
   export let i;
   export let projects;
+  export let ipo;
+  export let last;
 
   function ipoDisplayValue(val) {
     if (year === val) {
@@ -32,7 +34,7 @@
   }
 </script>
 
-{#if $data instanceof Map}
+{#if $planData instanceof Map}
   <div
     style="top: 0; min-width: 0; min-height: 0"
     class="round sticky border dark:border-gray-700 dark:bg-gray-800 bg-white grid grid-rows-3 z-20 relative"
@@ -45,9 +47,9 @@
         class="text-left text-gray-100 text-sm font-medium"
         value={i === 0 ? "実績" : "計画"}
       />
-      {#if i !== 0}
+      {#if last}
         <Icon
-          class="text-white bg-gray-800"
+          dark
           on:click={(e) => openContextMenu(getYearMenuItems({ year }), e)}
           size="20"
         />
@@ -57,8 +59,8 @@
       class="w-full flex justify-center text-xs items-center font-medium px-1 space-x-4"
     >
       <div>{i === 0 ? "直近期末" : i + "年後"}</div>
-      {#if $ipo && i !== 0}
-        <div>{ipoDisplayValue($ipo)}</div>
+      {#if ipo && i !== 0}
+        <div>{ipoDisplayValue(ipo)}</div>
       {/if}
     </div>
     <div
@@ -72,13 +74,14 @@
     style="min-width: 0; min-height: 0;"
     class="border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-1 rounded-sm flex flex-col"
   >
-    {#each rowTypes as { id, hasProjects, format, calculate }, i}
+    {#each rowTypes as { id, hasProjects, format, calculate, calculateSingle }, i}
       <Cell
         value={getTypeValue({
           rowType: { id, hasProjects, calculate },
           year,
-          data: $data,
-          fundingAmount: $fundingAmount || {}
+          data: $planData,
+          fundingAmount: $fundingAmount || {},
+          taxRate: $taxRate,
         })}
         editable={!hasProjects && !calculate}
         on:change={({ detail }) => updateCell({ year, value: detail, id })}
@@ -93,20 +96,22 @@
           getTypeValue({
             rowType: { id, hasProjects, calculate },
             year,
-            data: $data,
-            fundingAmount: $fundingAmount || {}
+            data: $planData,
+            fundingAmount: $fundingAmount || {},
+            taxRate: $taxRate,
           })
         )}
       </Cell>
       {#if hasProjects}
         {#each [...$projects.keys()] as projectId}
           <Cell
+            editable={!calculateSingle}
             class="border-y truncate p-1 h-6 items-center text-xs text-right font-medium"
-            value={getProjectValue(id, year, $data, projectId)}
+            value={getProjectValue(id, year, $planData, projectId, calculateSingle)}
             on:change={({ detail }) =>
               updateCell({ year, value: detail, id, projectId })}
           >
-            {formatValue(format, getProjectValue(id, year, $data, projectId))}
+            {formatValue(format, getProjectValue(id, year, $planData, projectId, calculateSingle))}
           </Cell>
         {/each}
       {/if}

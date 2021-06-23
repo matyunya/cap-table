@@ -540,11 +540,15 @@ const defaultNames = {
   },
   planTitle: {
     en: "New plan",
-    ja: "無題の計画"
+    ja: "無題の計画",
   },
   project: {
     ja: "新規事業",
     en: "New project",
+  },
+  scenarioTitle: {
+    en: "Scenario",
+    ja: "シナリオ",
   }
 };
 

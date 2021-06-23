@@ -23,6 +23,12 @@
     .logo-st2 {
       fill: #090000;
     }
+    .mode-dark .logo-st2 {
+      fill: white;
+    }
+    .mode-dark .logo-st0 {
+      fill:#7DD3FC;
+    }
   </style>
   <polygon class="logo-st0" points="64.8,-0.2 1.1,25.1 18.9,24.7 " />
   <polygon class="logo-st0" points="64.8,-0.2 27.3,24.5 38.1,24.3 " />

@@ -10,7 +10,7 @@
   import LoginPage from "/pages/LoginPage.svelte";
   import PasswordRecoveryPage from "/pages/PasswordRecoveryPage.svelte";
   import PasswordResetPage from "/pages/PasswordResetPage.svelte";
-  import CalcPage from "/pages/CalcPage.svelte";
+  import ScenarioPage from "/pages/ScenarioPage.svelte";
   import TutorialPage from "/pages/TutorialPage.svelte";
   import FeedbackPage from "/pages/FeedbackPage.svelte";
   import RulesPage from "/pages/RulesPage.svelte";
@@ -34,7 +34,14 @@
     document.querySelector("body").classList.remove("mode-dark");
   }
 
-  const { route, unsubscribeDocs, unsubscribeProfile, unsubscribePlans } = require("/index.ellx");
+  const {
+    route,
+    unsubscribeDocs,
+    unsubscribeProfile,
+    unsubscribePlans,
+    unsubscribeScenarios,
+    unsubscribeBenchmarks,
+  } = require("/index.ellx");
 
   onMount(() => {
     const { apply, unsubscribe, ...hl } = headlong({ classes });
@@ -57,6 +64,8 @@
     $unsubscribeDocs();
     $unsubscribeProfile();
     $unsubscribePlans();
+    $unsubscribeScenarios();
+    $unsubscribeBenchmarks();
     window.ellx.logout();
     window.ellx.router.go("/");
     store.resetStore();
@@ -93,8 +102,8 @@
   </div>
 {:else if $route === "/forgot"}
   <PasswordRecoveryPage />
-{:else if $route === "/calc"}
-  <CalcPage />
+{:else if $route === "/scenarios"}
+  <ScenarioPage />
 {:else if $route === "/reset"}
   <PasswordResetPage />
 {:else if $route === "/login"}

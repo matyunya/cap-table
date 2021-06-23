@@ -18,6 +18,10 @@
       stroke-linejoin: round;
       stroke-miterlimit: 10;
     }
+
+    .mode-dark .st0 {
+      stroke: white;
+    }
   </style>
   <g>
     <path

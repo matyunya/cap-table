@@ -6,10 +6,11 @@ nodes:
   getAuth = tryLogin && withStatus("auth")
   auth = tryLogin && ellx.auth
   authStatus = tryLogin && getAuth()
+  authReady = try(Boolean(auth), false)
   profile = store.profile
   profileReady = profile.owner === userId
-  userId = !authError ? (auth ? auth.userId : null) : null
-  appId = !authError ? auth.appId : null
+  userId = authReady ? auth.userId : null
+  appId = authReady ? auth.appId : null
   regStep = route.includes("signup") ? +(route.split('/')[2] || 1) : null
   language = profileReady ? profile.language : navigator.languages[0].slice(0, 2)
   routeUserId = route.split('/')[2]
@@ -21,16 +22,20 @@ nodes:
   isAuthenticated = Boolean(userId)
   activeSheet = getActiveItem(activeItemId, route, profileReady, plans, docs)
   getSheetStatus = withStatus("activeSheet")
-  unsubscribeDocs = connect(userId)
+  unsubscribeDocs = authReady && connect(userId)
   sheetStatus = getSheetStatus()
-  unsubscribePlans = connectPlans(userId)
+  unsubscribePlans = authReady && connectPlans(userId)
   routeUrl = new URL("http://internet.com" + router.path)
   isPlan = route.startsWith("/plans")
   isDoc = route.startsWith("/docs")
   isItem = route.startsWith("/docs/") || route.startsWith("/plans/")
-  unsubscribeProfile = connectProfile(userId)
+  unsubscribeProfile = authReady && connectProfile(userId)
   route = routeUrl.pathname
+  unsubscribeScenarios = authReady && connectScenarios(userId)
+  unsubscribeBenchmarks = authReady && connectBenchmarks(userId)
+  isScenario = route.startsWith("/scenarios")
   docPlanId = isDoc && getDocPlanId(plans, activeItemId)
+  activeEntity = isPlan ? "plans" : (isDoc ? "documents" : "scenarios")
   sheetChanged = activeSheet && activeSheet.owner && activeItemId
   router = ellx.router
   title = activeSheet && activeSheet.title
@@ -42,15 +47,21 @@ nodes:
   calculated = calculate(rounds, investors)
   projects = activeSheet ? activeSheet.projects : new Map()
   plans = store.plans
-  data = activeSheet ? activeSheet.data : new Map()
-  itemIds = profileReady && isPlan ? getItemIds(plans) : docIds
+  planData = activeSheet ? activeSheet.data : new Map()
+  itemIds = profileReady && getItemIds(store[activeEntity])
   docIds = profileReady && getItemIds(docs)
+  planIds = profileReady && getItemIds(plans)
   years = isPlan && activeSheet && getYearsRange(...(activeSheet.dateRange || []))
   ipo = isPlan && activeSheet && activeSheet.ipo
   planDocId = isPlan && activeSheet && activeSheet.docId
   planDoc = planDocId && docs.get(planDocId)
   fundingAmount = activeItemId && planDoc && calcFundingPerYear(years, planDoc, calculate(planDoc.rounds, planDoc.investors))
   planDocCalculated = planDoc && calculate(planDoc.rounds, planDoc.investors)
+  taxRate = activeSheet.taxRate || DEFAULT_TAX_RATE
+  scenarios = store.scenarios
+  foundedDates = profileReady && getFoundedDates(docs)
+  benchmarks = store.benchmarks
+  benchmarkIds = profileReady && getItemIds(benchmarks)
 layout:
 [,
   [,,
@@ -66,11 +77,11 @@ layout:
         "labelsLeft": true,
         "secondary": false,
         "labelsTop": false,
-        "height": 2,
+        "height": 4,
         "width": 1
       }
     }
-  ],
+  ],,,,
   [,,,,,,,,
     {
       "value": "Call login:"
@@ -84,7 +95,7 @@ layout:
   [,,
     {
       "value": "Documents:"
-    },,,,,,,,
+    },,,,,,
     {
       "value": "Auth status:"
     }
@@ -120,7 +131,17 @@ layout:
     {
       "node": "authStatus"
     }
-  ],,,,,
+  ],
+  [,,,,,,,,,,,,
+    {
+      "value": "Auth ready:"
+    }
+  ],
+  [,,,,,,,,,,,,
+    {
+      "node": "authReady"
+    }
+  ],,,
   [,
     {
       "value": "Profile:"
@@ -163,7 +184,10 @@ layout:
       "node": "regStep"
     }
   ],,
-  [,,,,,,,,
+  [,,,,
+    {
+      "value": "Language:"
+    },,,,
     {
       "value": "Route user ID:"
     },,
@@ -231,7 +255,7 @@ layout:
       "expansion": {
         "vertical": true,
         "labelsLeft": true,
-        "height": 5,
+        "height": 7,
         "width": 1
       }
     },,
@@ -281,15 +305,37 @@ layout:
     {
       "node": "route"
     }
-  ],,,,
+  ],
+  [,,,,,,,
+    {
+      "node": "unsubscribeScenarios"
+    },,,,,,,
+    {
+      "value": "Is scenario:"
+    }
+  ],
+  [,,,,,,,
+    {
+      "node": "unsubscribeBenchmarks"
+    },,,,,,,
+    {
+      "node": "isScenario"
+    }
+  ],,,,,
   [,,
     {
       "value": "Doc plan id:"
+    },,,,,,,,,,,,
+    {
+      "value": "Active entity:"
     }
   ],
   [,,
     {
       "node": "docPlanId"
+    },,,,,,,,,,,,
+    {
+      "node": "activeEntity"
     }
   ],,
   [,,
@@ -425,7 +471,7 @@ layout:
       "value": "Projects:"
     },,,
     {
-      "value": "Data:"
+      "value": "Plan data:"
     }
   ],
   [,,,,,,,,
@@ -452,7 +498,7 @@ layout:
       }
     },,,,,,,,,
     {
-      "node": "data",
+      "node": "planData",
       "expansion": {
         "vertical": false,
         "labelsTop": true,
@@ -469,6 +515,9 @@ layout:
     },,,,
     {
       "value": "Doc ids:"
+    },,,
+    {
+      "value": "Plan ids:"
     }
   ],
   [,,
@@ -487,6 +536,9 @@ layout:
         "height": 10,
         "width": 1
       }
+    },,,
+    {
+      "node": "planIds"
     }
   ],,,,,,,,
   [,,
@@ -563,6 +615,68 @@ layout:
         "height": 3,
         "width": 5
       }
+    }
+  ],
+  [,,
+    {
+      "value": "Plan doc tax rate:"
+    }
+  ],
+  [,,
+    {
+      "node": "taxRate"
+    }
+  ],,,
+  [,,
+    {
+      "value": "Scenarios:"
+    }
+  ],,
+  [,,
+    {
+      "node": "scenarios",
+      "expansion": {
+        "vertical": true,
+        "labelsLeft": true,
+        "secondary": true,
+        "labelsTop": true,
+        "height": 1,
+        "width": 5
+      }
+    }
+  ],,,
+  [,,
+    {
+      "value": "Founded dates:"
+    }
+  ],
+  [,,
+    {
+      "node": "foundedDates"
+    }
+  ],,,
+  [,,
+    {
+      "value": "Benchmarks:"
+    },,,,
+    {
+      "value": "Benchmark ids:"
+    }
+  ],,
+  [,,
+    {
+      "node": "benchmarks",
+      "expansion": {
+        "vertical": false,
+        "labelsTop": true,
+        "secondary": true,
+        "labelsLeft": true,
+        "height": 2,
+        "width": 4
+      }
+    },,,,
+    {
+      "node": "benchmarkIds"
     }
   ]
 ]

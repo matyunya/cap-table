@@ -89,8 +89,43 @@ export function chartData(id, docs) {
     postMoney: doc.rounds.get(id).type === "j-kiss"
       ? data[keys[i - 1]].roundResults.postMoney
       : data[id].roundResults.postMoney,
-    date: new Date(doc.rounds.get(id).date),
+    newEquity: doc.rounds.get(id).type === "j-kiss"
+      ? data[keys[i - 1]].roundResults.newEquity
+      : data[id].roundResults.newEquity,
+    date: doc.rounds.get(id).date,
   }));
 
   return res;
+}
+
+export function getIpoYear(docId, docs) {
+  const doc = docs.get(docId);
+  if (!doc) return null;
+
+  const round = doc.rounds.get(doc.ipoRoundId);
+  if (!round) return null;
+
+  return new Date(round.date).getFullYear();
+}
+
+export function calcFundingPerYear(years, doc) {
+  const calculated = calculate(doc.rounds, doc.investors);
+
+  return Object.fromEntries(
+    years.map((year) => [
+      year,
+      [...doc.rounds.keys()]
+        .filter(
+          (id) => new Date(doc.rounds.get(id).date).getFullYear() === year
+        )
+        .reduce((acc, id) => acc + calculated[id].roundResults.newEquity, 0),
+    ])
+  );
+}
+
+export function withEmpty(opts) {
+  if (typeof opts === "function") opts = opts();
+  if (!opts || !opts.length) return [];
+
+  return [["", "選択してください"], ...opts];
 }

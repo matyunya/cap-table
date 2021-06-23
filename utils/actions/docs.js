@@ -1,11 +1,10 @@
 import { promptYesNo } from "/components/ui/ConfirmationDialog.svelte";
-import { select } from "tinyx";
 import _ from "/utils/intl.js";
 import {
-  syncUp,
-  syncItemUp,
   store,
 } from "/store.js";
+
+import { syncItemUp } from "/models/generic.js";
 
 import {
   UPDATE_SHARE,
@@ -23,6 +22,7 @@ import {
   UPDATE_DISCOUNT,
   UPDATE_INVESTOR_NAME,
   UPDATE_INVESTOR_TITLE,
+  SET_IPO_ROUND_ID,
 } from "/utils/mutations/docs.js";
 
 import {
@@ -51,6 +51,9 @@ export const updateSplitBy = ({ roundId, value }) =>
 
 export const renameRound = ({ roundId, value }) =>
   syncCurrentDoc(RENAME_ROUND, { roundId, name: value });
+
+export const setIpoRoundId = ({ roundId }) =>
+  syncCurrentDoc(SET_IPO_ROUND_ID, { roundId });
 
 const updateShares =
   (type) =>

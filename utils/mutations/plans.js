@@ -4,13 +4,16 @@ import { uid } from "/utils/index.js";
 
 const { userId, language } = require("/index.ellx");
 
+export const DEFAULT_TAX_RATE = 30;
+
 export const defaultPlan = (title) => ({
   title: title || defaultName("planTitle"),
   lastViewed: null,
   // sparse map containing user input values, key year -> field -> (projectId) -> value
   data: new Map(),
+  taxRate: DEFAULT_TAX_RATE,
   // first year comes from the last settlement year value
-  dateRange: [new Date(), addYears(new Date(), 5)].map(d => d.getFullYear()),
+  dateRange: [new Date(), addYears(new Date(), 5)].map((d) => d.getFullYear()),
   projects: new Map([
     ["PR", { title: "主力事業" }],
     ["PR2", { title: "新規事業A" }],
@@ -18,18 +21,19 @@ export const defaultPlan = (title) => ({
 });
 
 export function UPDATE_CELL({ year, value, id, projectId }) {
-  return ({ set }) => projectId
-    ? set("data", year, id, projectId, Number(value))
-    : set("data", year, id, Number(value));
+  return ({ set }) =>
+    projectId
+      ? set("data", year, id, projectId, Number(value))
+      : set("data", year, id, Number(value));
 }
 
 export function COPY_PLAN({ from, to }) {
   return ({ set, get }) => {
     const newPlan = from
       ? {
-        ...from,
-        title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
-      }
+          ...from,
+          title: from.title + (language.get() === "ja" ? "コピー" : " copy"),
+        }
       : defaultPlan(getDefaultTitle(get("plans"), "planTitle"));
 
     set("plans", to, {
@@ -47,7 +51,6 @@ export function RENAME_PROJECT({ projectId, title }) {
   return ({ update }) =>
     update("projects", projectId, "title", (i) => title || i);
 }
-
 
 export function CREATE_PROJECT({ afterId }) {
   return ({ update }) =>
@@ -94,18 +97,20 @@ export function REMOVE_PLAN({ id }) {
 
 export function ADD_YEAR() {
   // TODO: allow only at the end
-  return ({ update }) => update("dateRange", ([start, end]) => [start, end + 1]);
+  return ({ update }) =>
+    update("dateRange", ([start, end]) => [start, end + 1]);
 }
 
 export function REMOVE_YEAR() {
   // TODO: remove data
-  return ({ update }) => update("dateRange", ([start, end]) => [start, end - 1]);
-}
-
-export function SET_IPO_YEAR({ year }) {
-  return ({ set }) => set("ipo", year);
+  return ({ update }) =>
+    update("dateRange", ([start, end]) => [start, end - 1]);
 }
 
 export function SET_PLAN_DOC_ID({ id }) {
   return ({ set }) => set("docId", id);
+}
+
+export function UPDATE_TAX_RATE({ value }) {
+  return ({ set }) => set("taxRate", value);
 }

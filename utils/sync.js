@@ -54,6 +54,10 @@ export const SYNC_DOCS = syncRootItem("documents");
 
 export const SYNC_PLANS = syncRootItem("plans");
 
+export const SYNC_SCENARIOS = syncRootItem("scenarios");
+
+export const SYNC_BENCHMARKS = syncRootItem("benchmarks");
+
 export function SYNC_PROFILE(querySnapshot) {
   return ({ set, remove }) => {
     for (let { type, doc } of querySnapshot.docChanges()) {
