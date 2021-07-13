@@ -1,6 +1,6 @@
 import download from "~ellx-hub/lib/utils/download.js";
-import { conclude } from "conclure";
-import { cps } from "conclure/effects";
+import { conclude } from "conclure@1.2.1";
+import { cps } from "conclure@1.2.1/effects";
 import { store } from "/store.js";
 import _ from "/utils/intl.js";
 import { uniqueGroups } from "/utils/index.js";
