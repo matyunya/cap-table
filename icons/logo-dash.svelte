@@ -92,3 +92,9 @@
   </g>
   <text x="235" y="25" font-size="10" fill="#1d2974">クローズドβ版</text>
 </svg>
+
+<style>
+text {
+  font-size: 10px !important;
+}
+</style>
