@@ -159,7 +159,7 @@ export const roundMenuItems = (id) =>
     canRemoveRound(id)
       ? {
           text: "ラウンド削除",
-          cb: () => syncCurrentDoc(REMOVE_ROUND, { id: id }),
+          cb: () => syncCurrentDoc(REMOVE_ROUND, { id }),
         }
       : false,
   ].filter(Boolean);
@@ -176,7 +176,7 @@ export const getDocMenuItems = () =>
     },
     {
       text: "Excelでダウンロード",
-      cb: () => exportExcel(id),
+      cb: () => exportExcel(activeItemId.get()),
     },
     docPlanId.get() && {
       text: "紐づけた事業計画へ",
