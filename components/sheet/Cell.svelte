@@ -24,7 +24,7 @@
   export let options = [];
   export let placeholder = "";
 
-  let editingValue = value;
+  $: editingValue = value;
 
   const dispatch = createEventDispatcher();
 
