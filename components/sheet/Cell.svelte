@@ -32,7 +32,6 @@
     dispatch("change", editingValue);
 
     editing.set(false);
-    // value = "..."; TODO implement proper loading value
   }
 
   function onKeydown(e) {

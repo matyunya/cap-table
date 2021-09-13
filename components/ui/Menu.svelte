@@ -1,6 +1,5 @@
 <script context="module">
   import { tick } from "svelte";
-  import { writable } from "svelte/store";
 
   function clickedOutside(node, cb) {
     const onclick = e => !node.contains(e.target) && cb();
@@ -19,7 +18,6 @@
 
 
   let node;
-  const activeId = writable();
 
   export async function onClickActivator({ pageX, pageY }) {
     await tick();
@@ -40,17 +38,7 @@
 </script>
 
 <script>
-  import { uid } from "/utils/index.js";
-
   export let open = false;
-
-  let id = uid();
-
-  $: if (open) {
-    $activeId = id;
-  } else {
-    $activeId = false;
-  }
 
   function onKeydown(e) {
     if (e.code === "Escape") {
@@ -75,7 +63,7 @@
   <div
     bind:this={node}
     on:click={() => open = false}
-    class:hidden={$activeId !== id}
+    class:hidden={!Array.isArray(open)}
     class="shadow text-xs fixed w-auto bg-gray-100 dark:bg-gray-700 z-50 rounded-lg hover:shadow-lg"
   >
     <slot />
